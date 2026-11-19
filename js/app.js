@@ -1016,12 +1016,27 @@
     return `<span class="ka ${anim}">${w.emoji || '✨'}</span>`;
   }
 
-    /* Голосовая инструкция, затем (по желанию) слово */
+    /* Голосовая инструкция, затем сразу слово (по длительности записи, без ожидания тишины в конце файла) */
   let kVoiceT = null;
+  const KIDS_PHRASE_MS = {
+    'привет будем учиться вместе': 2700,
+    'послушай и повтори': 1750,
+    'послушай и нажми на картинку': 2500,
+    'нажми на звук а потом на картинку': 2500,
+    'молодец': 700,
+    'умница': 600,
+    'отлично': 1400,
+    'здорово': 1400,
+    'ура правильно': 1500,
+    'ой это вот так': 1300
+  };
   function kidsVoice(text, then) {
     clearTimeout(kVoiceT);
-    const go = () => { if (ui.lesson && then) then(); };
-    speak(text, false, null, () => { kVoiceT = setTimeout(go, 350); });
+    speak(text);
+    if (!then) return;
+    const key = normWord(text);
+    const ms = KIDS_PHRASE_MS[key] || Math.max(600, text.length * 70);
+    kVoiceT = setTimeout(() => { if (ui.lesson) then(); }, ms);
   }
   const kSpk = () => '<button class="k-spk" data-silent data-ksay aria-label="Прослушать">🔊</button>';
   function kBindSay(root, w) { $$('[data-ksay]', root).forEach(b => { b.onclick = e => { e.stopPropagation(); clearTimeout(kVoiceT); speak(w.bu, false, audioOf(w)); b.classList.remove('ping'); void b.offsetWidth; b.classList.add('ping'); }; }); }
