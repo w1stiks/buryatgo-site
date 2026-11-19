@@ -1083,14 +1083,21 @@
       };
     });
   }
-  const PRAISE_K = ['Молодец!', 'Умница!', 'Отлично!', 'Здорово!', 'Ура! Правильно!'];
+  const PRAISE_K = [
+    { t: 'Молодец!', a: 'k_molodec' },
+    { t: 'Умница!', a: 'k_umnica' },
+    { t: 'Отлично!', a: 'k_otlichno' },
+    { t: 'Здорово!', a: 'k_zdorovo' },
+    { t: 'Ура! Правильно!', a: 'k_ura' }
+  ];
   function kidsSheet(ok, r) {
     const sh = $('#lSheet');
     sh.className = 'sheet k-sheet ' + (ok ? 'good' : 'wrong');
     sh.innerHTML = `<div class="k-res"><span class="k-big">${ok ? '🌟' : '🙈'}</span>${r.kids ? `<span class="k-ans">${r.kids}</span>` : ''}</div><button class="btn ${ok ? '' : 'wrongbtn'} k-next" id="sNext" aria-label="Дальше">▶</button>`;
     void sh.offsetWidth; sh.classList.add('show');
     clearTimeout(kVoiceT);
-    speak(ok ? PRAISE_K[Math.floor(Math.random() * PRAISE_K.length)] : 'Ой! Это вот так.');
+    const p = ok ? PRAISE_K[Math.floor(Math.random() * PRAISE_K.length)] : { t: 'Ой! Это вот так.', a: 'k_oy' };
+    speak(p.t, false, audioFor(p.a));
     if (!ok && r.kidsWord) kVoiceT = setTimeout(() => speak(r.kidsWord.bu, false, audioOf(r.kidsWord)), 1300);
     const lessonEl = sh.closest('.lesson');
     if (lessonEl) lessonEl.classList.add('sheet-open');
