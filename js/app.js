@@ -2679,12 +2679,29 @@
     const words = groups.map(g => `<div class="dv-gh">${esc(g.t)}</div>` + g.ids.map(id => { n++; const w = D.words[id];
       return `<div class="dv-w"><span class="dv-n">${n}</span><span class="dv-t"><b>${esc(w.bu)}</b><small>${esc(w.ru)} · ${esc(id)}</small></span>
         <button class="dv-play" data-say="${esc(id)}" aria-label="Слушать ${esc(w.bu)}">▶</button><button class="dv-play slow" data-say="${esc(id)}" data-slow="1" aria-label="Медленно">🐢</button></div>`; }).join('')).join('');
+    const KIDS_PHRASES = [
+      { id: 'k_hello', t: 'Привет! Будем учиться вместе!' },
+      { id: 'k_listen_repeat', t: 'Послушай и повтори' },
+      { id: 'k_listen_tap', t: 'Послушай и нажми на картинку' },
+      { id: 'k_sound_then_pic', t: 'Нажми на звук, а потом на картинку' },
+      { id: 'k_molodec', t: 'Молодец!' },
+      { id: 'k_umnica', t: 'Умница!' },
+      { id: 'k_otlichno', t: 'Отлично!' },
+      { id: 'k_zdorovo', t: 'Здорово!' },
+      { id: 'k_ura', t: 'Ура! Правильно!' },
+      { id: 'k_oy', t: 'Ой! Это вот так.' }
+    ];
+    const phrases = KIDS_PHRASES.map((p, i) => `<div class="dv-w"><span class="dv-n">${i + 1}</span><span class="dv-t"><b>${esc(p.t)}</b><small>${esc(p.id)}.m4a</small></span>
+      <button class="dv-play" data-kphrase="${esc(p.id)}" data-ktext="${esc(p.t)}" aria-label="Слушать">▶</button></div>`).join('');
     return `<h2 class="sub">Лига</h2>
       <div class="set-group dev-pad"><div class="dev-row"><select id="devLeague" class="dev-sel">${D.leagues.map((l, i) => `<option value="${i}" ${i === s.league ? 'selected' : ''}>${esc(l.name)} лига</option>`).join('')}</select></div>
         <div class="muted dock-note">Лига меняется сразу после выбора.</div></div>
       <h2 class="sub">Активный модуль</h2>
       <div class="set-group dev-pad"><div class="dev-row"><select id="devModule" class="dev-sel">${D.units.map((u, i) => `<option value="${i + 1}" ${i + 1 === curUnit ? 'selected' : ''}>${i + 1}. ${esc(u.title)}${u.superOnly || u.premium ? ' 👑' : ''}</option>`).join('')}</select><button class="btn small blue" id="devModBtn">Установить</button></div>
         <div class="muted dock-note">Уроки всех модулей до выбранного станут пройденными, с выбранного — начнутся заново.</div></div>
+      <h2 class="sub">Фразы детского режима · ${KIDS_PHRASES.length}</h2>
+      <div class="set-group dev-voice">${phrases}</div>
+      <p class="disclaimer">▶ — играет запись из audio/k_….m4a. Если файла нет — синтезатор.</p>
       <h2 class="sub">Озвучка · ${n} слов</h2>
       <div class="set-group dev-voice">${words}</div>
       <p class="disclaimer">▶ — играет ваша запись из папки audio, если она есть, иначе синтезатор речи. 🐢 — медленно.</p>`;
@@ -2700,6 +2717,11 @@
       if (!st().settings.tts) { toast('Включите озвучку в настройках'); return; }
       $$('.dv-play.on', scr).forEach(x => x.classList.remove('on')); b.classList.add('on'); setTimeout(() => b.classList.remove('on'), 900);
       speak(w.bu, !!b.dataset.slow, audioOf(w));
+    }; });
+    $$('[data-kphrase]', scr).forEach(b => { b.onclick = () => {
+      if (!st().settings.tts) { toast('Включите озвучку в настройках'); return; }
+      $$('.dv-play.on', scr).forEach(x => x.classList.remove('on')); b.classList.add('on'); setTimeout(() => b.classList.remove('on'), 900);
+      speak(b.dataset.ktext || '', false, audioFor(b.dataset.kphrase));
     }; });
   }
 
