@@ -111,41 +111,45 @@ window.BG_AUDIO = (function () {
   function listVoices() {
     return Promise.resolve([{ id: 'female', label: 'Женский голос' }, { id: 'male', label: 'Мужской голос' }]);
   }
-  function speak(text, rate, audioFile, voice) {
+  function speak(text, rate, audioFile, voice, onEnded) {
     rate = rate || 0.85;
     const g = gender(voice);
     let list = audioFile ? (Array.isArray(audioFile) ? audioFile : [audioFile]) : [];
     list = list.filter(f => f && !missingAudio[f]);
+    const done = () => { if (typeof onEnded === 'function') onEnded(); };
     if (list.length) {
       const token = ++playToken;
       const tryAt = i => {
         if (token !== playToken) return;
-        if (i >= list.length) { synth(text, rate, g); return; }
+        if (i >= list.length) { synth(text, rate, g, done); return; }
         const f = list[i];
-        let done = false;
-        const next = () => { if (done) return; done = true; missingAudio[f] = true; tryAt(i + 1); };
+        let failed = false;
+        const next = () => { if (failed) return; failed = true; missingAudio[f] = true; tryAt(i + 1); };
         try {
-          if (recorded) { recorded.onerror = null; recorded.pause(); }
+          if (recorded) { recorded.onerror = null; recorded.onended = null; recorded.pause(); }
           const el = new Audio(f);
           recorded = el;
           el.playbackRate = rate < 0.7 ? 0.75 : 1;
           el.onerror = next;
+          el.onended = () => { if (token === playToken) done(); };
           const pr = el.play();
-          if (pr && pr.catch) pr.catch(err => { if (err && err.name === 'NotAllowedError') { done = true; return; } next(); });
+          if (pr && pr.catch) pr.catch(err => { if (err && err.name === 'NotAllowedError') { failed = true; return; } next(); });
         } catch (e) { next(); }
       };
       tryAt(0);
       return;
     }
-    synth(text, rate, g);
+    synth(text, rate, g, done);
   }
-  function synth(text, rate, g) {
+  function synth(text, rate, g, onEnded) {
     const t = ttsText(text);
     try {
       const b = window.AndroidBridge;
       if (b && b.speak) {
         if (b.setVoiceGender && nativeGender !== g) { b.setVoiceGender(g); nativeGender = g; }
-        b.speak(t, rate); return;
+        b.speak(t, rate);
+        if (typeof onEnded === 'function') setTimeout(onEnded, Math.max(800, String(text || '').length * 80));
+        return;
       }
     } catch (e) {}
     if ('speechSynthesis' in window) {
@@ -156,6 +160,7 @@ window.BG_AUDIO = (function () {
         const p = pickVoice(g);
         if (p.v) u.voice = p.v;
         u.pitch = p.pitch;
+        if (typeof onEnded === 'function') u.onend = onEnded;
         speechSynthesis.speak(u);
       } catch (e) {}
     }

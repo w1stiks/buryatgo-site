@@ -218,7 +218,7 @@
     });
     return t;
   }
-  function speak(text, slow, audio) {
+  function speak(text, slow, audio, onEnded) {
     if (!st().settings.tts) return;
     const cfg = st().settings;
     const base = cfg.ttsRate === 0.85 ? 0.92 : (cfg.ttsRate || 0.92);
@@ -226,7 +226,7 @@
       const norm = normWord(text);
       audio = audioFor(WORD_BY_TEXT[norm]) || audioFor(PHRASE_AUDIO[norm]);
     }
-    A.speak(pronounce(text), base * (slow ? 0.75 : 1), audio, cfg.voice || '');
+    A.speak(pronounce(text), base * (slow ? 0.75 : 1), audio, cfg.voice || '', onEnded);
   }
 
   /* ───────────────── Тосты, конфетти, модалки ───────────────── */
@@ -1019,8 +1019,8 @@
   let kVoiceT = null;
   function kidsVoice(text, then) {
     clearTimeout(kVoiceT);
-    speak(text);
-    if (then) kVoiceT = setTimeout(() => { if (ui.lesson) then(); }, 900 + text.length * 55);
+    const go = () => { if (ui.lesson && then) then(); };
+    speak(text, false, null, () => { kVoiceT = setTimeout(go, 350); });
   }
   const kSpk = () => '<button class="k-spk" data-silent data-ksay aria-label="Прослушать">🔊</button>';
   function kBindSay(root, w) { $$('[data-ksay]', root).forEach(b => { b.onclick = e => { e.stopPropagation(); clearTimeout(kVoiceT); speak(w.bu, false, audioOf(w)); b.classList.remove('ping'); void b.offsetWidth; b.classList.add('ping'); }; }); }
