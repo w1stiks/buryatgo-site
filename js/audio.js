@@ -115,7 +115,7 @@ window.BG_AUDIO = (function () {
     rate = rate || 0.85;
     const g = gender(voice);
     let list = audioFile ? (Array.isArray(audioFile) ? audioFile : [audioFile]) : [];
-    list = list.filter(f => f && !missingAudio[f]);
+    list = list.filter(f => f);
     const done = () => { if (typeof onEnded === 'function') onEnded(); };
     if (list.length) {
       const token = ++playToken;
@@ -124,11 +124,12 @@ window.BG_AUDIO = (function () {
         if (i >= list.length) { synth(text, rate, g, done); return; }
         const f = list[i];
         let failed = false;
-        const next = () => { if (failed) return; failed = true; missingAudio[f] = true; tryAt(i + 1); };
+        const next = () => { if (failed) return; failed = true; tryAt(i + 1); };
         try {
           if (recorded) { recorded.onerror = null; recorded.onended = null; recorded.pause(); }
           const el = new Audio(f);
           recorded = el;
+          el.preload = 'auto';
           el.playbackRate = rate < 0.7 ? 0.75 : 1;
           el.onerror = next;
           el.onended = () => { if (token === playToken) done(); };
