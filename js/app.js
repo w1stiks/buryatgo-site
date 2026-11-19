@@ -99,6 +99,7 @@
     "сайн байна гүт": "p03_sayn_bayna_gut",
     "һайн баярлаа": "p04_hayn_bayarlaa",
     "минии нэрэ бато": "p05_minii_nere_bato",
+    "минии нэрэ": "nere",
     "тиимэ би сэсэг": "p06_tiime_bi_seseg",
     "хөхэ тэнгэри": "p07_hohe_tengeri",
     "улаан шара ногоон": "p08_ulaan_shara_nogoon",
@@ -613,7 +614,7 @@
         <button class="spk" data-silent data-say aria-label="Прослушать">🔊</button>
         <button class="spk" data-silent data-slow aria-label="Медленно" style="background:#fff;border:2px solid var(--line);box-shadow:0 3px 0 var(--line)">🐢</button></div></div>`;
     bindSay(root, w.bu, audioOf(w));
-    setTimeout(() => speak(w.bu, false, audioOf(w)), 350);
+    setTimeout(() => speak(w.bu, false, audioOf(w)), 50);
     const b = $('#lCheck', foot);
     b.disabled = false; b.textContent = 'Продолжить';
     ui.lesson.ready = true;
@@ -625,7 +626,7 @@
       <div class="speech"><div class="mini-m">${mini()}</div><div class="bubble"><button class="spk" data-silent data-say>🔊</button><span>${esc(w.bu)}</span></div></div>
       <div class="grid2">${ex.opts.map(id => { const o = D.words[id]; return `<button class="card-opt" data-id="${id}"><span class="emo">${o.emoji}</span><span>${esc(o.ru)}</span></button>`; }).join('')}</div>`;
     bindSay(root, w.bu, audioOf(w));
-    setTimeout(() => speak(w.bu, false, audioOf(w)), 300);
+    setTimeout(() => speak(w.bu, false, audioOf(w)), 50);
     bindChoice(root, '.card-opt', ex.w, () => ({ correctText: w.ru, okText: w.bu + ' — ' + w.ru }));
   }
 
@@ -635,7 +636,7 @@
       <div class="listen-btns"><button class="big-spk" data-silent data-say aria-label="Прослушать">🔊</button><button class="big-spk slow" data-silent data-slow aria-label="Медленно">🐢</button></div>
       <div class="grid2">${ex.opts.map(id => { const o = D.words[id]; return `<button class="card-opt" data-id="${id}"><span class="emo">${o.emoji}</span><span>${esc(o.ru)}</span></button>`; }).join('')}</div>`;
     bindSay(root, w.bu, audioOf(w));
-    setTimeout(() => speak(w.bu, false, audioOf(w)), 350);
+    setTimeout(() => speak(w.bu, false, audioOf(w)), 50);
     bindChoice(root, '.card-opt', ex.w, () => ({ correctText: w.bu + ' — ' + w.ru, okText: w.bu + ' — ' + w.ru }));
     foot.insertAdjacentHTML('afterbegin', '<button class="btn ghost dark skip" id="lSkip">Не могу слушать</button>');
     $('#lSkip', foot).onclick = () => { if (ui.lesson.checked) return; ui.lesson.done++; nextExercise(); };
@@ -663,7 +664,7 @@
       <div class="speech"><div class="mini-m">${mini()}</div><div class="bubble">${toRu ? '<button class="spk" data-silent data-say>🔊</button>' : ''}<span>${esc(srcText)}</span></div></div>
       <div class="answer-area" id="ans"></div>
       <div class="bank" id="bank">${tiles.map((o, i) => `<button class="tile" data-i="${i}">${esc(o.t)}</button>`).join('')}</div>`;
-    if (toRu) { bindSay(root, srcText); setTimeout(() => speak(srcText), 300); }
+    if (toRu) { bindSay(root, srcText); setTimeout(() => speak(srcText), 50); }
     const ans = $('#ans', root), bank = $('#bank', root);
     const chosen = [];
     function draw() {
@@ -1221,7 +1222,12 @@
       confetti(); sfx('complete'); haptic('success');
     } else res.textContent = txt;
     S.save();
-    speak(rolls.map(r => r.bu).join(', '));
+    // Юрта: каждое животное своим голосом
+    const yurtAudio = { 'хони': 'honin', 'морин': 'morin', 'тэмэн': 'temeen', 'үхэр': 'uher' };
+    rolls.forEach((r, i) => {
+      const id = yurtAudio[normWord(r.bu)];
+      setTimeout(() => speak(r.bu, false, id ? audioFor(id) : null), i * 700);
+    });
     ui.shagai = false;
   }
 
