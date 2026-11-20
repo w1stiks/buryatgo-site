@@ -167,6 +167,86 @@ window.BG_DATA = (function () {
       ]
     },
     {
+      id: 'u8', title: 'Праздники и традиции', subtitle: 'Сагаалган, Сурхарбаан, ёохор…',
+      color: '#7B3FD1', shade: '#5F2DAA', premium: true, superOnly: true, hard: true, icon: '🎊',
+      lessons: [
+        { id: 'u8l1', title: 'Белый месяц', words: ['sagaalgan', 'hadag', 'yokhor'], review: ['amar', 'bayarlaa'],
+          phrases: [
+            { bu: ['Сагаан', 'һараар!'], ru: ['С', 'Белым', 'месяцем!'] },
+            { bu: ['Һайн', 'дуун!'], ru: ['Хорошая', 'песня!'] }
+          ] },
+        { id: 'u8l2', title: 'Сурхарбаан', words: ['surharban', 'naadan', 'duun'], review: ['sagaalgan', 'hadag', 'yokhor'],
+          phrases: [
+            { bu: ['Һайн', 'наадан!'], ru: ['Хорошая', 'игра!'] },
+            { bu: ['Сагаан', 'һараар!'], ru: ['С', 'Белым', 'месяцем!'] }
+          ] }
+      ]
+    },
+    {
+      id: 'u9', title: 'Числа и время', subtitle: 'Нэгэн, хоёр, гурбан… үдэр, жэл',
+      color: '#0E8A7E', shade: '#0A6B62', premium: true, superOnly: true, hard: true, icon: '🔢',
+      lessons: [
+        { id: 'u9l1', title: 'Считаем до пяти', words: ['negen', 'hoyor', 'gurban', 'durben', 'taban'], review: [],
+          phrases: [
+            { bu: ['Нэгэн,', 'хоёр,', 'гурбан'], ru: ['Один,', 'два,', 'три'] },
+            { bu: ['Табан', 'бууза'], ru: ['Пять', 'бууз'] }
+          ] },
+        { id: 'u9l2', title: 'День, месяц, год', words: ['udur', 'hara_m', 'jel'], review: ['negen', 'hoyor', 'gurban', 'taban'],
+          phrases: [
+            { bu: ['Нэгэн', 'үдэр'], ru: ['Один', 'день'] },
+            { bu: ['Гурбан', 'жэл'], ru: ['Три', 'года'] }
+          ] }
+      ]
+    },
+    {
+      id: 'u14', title: 'Байкал и вода', subtitle: 'Нуур, гол, арал…',
+      color: '#0B7285', shade: '#085A69', premium: true, superOnly: true, hard: true, icon: '🌊',
+      lessons: [
+        { id: 'u14l1', title: 'Священное море', words: ['b_nuur', 'b_gol', 'b_aral'], review: ['dalai'],
+          phrases: [
+            { bu: ['Байгал', 'нуур'], ru: ['Озеро', 'Байкал'] },
+            { bu: ['Ольхон', 'арал'], ru: ['Остров', 'Ольхон'] }
+          ] },
+        { id: 'u14l2', title: 'На берегу', words: ['b_zagahan', 'b_dolgin', 'b_erie'], review: ['b_nuur', 'b_gol'],
+          phrases: [
+            { bu: ['Томо', 'загаһан'], ru: ['Большая', 'рыба'] },
+            { bu: ['Нуурай', 'эрье'], ru: ['Берег', 'озера'] }
+          ] }
+      ]
+    },
+    {
+      id: 'u15', title: 'Чувства и характер', subtitle: 'Баясхалан, ухаатай…',
+      color: '#C2255C', shade: '#9A1C49', premium: true, superOnly: true, hard: true, icon: '💖',
+      lessons: [
+        { id: 'u15l1', title: 'Настроение', words: ['b_bayaskhalan', 'b_gunig', 'b_duratai'], review: ['bayarlaa'],
+          phrases: [
+            { bu: ['Би', 'сайд', 'дуратай'], ru: ['Я', 'люблю', 'чай'] },
+            { bu: ['Эхэ', 'баясхалан'], ru: ['Большая', 'радость'] }
+          ] },
+        { id: 'u15l2', title: 'Характер', words: ['b_uhaatai', 'b_zorigtoi', 'b_erhim'], review: ['b_duratai', 'b_gunig'],
+          phrases: [
+            { bu: ['Ухаатай', 'хүбүүн'], ru: ['Умный', 'мальчик'] },
+            { bu: ['Зоригтой', 'Бато'], ru: ['Смелый', 'Бато'] }
+          ] }
+      ]
+    },
+    {
+      id: 'u16', title: 'Путешествие', subtitle: 'Зам, хото, тосхон…',
+      color: '#5F3DC4', shade: '#4A2FA0', premium: true, superOnly: true, hard: true, icon: '🧭',
+      lessons: [
+        { id: 'u16l1', title: 'Город и село', words: ['b_zam', 'b_hoto', 'b_toskhon'], review: ['b_yabaha'],
+          phrases: [
+            { bu: ['Хото', 'руу', 'ябанаб'], ru: ['Еду', 'в', 'город'] },
+            { bu: ['Урта', 'зам'], ru: ['Длинная', 'дорога'] }
+          ] },
+        { id: 'u16l2', title: 'В дороге', words: ['b_buudal', 'b_tergen', 'b_guur'], review: ['b_zam', 'b_hoto'],
+          phrases: [
+            { bu: ['Шэнэ', 'гүүр'], ru: ['Новый', 'мост'] },
+            { bu: ['Тэргэнай', 'буудал'], ru: ['Остановка', 'транспорта'] }
+          ] }
+      ]
+    },
+    {
       id: 'u3', title: 'Семья', subtitle: 'Эжы, аба, аха…',
       color: '#CE82FF', shade: '#A568CC', premium: false, icon: '👨‍👩‍👧',
       lessons: [
@@ -280,88 +360,8 @@ window.BG_DATA = (function () {
             { bu: ['Минии', 'дэбтэр'], ru: ['Моя', 'тетрадь'] }
           ] }
       ]
-    },
-    {
-      id: 'u8', title: 'Праздники и традиции', subtitle: 'Сагаалган, Сурхарбаан, ёохор…',
-      color: '#7B3FD1', shade: '#5F2DAA', premium: true, superOnly: true, hard: true, icon: '🎊',
-      lessons: [
-        { id: 'u8l1', title: 'Белый месяц', words: ['sagaalgan', 'hadag', 'yokhor'], review: ['amar', 'bayarlaa'],
-          phrases: [
-            { bu: ['Сагаан', 'һараар!'], ru: ['С', 'Белым', 'месяцем!'] },
-            { bu: ['Һайн', 'дуун!'], ru: ['Хорошая', 'песня!'] }
-          ] },
-        { id: 'u8l2', title: 'Сурхарбаан', words: ['surharban', 'naadan', 'duun'], review: ['sagaalgan', 'hadag', 'yokhor'],
-          phrases: [
-            { bu: ['Һайн', 'наадан!'], ru: ['Хорошая', 'игра!'] },
-            { bu: ['Сагаан', 'һараар!'], ru: ['С', 'Белым', 'месяцем!'] }
-          ] }
-      ]
-    },
-    {
-      id: 'u9', title: 'Числа и время', subtitle: 'Нэгэн, хоёр, гурбан… үдэр, жэл',
-      color: '#0E8A7E', shade: '#0A6B62', premium: true, superOnly: true, hard: true, icon: '🔢',
-      lessons: [
-        { id: 'u9l1', title: 'Считаем до пяти', words: ['negen', 'hoyor', 'gurban', 'durben', 'taban'], review: [],
-          phrases: [
-            { bu: ['Нэгэн,', 'хоёр,', 'гурбан'], ru: ['Один,', 'два,', 'три'] },
-            { bu: ['Табан', 'бууза'], ru: ['Пять', 'бууз'] }
-          ] },
-        { id: 'u9l2', title: 'День, месяц, год', words: ['udur', 'hara_m', 'jel'], review: ['negen', 'hoyor', 'gurban', 'taban'],
-          phrases: [
-            { bu: ['Нэгэн', 'үдэр'], ru: ['Один', 'день'] },
-            { bu: ['Гурбан', 'жэл'], ru: ['Три', 'года'] }
-          ] }
-      ]
-    },
-    {
-      id: 'u14', title: 'Байкал и вода', subtitle: 'Нуур, гол, арал…',
-      color: '#0B7285', shade: '#085A69', premium: true, superOnly: true, hard: true, icon: '🌊',
-      lessons: [
-        { id: 'u14l1', title: 'Священное море', words: ['b_nuur', 'b_gol', 'b_aral'], review: ['dalai'],
-          phrases: [
-            { bu: ['Байгал', 'нуур'], ru: ['Озеро', 'Байкал'] },
-            { bu: ['Ольхон', 'арал'], ru: ['Остров', 'Ольхон'] }
-          ] },
-        { id: 'u14l2', title: 'На берегу', words: ['b_zagahan', 'b_dolgin', 'b_erie'], review: ['b_nuur', 'b_gol'],
-          phrases: [
-            { bu: ['Томо', 'загаһан'], ru: ['Большая', 'рыба'] },
-            { bu: ['Нуурай', 'эрье'], ru: ['Берег', 'озера'] }
-          ] }
-      ]
-    },
-    {
-      id: 'u15', title: 'Чувства и характер', subtitle: 'Баясхалан, ухаатай…',
-      color: '#C2255C', shade: '#9A1C49', premium: true, superOnly: true, hard: true, icon: '💖',
-      lessons: [
-        { id: 'u15l1', title: 'Настроение', words: ['b_bayaskhalan', 'b_gunig', 'b_duratai'], review: ['bayarlaa'],
-          phrases: [
-            { bu: ['Би', 'сайд', 'дуратай'], ru: ['Я', 'люблю', 'чай'] },
-            { bu: ['Эхэ', 'баясхалан'], ru: ['Большая', 'радость'] }
-          ] },
-        { id: 'u15l2', title: 'Характер', words: ['b_uhaatai', 'b_zorigtoi', 'b_erhim'], review: ['b_duratai', 'b_gunig'],
-          phrases: [
-            { bu: ['Ухаатай', 'хүбүүн'], ru: ['Умный', 'мальчик'] },
-            { bu: ['Зоригтой', 'Бато'], ru: ['Смелый', 'Бато'] }
-          ] }
-      ]
-    },
-    {
-      id: 'u16', title: 'Путешествие', subtitle: 'Зам, хото, тосхон…',
-      color: '#5F3DC4', shade: '#4A2FA0', premium: true, superOnly: true, hard: true, icon: '🧭',
-      lessons: [
-        { id: 'u16l1', title: 'Город и село', words: ['b_zam', 'b_hoto', 'b_toskhon'], review: ['b_yabaha'],
-          phrases: [
-            { bu: ['Хото', 'руу', 'ябанаб'], ru: ['Еду', 'в', 'город'] },
-            { bu: ['Урта', 'зам'], ru: ['Длинная', 'дорога'] }
-          ] },
-        { id: 'u16l2', title: 'В дороге', words: ['b_buudal', 'b_tergen', 'b_guur'], review: ['b_zam', 'b_hoto'],
-          phrases: [
-            { bu: ['Шэнэ', 'гүүр'], ru: ['Новый', 'мост'] },
-            { bu: ['Тэргэнай', 'буудал'], ru: ['Остановка', 'транспорта'] }
-          ] }
-      ]
     }
-  ];
+  
 
   /* Магазин. slot: hat | outfit | feet | hand | acc | bonus; cat — вкладка магазина (по умолчанию = slot) */
   const items = [
