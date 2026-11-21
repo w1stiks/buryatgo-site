@@ -2924,6 +2924,16 @@
     }, 800);
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-  else init();
+  function safeInit() {
+    try { init(); }
+    catch (e) {
+      console.error('BuryatGo init error:', e);
+      const sp = document.getElementById('splash');
+      if (sp) { sp.classList.add('hide'); setTimeout(() => sp.remove(), 400); }
+      const sc = document.getElementById('screen');
+      if (sc) sc.innerHTML = '<div style="padding:24px;text-align:center"><h2>Ошибка загрузки</h2><p>' + (e && e.message || e) + '</p><button onclick="location.reload(true)">Обновить</button></div>';
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeInit);
+  else safeInit();
 })();
