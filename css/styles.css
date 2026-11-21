@@ -1231,3 +1231,104 @@ body[data-view=shop] .seg button img, body[data-view=shop] .seg button .ic { fle
   animation: none !important;
   transform: none !important;
 }
+
+/* ───────── Beautiful open / appear animations ───────── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUpIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes slideDownIn {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(.88); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes popIn {
+  0% { opacity: 0; transform: scale(.6); }
+  70% { transform: scale(1.06); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Overlay / modal polish */
+.overlay.show .backdrop {
+  animation: backdropIn .25s ease both;
+}
+.overlay .modal {
+  animation: sheetUp .38s cubic-bezier(.2,.85,.3,1.05) both;
+}
+.overlay .modal.center {
+  animation: popIn .32s cubic-bezier(.3,1.4,.5,1) both;
+}
+.overlay.full .modal {
+  animation: slideUpIn .35s cubic-bezier(.2,.8,.2,1) both;
+}
+
+/* Feedback sheet */
+.sheet.show {
+  animation: sheetUp .34s cubic-bezier(.2,.85,.3,1.08) both;
+}
+.sheet .s-ic {
+  animation: popIn .4s cubic-bezier(.3,1.5,.5,1) both;
+}
+
+/* View / screen transitions */
+.view {
+  animation: slideUpIn .32s cubic-bezier(.2,.8,.2,1) both;
+}
+
+/* Cards, units, nodes appearing */
+.unit, .unit-head, .node-wrap, .card-opt, .row-opt, .intro-card, .r-stat {
+  animation: slideUpIn .4s cubic-bezier(.2,.8,.2,1) both;
+}
+.node-wrap:nth-child(1) { animation-delay: .02s; }
+.node-wrap:nth-child(2) { animation-delay: .04s; }
+.node-wrap:nth-child(3) { animation-delay: .06s; }
+.node-wrap:nth-child(4) { animation-delay: .08s; }
+.node-wrap:nth-child(5) { animation-delay: .10s; }
+
+/* Buttons subtle press */
+.btn, .tab, .node, .card-opt, .row-opt {
+  transition: transform .12s ease, box-shadow .12s ease, background .15s ease;
+}
+.btn:active, .tab:active, .node:active, .card-opt:active, .row-opt:active {
+  transform: translateY(2px) scale(.98);
+}
+
+/* Toast */
+.toast.show {
+  animation: slideDownIn .28s cubic-bezier(.3,1.4,.5,1) both;
+}
+
+/* Splash exit */
+.splash.hide {
+  animation: fadeIn .4s reverse both;
+}
+
+/* Keep lesson emojis / pics static (no floating) */
+.lesson .emo,
+.lesson .k-pic,
+.lesson .k-pic2,
+.lesson .k-pic.big,
+#exRoot .emo,
+#exRoot .k-pic,
+#exRoot .k-pic2,
+.k-wrap .emo,
+.k-wrap .k-pic,
+.k-wrap .k-pic2 {
+  animation: none !important;
+  transform: none !important;
+}
