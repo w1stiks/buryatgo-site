@@ -361,7 +361,7 @@ window.BG_DATA = (function () {
           ] }
       ]
     }
-  
+  ];
 
   /* Магазин. slot: hat | outfit | feet | hand | acc | bonus; cat — вкладка магазина (по умолчанию = slot) */
   const items = [
