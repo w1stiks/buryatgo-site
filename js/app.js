@@ -92,81 +92,6 @@
   const normWord = s => String(s == null ? '' : s).toLowerCase().replace(/ё/g, 'е').replace(/[!?.,…«»"“”:;—–-]/g, ' ').replace(/\s+/g, ' ').trim();
   const WORD_BY_TEXT = {};
   Object.keys(D.words || {}).forEach(id => { const w = D.words[id]; w._id = id; const k = normWord(w.bu); if (k && !WORD_BY_TEXT[k]) WORD_BY_TEXT[k] = id; });
-
-  const PHRASE_AUDIO = {
-    "амар мэндэ сэсэг": "p01_amar_mende_seseg",
-    "баяртай бато": "p02_bayartay_bato",
-    "сайн байна гүт": "p03_sayn_bayna_gut",
-    "һайн баярлаа": "p04_hayn_bayarlaa",
-    "минии нэрэ бато": "p05_minii_nere_bato",
-    "минии нэрэ": "nere",
-    "тиимэ би сэсэг": "p06_tiime_bi_seseg",
-    "хөхэ тэнгэри": "p07_hohe_tengeri",
-    "улаан шара ногоон": "p08_ulaan_shara_nogoon",
-    "сагаан һара": "p09_sagaan_hara",
-    "минии эжы": "p10_minii_ezhy",
-    "минии аба": "p11_minii_aba",
-    "минии гэр бүлэ": "p12_minii_ger_bule",
-    "би сай уунаб": "p13_bi_say_uunab",
-    "бууза амтатай": "p14_buuza_amtatay",
-    "байгал далай": "p15_baygal_dalay",
-    "минии морин": "p16_minii_morin",
-    "һайн нохой": "p17_hayn_nohoy",
-    "минии хонин": "p18_minii_honin",
-    "минии дэгэл": "p19_minii_degel",
-    "шэнэ малгай": "p20_shene_malgay",
-    "минии гэр": "p21_minii_ger",
-    "минии толгой": "p22_minii_tolgoy",
-    "хоер нюдэн": "p23_hoyor_nyuden",
-    "хоер гар": "p24_hoyor_gar",
-    "ута үһэн": "p25_uta_uhen",
-    "хүйтэн үбэл": "p26_huyten_ubel",
-    "халуун зун": "p27_haluun_zun",
-    "саһан орожо байна": "p28_sahan_orozho_bayna",
-    "бороо орожо байна": "p29_boroo_orozho_bayna",
-    "би ябанаб": "p30_bi_yabanab",
-    "бато унтана": "p31_bato_untana",
-    "би ном уншанаб": "p32_bi_nom_unshanab",
-    "минии багша": "p33_minii_bagsha",
-    "би һургуулида ябанаб": "p34_bi_hurguulida_yabanab",
-    "шэнэ ном": "p35_shene_nom",
-    "минии дэбтэр": "p36_minii_debter",
-    "сагаан һараар": "p37_sagaan_haraar",
-    "һайн дуун": "p38_hayn_duun",
-    "һайн наадан": "p39_hayn_naadan",
-    "нэгэн хоер гурбан": "p40_negen_hoyor_gurban",
-    "табан бууза": "p41_taban_buuza",
-    "нэгэн үдэр": "p42_negen_uder",
-    "гурбан жэл": "p43_gurban_zhel",
-    "байгал нуур": "p44_baygal_nuur",
-    "ольхон арал": "p45_olhon_aral",
-    "томо загаһан": "p46_tomo_zagahan",
-    "нуурай эрье": "p47_nuuray_ere",
-    "би сайд дуратай": "p48_bi_sayd_duratay",
-    "эхэ баясхалан": "p49_ehe_bayashalan",
-    "ухаатай хүбүүн": "p50_uhaatay_hubuun",
-    "зоригтой бато": "p51_zorigtoy_bato",
-    "хото руу ябанаб": "p52_hoto_ruu_yabanab",
-    "урта зам": "p53_urta_zam",
-    "шэнэ гүүр": "p54_shene_guur",
-    "тэргэнай буудал": "p55_tergenay_buudal",
-    "амар мэндэ": "p56_amar_mende",
-    "сайн байна": "p57_sayn_bayna",
-    "баярлаа": "p58_bayarlaa",
-    "һайн": "p59_hayn",
-    "баяртай": "p60_bayartay",
-    "привет будем учиться вместе": "k_hello",
-    "послушай и повтори": "k_listen_repeat",
-    "послушай и нажми на картинку": "k_listen_tap",
-    "нажми на звук а потом на картинку": "k_sound_then_pic",
-    "молодец": "k_molodec",
-    "умница": "k_umnica",
-    "отлично": "k_otlichno",
-    "здорово": "k_zdorovo",
-    "ура правильно": "k_ura",
-    "ой это вот так": "k_oy",
-  };
-
   /* Сначала пробуем audio/<код>.m4a, потом .mp3, потом синтезатор. Отсутствующие файлы запоминаются. */
   function audioFor(id) {
     if (!id) return null;
@@ -220,13 +145,10 @@
     return t;
   }
   function speak(text, slow, audio, onEnded) {
-    if (!st().settings.tts) return;
+    if (!st().settings.tts) { if (typeof onEnded === 'function') setTimeout(onEnded, 0); return; }
     const cfg = st().settings;
     const base = cfg.ttsRate === 0.85 ? 0.92 : (cfg.ttsRate || 0.92);
-    if (!audio) {
-      const norm = normWord(text);
-      audio = audioFor(WORD_BY_TEXT[norm]) || audioFor(PHRASE_AUDIO[norm]);
-    }
+    if (!audio) audio = audioFor(WORD_BY_TEXT[normWord(text)]);
     A.speak(pronounce(text), base * (slow ? 0.75 : 1), audio, cfg.voice || '', onEnded);
   }
 
@@ -492,10 +414,6 @@
   function setReady(b) { ui.lesson.ready = b; const c = $('#lCheck'); if (c) c.disabled = !b; }
 
   function nextExercise() {
-    const sh = $('#lSheet');
-    if (sh) { sh.classList.remove('show'); }
-    const lessonEl = document.querySelector('.lesson.sheet-open');
-    if (lessonEl) lessonEl.classList.remove('sheet-open');
     const L = ui.lesson;
     if (!L) return;
     L.cur = L.queue.shift() || null;
@@ -520,8 +438,6 @@
   function onCheck() {
     const L = ui.lesson;
     if (!L || !L.cur) return;
-    /* Sheet is open — ignore foot button (prevents swipe-down skip) */
-    if (document.querySelector('.lesson.sheet-open') || ($('#lSheet') && $('#lSheet').classList.contains('show'))) return;
     if (L.cur.type === 'intro' || L.cur.type === 'k_intro') { L.done++; sfx('pop'); nextExercise(); return; }
     if (!L.ready || L.checked || !L.evaluate) return;
     doCheck();
@@ -561,13 +477,7 @@
       <button class="btn ${ok ? '' : 'wrongbtn'}" id="sNext">Продолжить</button>`;
     void sh.offsetWidth;
     sh.classList.add('show');
-    const lessonEl = sh.closest('.lesson');
-    if (lessonEl) lessonEl.classList.add('sheet-open');
-    $('#sNext').onclick = () => {
-      sh.classList.remove('show');
-      if (lessonEl) lessonEl.classList.remove('sheet-open');
-      nextExercise();
-    };
+    $('#sNext').onclick = () => { sh.classList.remove('show'); nextExercise(); };
   }
 
   function bindSay(root, text, audio) {
@@ -614,7 +524,7 @@
         <button class="spk" data-silent data-say aria-label="Прослушать">🔊</button>
         <button class="spk" data-silent data-slow aria-label="Медленно" style="background:#fff;border:2px solid var(--line);box-shadow:0 3px 0 var(--line)">🐢</button></div></div>`;
     bindSay(root, w.bu, audioOf(w));
-    setTimeout(() => speak(w.bu, false, audioOf(w)), 50);
+    setTimeout(() => speak(w.bu, false, audioOf(w)), 350);
     const b = $('#lCheck', foot);
     b.disabled = false; b.textContent = 'Продолжить';
     ui.lesson.ready = true;
@@ -626,7 +536,7 @@
       <div class="speech"><div class="mini-m">${mini()}</div><div class="bubble"><button class="spk" data-silent data-say>🔊</button><span>${esc(w.bu)}</span></div></div>
       <div class="grid2">${ex.opts.map(id => { const o = D.words[id]; return `<button class="card-opt" data-id="${id}"><span class="emo">${o.emoji}</span><span>${esc(o.ru)}</span></button>`; }).join('')}</div>`;
     bindSay(root, w.bu, audioOf(w));
-    setTimeout(() => speak(w.bu, false, audioOf(w)), 50);
+    setTimeout(() => speak(w.bu, false, audioOf(w)), 300);
     bindChoice(root, '.card-opt', ex.w, () => ({ correctText: w.ru, okText: w.bu + ' — ' + w.ru }));
   }
 
@@ -636,7 +546,7 @@
       <div class="listen-btns"><button class="big-spk" data-silent data-say aria-label="Прослушать">🔊</button><button class="big-spk slow" data-silent data-slow aria-label="Медленно">🐢</button></div>
       <div class="grid2">${ex.opts.map(id => { const o = D.words[id]; return `<button class="card-opt" data-id="${id}"><span class="emo">${o.emoji}</span><span>${esc(o.ru)}</span></button>`; }).join('')}</div>`;
     bindSay(root, w.bu, audioOf(w));
-    setTimeout(() => speak(w.bu, false, audioOf(w)), 50);
+    setTimeout(() => speak(w.bu, false, audioOf(w)), 350);
     bindChoice(root, '.card-opt', ex.w, () => ({ correctText: w.bu + ' — ' + w.ru, okText: w.bu + ' — ' + w.ru }));
     foot.insertAdjacentHTML('afterbegin', '<button class="btn ghost dark skip" id="lSkip">Не могу слушать</button>');
     $('#lSkip', foot).onclick = () => { if (ui.lesson.checked) return; ui.lesson.done++; nextExercise(); };
@@ -664,7 +574,7 @@
       <div class="speech"><div class="mini-m">${mini()}</div><div class="bubble">${toRu ? '<button class="spk" data-silent data-say>🔊</button>' : ''}<span>${esc(srcText)}</span></div></div>
       <div class="answer-area" id="ans"></div>
       <div class="bank" id="bank">${tiles.map((o, i) => `<button class="tile" data-i="${i}">${esc(o.t)}</button>`).join('')}</div>`;
-    if (toRu) { bindSay(root, srcText); setTimeout(() => speak(srcText), 50); }
+    if (toRu) { bindSay(root, srcText); setTimeout(() => speak(srcText), 300); }
     const ans = $('#ans', root), bank = $('#bank', root);
     const chosen = [];
     function draw() {
@@ -900,13 +810,14 @@
 
   /* ───────── v1.15: возраст, теги статусов, боты ───────── */
   const AGES = [
-    { id: 'kids', label: 'Детский', tag: 'Детский', emoji: '🧸', d: 'Картинки, анимация и голос — читать не нужно' },
-    { id: 'big', label: 'Взрослый', tag: 'Взрослый', emoji: '🎓', d: 'Полный режим: текст, карточки, конструктор фраз' }
+    { id: 'kids', label: '3–5 лет', tag: 'KIDS', emoji: '🧸', d: 'Только картинки и озвучка — читать не нужно' },
+    { id: 'std', label: '5–10 лет', tag: 'Standart', emoji: '🎒', d: 'Больше аудио и подсказок, минимум текста' },
+    { id: 'big', label: '10–15+ лет', tag: 'BIG', emoji: '🎓', d: 'Полный режим: текст, карточки, конструктор фраз' }
   ];
-  const ageOf = () => { const a = st().age; if (a === 'std') return 'big'; return a === 'kids' || a === 'big' ? a : 'big'; };
-  const ageInfo = id => AGES.find(a => a.id === (id === 'std' ? 'big' : id)) || AGES[1];
+  const ageOf = () => { const a = st().age; return a === 'kids' || a === 'std' || a === 'big' ? a : 'big'; };
+  const ageInfo = id => AGES.find(a => a.id === id) || AGES[2];
   const isAdmin = () => !!st().admin || devRemembered();
-  const TAGS = { admin: ['ADMIN', 'tg-admin'], super: ['SUPER', 'tg-super'], kids: ['Детский', 'tg-kids'], big: ['Взрослый', 'tg-big'] };
+  const TAGS = { admin: ['ADMIN', 'tg-admin'], super: ['SUPER', 'tg-super'], kids: ['KIDS', 'tg-kids'], std: ['Standart', 'tg-std'], big: ['BIG', 'tg-big'] };
   function tagHtml(kind, upper) {
     const t = TAGS[kind]; if (!t) return '';
     return `<span class="utag ${t[1]}">${upper ? t[0].toUpperCase() : t[0]}</span>`;
@@ -921,12 +832,11 @@
   const myTags = (withAge, upper) => tagsFor({ admin: isAdmin(), premium: S.isPremium(), age: st().age }, withAge, upper);
 
   /* Боты лиг: категория выдаётся случайно один раз и навсегда хранится в состоянии (локально + Firebase) */
-  const BOT_CATS = ['kids', 'big', 'super'];
+  const BOT_CATS = ['kids', 'std', 'big', 'super'];
   function botCat(name) {
     const s = st();
     if (!s.bots || typeof s.bots !== 'object') s.bots = {};
     let c = s.bots[name];
-    if (c === 'std') c = 'big';
     if (BOT_CATS.indexOf(c) < 0) { c = BOT_CATS[Math.floor(Math.random() * BOT_CATS.length)]; s.bots[name] = c; ui.botsDirty = true; }
     return c;
   }
@@ -941,7 +851,7 @@
     if (id === 'kids') setTimeout(() => speak('Привет! Будем учиться вместе!'), 300);
   }
   function ageModal(onDone, locked) {
-    const m = openModal(`<h2>Как будем учиться?</h2><p>Выберите детский или взрослый режим. Ограничений по возрасту нет.</p><div class="stack age-list">${ageButtons(ageOf())}</div>`, { center: true, locked: !!locked });
+    const m = openModal(`<h2>Сколько лет ученику?</h2><p>От возраста зависит формат уроков.</p><div class="stack age-list">${ageButtons(st().age)}</div>`, { center: true, locked: !!locked });
     $$('[data-age]', m).forEach(b => { b.onclick = () => { setAge(b.dataset.age); closeModal(); if (onDone) onDone(); }; });
   }
 
@@ -981,53 +891,33 @@
     if (mp.length >= 3) q.push({ type: 'match', pairs: sample(mp, Math.min(4, mp.length)) });
     return q;
   }
+  /* Голосовая инструкция, затем (по желанию) слово */
 
-  const KID_ANIM = {
-    b_tolgoi:'ka-nod', b_gar:'ka-wave', b_hul:'ka-kick', b_nyuden:'ka-blink', b_shehen:'ka-wiggle',
-    b_hamar:'ka-sniff', b_ama:'ka-talk', b_uhen:'ka-sway',
-    b_ubel:'ka-snow', b_habar:'ka-grow', b_zun:'ka-spin', b_namar:'ka-fall',
-    b_boroo:'ka-rain', b_sahan:'ka-snow', b_halhin:'ka-wind', b_huiten:'ka-shake', b_haluun:'ka-hot',
-    b_yabaha:'ka-walk', b_edihe:'ka-eat', b_uuha:'ka-sip', b_untaha:'ka-sleep',
-    b_unshaha:'ka-read', b_beshehe:'ka-write',
-    b_hurguuli:'ka-bob', b_bagsha:'ka-wave', b_nom:'ka-read', b_huragsha:'ka-bob', b_debter:'ka-write',
-    b_nuur:'ka-ripple', b_gol:'ka-flow', b_aral:'ka-bob', b_zagahan:'ka-swim', b_dolgin:'ka-wave2', b_erie:'ka-sway',
-    b_bayaskhalan:'ka-jump', b_gunig:'ka-sad', b_duratai:'ka-heart', b_uhaatai:'ka-pop', b_zorigtoi:'ka-roar', b_erhim:'ka-spin',
-    b_zam:'ka-drive', b_hoto:'ka-bob', b_toskhon:'ka-bob', b_buudal:'ka-wait', b_tergen:'ka-drive', b_guur:'ka-bob',
-    amar:'ka-wave', sain:'ka-wave', bayartai:'ka-wave', sain_gut:'ka-think', hain:'ka-yes', bayarlaa:'ka-bow',
-    bi:'ka-me', shi:'ka-point', nere:'ka-pop', tiime:'ka-yes', ugy:'ka-no',
-    hohe:'ka-color', ulaan:'ka-color', shara:'ka-color', nogoon:'ka-color', sagaan:'ka-color', hara:'ka-color',
-    tontoloo:'ka-spin', durbeljen:'ka-spin',
-    ezhy:'ka-hug', aba:'ka-hug', aha:'ka-wave', egeshe:'ka-wave', duu:'ka-jump', hugshen:'ka-nod', ubgen:'ka-nod', ger:'ka-hug',
-    sai:'ka-sip', sun:'ka-sip', hileemen:'ka-eat', uhan:'ka-drip', mahan:'ka-eat', buuza:'ka-eat', amtatai:'ka-yum',
-    dalai:'ka-wave2', shono:'ka-howl', temeen:'ka-walk', morin:'ka-gallop', nohoi:'ka-wag', uher:'ka-walk', honin:'ka-walk',
-    uula:'ka-bob', modon:'ka-sway', naran:'ka-spin',
-    degel:'ka-sway', malgai:'ka-bob', gutal:'ka-kick', buhe:'ka-spin', hubsahan:'ka-sway', geer:'ka-bob', ayaga:'ka-sip', shiree:'ka-bob',
-    sagaalgan:'ka-party', surharban:'ka-bowshot', yokhor:'ka-dance', hadag:'ka-sway', naadan:'ka-dice', duun:'ka-sing',
-    negen:'ka-count', hoyor:'ka-count', gurban:'ka-count', durben:'ka-count', taban:'ka-count',
-    udur:'ka-spin', hara_m:'ka-moon', jel:'ka-flip'
+  const KIDS_AUDIO = {
+    'Послушай и повтори': 'k_listen_repeat',
+    'Послушай и нажми на картинку': 'k_listen_tap',
+    'Нажми на звук, а потом на картинку': 'k_sound_then_pic',
+    'Молодец!': 'k_molodec',
+    'Умница!': 'k_umnica',
+    'Отлично!': 'k_otlichno',
+    'Здорово!': 'k_zdorovo',
+    'Ура! Правильно!': 'k_ura',
+    'Ой! Это вот так.': 'k_oy',
+    'Привет! Будем учиться вместе!': 'k_hello'
   };
-  function kidFace(w, id) {
-    if (!w) return '';
-    // Специальная анимация хлопка для «спасибо»
-    if (id === 'bayarlaa') {
-      return `<span class="ka-clap-wrap"><span class="ka-hand l">🤚</span><span class="ka-hand r">🤚</span></span>`;
-    }
-    const anim = KID_ANIM[id] || 'ka-bob';
-    return `<span class="ka ${anim}">${w.emoji || '✨'}</span>`;
-  }
-
-    /* Голосовая инструкция, затем слово — строго после конца записи */
   let kVoiceT = null;
   function kidsVoice(text, then) {
     clearTimeout(kVoiceT);
-    const go = () => { if (ui.lesson && then) then(); };
-    speak(text, false, null, () => { kVoiceT = setTimeout(go, 120); });
+    const id = KIDS_AUDIO[text];
+    const audio = id ? audioFor(id) : null;
+    const done = () => { if (ui.lesson && typeof then === 'function') then(); };
+    speak(text, false, audio, done);
   }
   const kSpk = () => '<button class="k-spk" data-silent data-ksay aria-label="Прослушать">🔊</button>';
   function kBindSay(root, w) { $$('[data-ksay]', root).forEach(b => { b.onclick = e => { e.stopPropagation(); clearTimeout(kVoiceT); speak(w.bu, false, audioOf(w)); b.classList.remove('ping'); void b.offsetWidth; b.classList.add('ping'); }; }); }
   function exKidsIntro(ex, root, foot) {
     const w = D.words[ex.w];
-    root.innerHTML = `<div class="k-wrap"><div class="k-head">👂</div><button class="k-pic big" data-ksay data-silent>${kidFace(w, ex.w)}</button>${kSpk()}</div>`;
+    root.innerHTML = `<div class="k-wrap"><div class="k-head">👂</div><button class="k-pic big" data-ksay data-silent>${w.emoji || '🔊'}</button>${kSpk()}</div>`;
     kBindSay(root, w);
     kidsVoice('Послушай и повтори', () => speak(w.bu, false, audioOf(w)));
     const b = $('#lCheck', foot); b.disabled = false; b.innerHTML = '▶'; b.classList.add('k-next');
@@ -1035,16 +925,16 @@
   }
   function exKidsPick(ex, root) {
     const w = D.words[ex.w];
-    root.innerHTML = `<div class="k-wrap"><div class="k-head">👂 → 👆</div>${kSpk()}<div class="k-grid n${ex.opts.length}">${ex.opts.map(id => `<button class="card-opt k-pic" data-id="${id}">${kidFace(D.words[id], id)}</button>`).join('')}</div></div>`;
+    root.innerHTML = `<div class="k-wrap"><div class="k-head">👂 → 👆</div>${kSpk()}<div class="k-grid n${ex.opts.length}">${ex.opts.map(id => `<button class="card-opt k-pic" data-id="${id}">${D.words[id].emoji}</button>`).join('')}</div></div>`;
     kBindSay(root, w);
     $('#lCheck').innerHTML = '👆';
     kidsVoice('Послушай и нажми на картинку', () => speak(w.bu, false, audioOf(w)));
-    bindChoice(root, '.k-pic', ex.w, () => ({ kids: kidFace(w, ex.w), kidsWord: w }), () => setTimeout(() => { const L = ui.lesson; if (L && !L.checked && L.ready) doCheck(); }, 380));
+    bindChoice(root, '.k-pic', ex.w, () => ({ kids: w.emoji, kidsWord: w }), () => setTimeout(() => { const L = ui.lesson; if (L && !L.checked && L.ready) doCheck(); }, 380));
   }
   function exKidsMatch(ex, root, foot) {
     const L = ui.lesson, ids = ex.pairs, left = shuffle(ids), right = shuffle(ids);
     const COL = ['#1CB0F6', '#FF9600', '#CE82FF', '#58CC02', '#FF4B4B'];
-    root.innerHTML = `<div class="k-wrap"><div class="k-head">🔊 ↔ 🖼️</div><div class="match-grid k-match">${left.map((id, i) => `<button class="row-opt k-snd" data-side="l" data-id="${id}" style="--c:${COL[i % 5]}">🔊</button><button class="row-opt k-pic2" data-side="r" data-id="${right[i]}">${kidFace(D.words[right[i]], right[i])}</button>`).join('')}</div></div>`;
+    root.innerHTML = `<div class="k-wrap"><div class="k-head">🔊 ↔ 🖼️</div><div class="match-grid k-match">${left.map((id, i) => `<button class="row-opt k-snd" data-side="l" data-id="${id}" style="--c:${COL[i % 5]}">🔊</button><button class="row-opt k-pic2" data-side="r" data-id="${right[i]}">${D.words[right[i]].emoji}</button>`).join('')}</div></div>`;
     $('#lCheck', foot).innerHTML = '🔊 ↔ 🖼️';
     kidsVoice('Нажми на звук, а потом на картинку');
     let selL = null, selR = null, matched = 0, busy = false;
@@ -1068,29 +958,18 @@
       };
     });
   }
-  const PRAISE_K = [
-    { t: 'Молодец!', a: 'k_molodec' },
-    { t: 'Умница!', a: 'k_umnica' },
-    { t: 'Отлично!', a: 'k_otlichno' },
-    { t: 'Здорово!', a: 'k_zdorovo' },
-    { t: 'Ура! Правильно!', a: 'k_ura' }
-  ];
+  const PRAISE_K = ['Молодец!', 'Умница!', 'Отлично!', 'Здорово!', 'Ура! Правильно!'];
   function kidsSheet(ok, r) {
     const sh = $('#lSheet');
     sh.className = 'sheet k-sheet ' + (ok ? 'good' : 'wrong');
     sh.innerHTML = `<div class="k-res"><span class="k-big">${ok ? '🌟' : '🙈'}</span>${r.kids ? `<span class="k-ans">${r.kids}</span>` : ''}</div><button class="btn ${ok ? '' : 'wrongbtn'} k-next" id="sNext" aria-label="Дальше">▶</button>`;
     void sh.offsetWidth; sh.classList.add('show');
     clearTimeout(kVoiceT);
-    const p = ok ? PRAISE_K[Math.floor(Math.random() * PRAISE_K.length)] : { t: 'Ой! Это вот так.', a: 'k_oy' };
-    speak(p.t, false, audioFor(p.a));
+    const pText = ok ? PRAISE_K[Math.floor(Math.random() * PRAISE_K.length)] : 'Ой! Это вот так.';
+    const pId = KIDS_AUDIO[pText];
+    speak(pText, false, pId ? audioFor(pId) : null);
     if (!ok && r.kidsWord) kVoiceT = setTimeout(() => speak(r.kidsWord.bu, false, audioOf(r.kidsWord)), 1300);
-    const lessonEl = sh.closest('.lesson');
-    if (lessonEl) lessonEl.classList.add('sheet-open');
-    $('#sNext').onclick = () => {
-      sh.classList.remove('show');
-      if (lessonEl) lessonEl.classList.remove('sheet-open');
-      nextExercise();
-    };
+    $('#sNext').onclick = () => { sh.classList.remove('show'); nextExercise(); };
   }
   /* Standart: голосовая подсказка — медленно проговаривает слово задания */
   function stdHint(ex, root) {
@@ -1229,12 +1108,7 @@
       confetti(); sfx('complete'); haptic('success');
     } else res.textContent = txt;
     S.save();
-    // Юрта: каждое животное своим голосом
-    const yurtAudio = { 'хони': 'honin', 'морин': 'morin', 'тэмэн': 'temeen', 'үхэр': 'uher' };
-    rolls.forEach((r, i) => {
-      const id = yurtAudio[normWord(r.bu)];
-      setTimeout(() => speak(r.bu, false, id ? audioFor(id) : null), i * 700);
-    });
+    speak(rolls.map(r => r.bu).join(', '));
     ui.shagai = false;
   }
 
@@ -2284,7 +2158,7 @@
     ];
     scr.innerHTML = `<div class="view pad">
       <div class="profile-head"><span class="corner-flag">${flagSvg()}</span><div class="avatar">${M.svg(s.equip, { cls: 'static', mood: 'happy' })}</div>
-        <div style="flex:1;min-width:0"><div class="nm" id="pName">${esc(s.name || 'Ученик')} ✏️</div><div class="p-tags" style="justify-content:flex-start">${tagsFor({ admin: isAdmin(), premium: prem }, false, true)}<button class="utag-btn" id="pAge" data-silent>${st().age ? tagHtml(ageOf()) : '<span class="utag tg-big">?</span> Режим'} ✎</button></div><div class="since">С нами с ${humanDate(s.createdAt)}${prem ? ' · 👑 Super' : ''}</div></div>
+        <div style="flex:1;min-width:0"><div class="nm" id="pName">${esc(s.name || 'Ученик')} ✏️</div><div class="p-tags" style="justify-content:flex-start">${tagsFor({ admin: isAdmin(), premium: prem }, false, true)}<button class="utag-btn" id="pAge" data-silent>${st().age ? tagHtml(st().age) : '<span class="utag tg-std">?</span> Возраст'} ✎</button></div><div class="since">С нами с ${humanDate(s.createdAt)}${prem ? ' · 👑 Super' : ''}</div></div>
         <button class="icon-btn" id="pSet" aria-label="Настройки">⚙️</button></div>
       ${prem ? `<div class="super-banner" id="pSuper"><div class="t">👑 BuryatGo Super активна</div><div class="d">Действует ${premUntil(s.premium)}${isLifetime(s.premium) ? '' : ' · управление в настройках'}</div></div>`
         : `<div class="super-banner" id="pSuper"><div class="t">👑 Попробуйте BuryatGo Super</div><div class="d">Все модули, двойные Буузы и праздничный дэгэл</div></div>`}
@@ -2664,29 +2538,12 @@
     const words = groups.map(g => `<div class="dv-gh">${esc(g.t)}</div>` + g.ids.map(id => { n++; const w = D.words[id];
       return `<div class="dv-w"><span class="dv-n">${n}</span><span class="dv-t"><b>${esc(w.bu)}</b><small>${esc(w.ru)} · ${esc(id)}</small></span>
         <button class="dv-play" data-say="${esc(id)}" aria-label="Слушать ${esc(w.bu)}">▶</button><button class="dv-play slow" data-say="${esc(id)}" data-slow="1" aria-label="Медленно">🐢</button></div>`; }).join('')).join('');
-    const KIDS_PHRASES = [
-      { id: 'k_hello', t: 'Привет! Будем учиться вместе!' },
-      { id: 'k_listen_repeat', t: 'Послушай и повтори' },
-      { id: 'k_listen_tap', t: 'Послушай и нажми на картинку' },
-      { id: 'k_sound_then_pic', t: 'Нажми на звук, а потом на картинку' },
-      { id: 'k_molodec', t: 'Молодец!' },
-      { id: 'k_umnica', t: 'Умница!' },
-      { id: 'k_otlichno', t: 'Отлично!' },
-      { id: 'k_zdorovo', t: 'Здорово!' },
-      { id: 'k_ura', t: 'Ура! Правильно!' },
-      { id: 'k_oy', t: 'Ой! Это вот так.' }
-    ];
-    const phrases = KIDS_PHRASES.map((p, i) => `<div class="dv-w"><span class="dv-n">${i + 1}</span><span class="dv-t"><b>${esc(p.t)}</b><small>${esc(p.id)}.m4a</small></span>
-      <button class="dv-play" data-kphrase="${esc(p.id)}" data-ktext="${esc(p.t)}" aria-label="Слушать">▶</button></div>`).join('');
     return `<h2 class="sub">Лига</h2>
       <div class="set-group dev-pad"><div class="dev-row"><select id="devLeague" class="dev-sel">${D.leagues.map((l, i) => `<option value="${i}" ${i === s.league ? 'selected' : ''}>${esc(l.name)} лига</option>`).join('')}</select></div>
         <div class="muted dock-note">Лига меняется сразу после выбора.</div></div>
       <h2 class="sub">Активный модуль</h2>
       <div class="set-group dev-pad"><div class="dev-row"><select id="devModule" class="dev-sel">${D.units.map((u, i) => `<option value="${i + 1}" ${i + 1 === curUnit ? 'selected' : ''}>${i + 1}. ${esc(u.title)}${u.superOnly || u.premium ? ' 👑' : ''}</option>`).join('')}</select><button class="btn small blue" id="devModBtn">Установить</button></div>
         <div class="muted dock-note">Уроки всех модулей до выбранного станут пройденными, с выбранного — начнутся заново.</div></div>
-      <h2 class="sub">Фразы детского режима · ${KIDS_PHRASES.length}</h2>
-      <div class="set-group dev-voice">${phrases}</div>
-      <p class="disclaimer">▶ — играет запись из audio/k_….m4a. Если файла нет — синтезатор.</p>
       <h2 class="sub">Озвучка · ${n} слов</h2>
       <div class="set-group dev-voice">${words}</div>
       <p class="disclaimer">▶ — играет ваша запись из папки audio, если она есть, иначе синтезатор речи. 🐢 — медленно.</p>`;
@@ -2702,11 +2559,6 @@
       if (!st().settings.tts) { toast('Включите озвучку в настройках'); return; }
       $$('.dv-play.on', scr).forEach(x => x.classList.remove('on')); b.classList.add('on'); setTimeout(() => b.classList.remove('on'), 900);
       speak(w.bu, !!b.dataset.slow, audioOf(w));
-    }; });
-    $$('[data-kphrase]', scr).forEach(b => { b.onclick = () => {
-      if (!st().settings.tts) { toast('Включите озвучку в настройках'); return; }
-      $$('.dv-play.on', scr).forEach(x => x.classList.remove('on')); b.classList.add('on'); setTimeout(() => b.classList.remove('on'), 900);
-      speak(b.dataset.ktext || '', false, audioFor(b.dataset.kphrase));
     }; });
   }
 
@@ -2934,7 +2786,7 @@
         <div class="grow"></div>
         <div class="stack"><button class="btn" id="onbNext">Дальше</button></div>`;
     } else if (step === 2) {
-      body = `<h1>Как будем учиться?</h1><p>Детский режим — живые картинки и голос. Взрослый — полный урок. Возраст указывать не нужно.</p>
+      body = `<h1>Сколько лет ученику?</h1><p>Уроки подстроятся под возраст: малышам — только голос и картинки.</p>
         <div class="stack age-list">${ageButtons(ui.onbAge)}</div>
         <div class="grow"></div>
         <div class="stack"><button class="btn" id="onbNext">Дальше</button></div>`;

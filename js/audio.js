@@ -114,17 +114,17 @@ window.BG_AUDIO = (function () {
   function speak(text, rate, audioFile, voice, onEnded) {
     rate = rate || 0.85;
     const g = gender(voice);
+    const fireEnd = () => { if (typeof onEnded === 'function') { try { onEnded(); } catch (e) {} } };
     let list = audioFile ? (Array.isArray(audioFile) ? audioFile : [audioFile]) : [];
-    list = list.filter(f => f);
-    const done = () => { if (typeof onEnded === 'function') onEnded(); };
+    list = list.filter(f => f && !missingAudio[f]);
     if (list.length) {
       const token = ++playToken;
       const tryAt = i => {
         if (token !== playToken) return;
-        if (i >= list.length) { synth(text, rate, g, done); return; }
+        if (i >= list.length) { synth(text, rate, g, fireEnd); return; }
         const f = list[i];
-        let failed = false;
-        const next = () => { if (failed) return; failed = true; tryAt(i + 1); };
+        let done = false;
+        const next = () => { if (done) return; done = true; missingAudio[f] = true; tryAt(i + 1); };
         try {
           if (recorded) { recorded.onerror = null; recorded.onended = null; recorded.pause(); }
           const el = new Audio(f);
@@ -132,15 +132,15 @@ window.BG_AUDIO = (function () {
           el.preload = 'auto';
           el.playbackRate = rate < 0.7 ? 0.75 : 1;
           el.onerror = next;
-          el.onended = () => { if (token === playToken) done(); };
+          el.onended = () => { if (token === playToken) fireEnd(); };
           const pr = el.play();
-          if (pr && pr.catch) pr.catch(err => { if (err && err.name === 'NotAllowedError') { failed = true; return; } next(); });
+          if (pr && pr.catch) pr.catch(err => { if (err && err.name === 'NotAllowedError') { done = true; return; } next(); });
         } catch (e) { next(); }
       };
       tryAt(0);
       return;
     }
-    synth(text, rate, g, done);
+    synth(text, rate, g, fireEnd);
   }
   function synth(text, rate, g, onEnded) {
     const t = ttsText(text);
@@ -148,9 +148,7 @@ window.BG_AUDIO = (function () {
       const b = window.AndroidBridge;
       if (b && b.speak) {
         if (b.setVoiceGender && nativeGender !== g) { b.setVoiceGender(g); nativeGender = g; }
-        b.speak(t, rate);
-        if (typeof onEnded === 'function') setTimeout(onEnded, Math.max(800, String(text || '').length * 80));
-        return;
+        b.speak(t, rate); return;
       }
     } catch (e) {}
     if ('speechSynthesis' in window) {
@@ -163,7 +161,7 @@ window.BG_AUDIO = (function () {
         u.pitch = p.pitch;
         if (typeof onEnded === 'function') u.onend = onEnded;
         speechSynthesis.speak(u);
-      } catch (e) {}
+      } catch (e) { if (typeof onEnded === 'function') setTimeout(onEnded, 800); }
     }
   }
 
