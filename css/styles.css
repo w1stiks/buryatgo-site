@@ -1208,3 +1208,26 @@ body[data-view=shop] .seg button img, body[data-view=shop] .seg button .ic { fle
   transition: none !important;
 }
 
+
+/* Hard disable all animations inside lessons */
+.lesson *,
+#exRoot *,
+.k-wrap *,
+.k-sheet *,
+.ex-anim * {
+  animation: none !important;
+  animation-name: none !important;
+  transition: none !important;
+}
+.k-spk,
+.k-spk.ping,
+.start-bubble,
+.emo,
+.k-pic,
+.k-pic2,
+.k-pic.big,
+.card-opt,
+.big-emo {
+  animation: none !important;
+  transform: none !important;
+}
