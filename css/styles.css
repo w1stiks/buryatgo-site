@@ -1489,3 +1489,36 @@ body[data-view="profile"] .u-t,
 body[data-view="shop"] .disclaimer {
   color: #fff;
 }
+
+/* Shop & Profile buttons themed */
+body[data-view="shop"] .seg button,
+body[data-view="profile"] .seg button {
+  background: rgba(255,255,255,.15) !important;
+  color: #fff !important;
+  border: 2px solid rgba(255,255,255,.3) !important;
+  border-radius: 14px !important;
+  font-weight: 800 !important;
+}
+body[data-view="shop"] .seg button.on,
+body[data-view="profile"] .seg button.on {
+  background: linear-gradient(135deg, #FFD54A, #F2B705) !important;
+  color: #0D4389 !important;
+  border-color: #F2B705 !important;
+  box-shadow: 0 3px 0 #B88300 !important;
+}
+body[data-view="shop"] .shop-grid .card,
+body[data-view="shop"] .shop-grid button {
+  background: rgba(255,255,255,.95) !important;
+  border-radius: 18px !important;
+  border: none !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,.12) !important;
+}
+body[data-view="shop"] .shop-grid .card:active,
+body[data-view="shop"] .shop-grid button:active {
+  transform: scale(.97);
+}
+body[data-view="profile"] .stat-card,
+body[data-view="profile"] .wallet > div {
+  background: rgba(255,255,255,.95) !important;
+  border-radius: 16px !important;
+}
