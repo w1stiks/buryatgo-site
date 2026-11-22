@@ -1889,3 +1889,98 @@ html body[data-view=profile] .ach .pr {
   border: 1px solid rgba(255,255,255,0.2) !important;
   border-radius: 8px !important;
 }
+
+/* === Fix achievement progress overflow === */
+html body[data-view=profile] .ach {
+  overflow: hidden !important;
+}
+html body[data-view=profile] .ach .bar,
+html body[data-view=profile] .ach .progress,
+html body[data-view=profile] .ach .pr-bar {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* === Chart bars from bottom === */
+html body[data-view=profile] .chart {
+  display: flex !important;
+  align-items: flex-end !important;
+}
+html body[data-view=profile] .chart .bar {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  height: 100% !important;
+}
+html body[data-view=profile] .chart .bar i {
+  width: 100% !important;
+  margin-top: auto !important;
+}
+
+/* === Force shop card dark bg === */
+html body[data-view=shop] .shop-grid .card,
+html body[data-view=shop] .shop-grid > div,
+html body[data-view="shop"] .item-card,
+html body[data-view=shop] .shop-grid button {
+  background: #102A5C !important;
+  background-color: #102A5C !important;
+  background-image: none !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  color: #fff !important;
+}
+html body[data-view=shop] .shop-grid .card *,
+html body[data-view=shop] .shop-grid .nm {
+  color: #FFFFFF !important;
+}
+html body[data-view=shop] .shop-grid .pr,
+html body[data-view=shop] .shop-grid .price {
+  color: #FFD54A !important;
+}
+
+/* === Staggered fade-in === */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+body[data-view=profile] .stat-box,
+body[data-view=profile] .ach,
+body[data-view=shop] .shop-grid .card,
+body[data-view=leagues] .lb-row {
+  animation: fadeUp .4s ease-out both;
+}
+body[data-view=profile] .stat-box:nth-child(1) { animation-delay: .05s; }
+body[data-view=profile] .stat-box:nth-child(2) { animation-delay: .1s; }
+body[data-view=profile] .stat-box:nth-child(3) { animation-delay: .15s; }
+body[data-view=profile] .stat-box:nth-child(4) { animation-delay: .2s; }
+body[data-view=profile] .stat-box:nth-child(5) { animation-delay: .25s; }
+body[data-view=profile] .stat-box:nth-child(6) { animation-delay: .3s; }
+body[data-view=shop] .shop-grid .card:nth-child(1) { animation-delay: .05s; }
+body[data-view=shop] .shop-grid .card:nth-child(2) { animation-delay: .1s; }
+body[data-view=shop] .shop-grid .card:nth-child(3) { animation-delay: .15s; }
+body[data-view=shop] .shop-grid .card:nth-child(4) { animation-delay: .2s; }
+
+/* === Hover & active === */
+body[data-view=profile] .stat-box:hover,
+body[data-view=profile] .ach:hover,
+body[data-view=shop] .shop-grid .card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,168,255,0.25);
+  border-color: rgba(255,255,255,0.3) !important;
+  transition: transform .2s, box-shadow .2s;
+}
+body[data-view=profile] .stat-box:active,
+body[data-view=shop] .shop-grid .card:active {
+  transform: scale(0.97);
+}
+
+/* === Chart bars grow animation === */
+@keyframes growUp {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+html body[data-view=profile] .chart .bar i {
+  transform-origin: bottom;
+  animation: growUp .5s ease-out both;
+}
