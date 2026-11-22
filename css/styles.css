@@ -2122,3 +2122,38 @@ html body[data-view=leagues] .lb-online b,
 html body[data-view=leagues] .online-box b {
   color: #FFFFFF !important;
 }
+
+/* === Profile inner info block === */
+html body[data-view=profile] .profile-head > div,
+html body[data-view=profile] .p-card > div,
+html body[data-view=profile] .view > div:first-child > div,
+html body[data-view="profile"] .nm,
+html body[data-view="profile"] #pName,
+html body[data-view="profile"] .p-tags,
+html body[data-view="profile"] .since {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+html body[data-view=profile] .nm,
+html body[data-view=profile] #pName {
+  color: #FFFFFF !important;
+}
+html body[data-view=profile] .since {
+  color: #B8D4FF !important;
+}
+
+/* === Leagues list wrapper transparent === */
+html body[data-view=leagues] .lb-list,
+html body[data-view=leagues] .lb-wrap,
+html body[data-view=leagues] .view > div,
+html body[data-view=leagues] .screen > div > div {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+html body[data-view=leagues] .lb-zone,
+html body[data-view=leagues] .zone,
+html body[data-view=leagues] .lb-divider {
+  background: transparent !important;
+  box-shadow: none !important;
+}
