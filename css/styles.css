@@ -1797,3 +1797,46 @@ html body[data-view=profile] .chart span,
 html body[data-view=profile] .chart b {
   color: #B8D4FF !important;
 }
+
+/* === Fix remaining white areas === */
+/* Super banner inner badges */
+html body[data-view=profile] .super-banner,
+html body[data-view="profile"] .super-banner {
+  background: rgba(16, 42, 92, 0.65) !important;
+  border: 1px solid rgba(255,255,255,0.25) !important;
+  color: #fff !important;
+}
+html body[data-view=profile] .super-banner .t,
+html body[data-view=profile] .super-banner .d {
+  color: #fff !important;
+  background: transparent !important;
+}
+
+/* Achievements cards */
+html body[data-view=profile] .ach,
+html body[data-view="profile"] .ach {
+  background: #102A5C !important;
+  background-image: none !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  border-radius: 16px !important;
+  color: #fff !important;
+}
+html body[data-view=profile] .ach .t,
+html body[data-view=profile] .ach b,
+html body[data-view=profile] .ach .nm {
+  color: #FFFFFF !important;
+}
+html body[data-view=profile] .ach .d,
+html body[data-view=profile] .ach small,
+html body[data-view=profile] .ach .pr {
+  color: #B8D4FF !important;
+}
+
+/* Chart empty bars */
+html body[data-view=profile] .chart .bar i,
+html body[data-view=profile] .chart .bar {
+  background: #0B1E42 !important;
+}
+html body[data-view=profile] .chart .bar.today i {
+  background: #1CB0F6 !important;
+}
