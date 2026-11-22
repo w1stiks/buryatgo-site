@@ -2049,3 +2049,76 @@ html body[data-view=leagues] .online-box {
   color: #fff !important;
   padding: 14px !important;
 }
+
+/* === Profile top card dark === */
+html body[data-view=profile] .profile-head,
+html body[data-view=profile] .p-card,
+html body[data-view="profile"] .view > div:first-child {
+  background: #102A5C !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  border-radius: 16px !important;
+  color: #fff !important;
+}
+html body[data-view=profile] .nm,
+html body[data-view=profile] #pName {
+  color: #FFFFFF !important;
+}
+html body[data-view=profile] .since,
+html body[data-view=profile] .p-tags {
+  color: #B8D4FF !important;
+}
+html body[data-view=profile] .icon-btn,
+html body[data-view=profile] #pSet {
+  background: #193F85 !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  color: #fff !important;
+  border-radius: 12px !important;
+}
+
+/* === Floating tabbar === */
+html body #tabbar,
+html body .tabbar {
+  background: rgba(11, 30, 66, 0.92) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border-radius: 20px 20px 0 0 !important;
+  border-top: 1px solid rgba(255,255,255,0.15) !important;
+  border-left: 1px solid rgba(255,255,255,0.08) !important;
+  border-right: 1px solid rgba(255,255,255,0.08) !important;
+}
+html body #tabbar button,
+html body .tabbar button {
+  color: #8FB3E8 !important;
+  background: transparent !important;
+  border-radius: 12px !important;
+}
+html body #tabbar button.on,
+html body .tabbar button.on,
+html body #tabbar button.active {
+  background: #193F85 !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255,255,255,0.25) !important;
+}
+
+/* === Leagues parent transparent === */
+html body[data-view=leagues] .view,
+html body[data-view=leagues] .lb-wrap,
+html body[data-view=leagues] .screen > div {
+  background: transparent !important;
+}
+html body[data-view=leagues] .lb-online,
+html body[data-view=leagues] .online-box,
+html body[data-view=leagues] .lb-foot {
+  background: #102A5C !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  border-radius: 14px !important;
+  color: #fff !important;
+}
+html body[data-view=leagues] .lb-online *,
+html body[data-view=leagues] .online-box * {
+  color: #B8D4FF !important;
+}
+html body[data-view=leagues] .lb-online b,
+html body[data-view=leagues] .online-box b {
+  color: #FFFFFF !important;
+}
