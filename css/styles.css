@@ -1522,3 +1522,47 @@ body[data-view="profile"] .wallet > div {
   background: rgba(255,255,255,.95) !important;
   border-radius: 16px !important;
 }
+
+/* Profile stat cards - soft blue tint */
+body[data-view="profile"] .stat-card,
+body[data-view="profile"] .wallet > div,
+body[data-view="profile"] .chart-wrap {
+  background: rgba(255,255,255,.88) !important;
+  border: 2px solid rgba(255,255,255,.4) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,.12) !important;
+}
+body[data-view="profile"] .stat-card .big,
+body[data-view="profile"] .stat-card b {
+  color: #0D4389 !important;
+}
+
+/* Shop: themed background behind mascot and cards */
+body[data-view="shop"] .mascot-stage {
+  background: linear-gradient(180deg, #0a3570 0%, #155AB0 100%) !important;
+  border-radius: 0 !important;
+}
+body[data-view="shop"] .wallet > div {
+  background: rgba(255,255,255,.9) !important;
+  border: 2px solid rgba(255,255,255,.35) !important;
+  border-radius: 14px !important;
+}
+body[data-view="shop"] .shop-grid .card,
+body[data-view="shop"] .shop-grid > div {
+  background: rgba(255,255,255,.92) !important;
+  border: 2px solid rgba(255,255,255,.3) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,.1) !important;
+}
+body[data-view="shop"] .seg button {
+  background: rgba(255,255,255,.12) !important;
+  color: #fff !important;
+  border: 2px solid rgba(255,255,255,.25) !important;
+  border-radius: 12px !important;
+}
+body[data-view="shop"] .seg button.on {
+  background: linear-gradient(135deg, #FFD54A, #F2B705) !important;
+  color: #0D4389 !important;
+  border-color: #E5A800 !important;
+  box-shadow: 0 3px 0 #B88300 !important;
+}
