@@ -1733,3 +1733,39 @@ body[data-view=profile] .chart span,
 body[data-view=profile] .chart b {
   color: rgba(255,255,255,.85) !important;
 }
+
+/* === Solid dark-blue profile cards === */
+body[data-view=profile] .stat-box,
+body[data-view="profile"] .stat-box {
+  background: #1E4E9E !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid #2A62B8 !important;
+  border-radius: 16px !important;
+  color: #fff !important;
+}
+body[data-view=profile] .stat-box .v,
+body[data-view="profile"] .stat-box .v {
+  color: #fff !important;
+}
+body[data-view=profile] .stat-box .l,
+body[data-view="profile"] .stat-box .l {
+  color: #A9DDFF !important;
+}
+body[data-view=profile] .chart,
+body[data-view="profile"] .chart {
+  background: #133673 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid #1E4E9E !important;
+  border-radius: 16px !important;
+}
+body[data-view=profile] h2.sub,
+body[data-view="profile"] h2.sub,
+body[data-view=profile] .sub {
+  color: #fff !important;
+}
+body[data-view=profile] .chart span,
+body[data-view=profile] .chart b {
+  color: #A9DDFF !important;
+}
