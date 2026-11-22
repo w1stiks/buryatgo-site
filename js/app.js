@@ -120,6 +120,20 @@
     return ['audio/' + k + '.m4a', 'audio/' + k + '.mp3'];
   }
   const audioOf = w => (w && w.audio ? 'audio/' + w.audio : (w ? audioFor(w._id) : null));
+  /* Play phrase word-by-word using recorded audio */
+  function speakPhrase(words) {
+    if (!words || !words.length) return;
+    let i = 0;
+    const next = () => {
+      if (i >= words.length) return;
+      const w = words[i++];
+      const clean = String(w).replace(/[.,!?]/g, '').toLowerCase();
+      const id = Object.keys(D.words).find(k => D.words[k].bu && D.words[k].bu.toLowerCase().replace(/[.,!?]/g, '') === clean);
+      const audio = id ? audioFor(id) : null;
+      speak(w, false, audio, null, next);
+    };
+    next();
+  }
   const leagueAcc = n => n.replace(/ая$/, 'ую');
   const leaguePrep = n => n.replace(/ая$/, 'ой');
   /* v1.11: наполненность пиал (чай/молоко). false — пиала пустая после обряда */
@@ -610,7 +624,7 @@
       <div class="speech"><div class="mini-m">${mini()}</div><div class="bubble">${toRu ? '<button class="spk" data-silent data-say>🔊</button>' : ''}<span>${esc(srcText)}</span></div></div>
       <div class="answer-area" id="ans"></div>
       <div class="bank" id="bank">${tiles.map((o, i) => `<button class="tile" data-i="${i}">${esc(o.t)}</button>`).join('')}</div>`;
-    if (toRu) { bindSay(root, srcText); setTimeout(() => speak(srcText), 300); }
+    if (toRu) { bindSay(root, srcText); setTimeout(() => speakPhrase(src), 300); }
     const ans = $('#ans', root), bank = $('#bank', root);
     const chosen = [];
     function draw() {
