@@ -1375,3 +1375,36 @@ body[data-view="lesson"] .lesson-body {
   touch-action: pan-y;
   overscroll-behavior-y: none;
 }
+
+/* Hard lock lesson from pull-down / overscroll */
+html, body { overscroll-behavior: none; }
+body[data-view="lesson"],
+body[data-view="lesson"] #app,
+body[data-view="lesson"] .screen,
+body[data-view="lesson"] .lesson,
+body[data-view="lesson"] .lesson-body {
+  overscroll-behavior: none !important;
+  overscroll-behavior-y: none !important;
+  touch-action: pan-y;
+}
+body[data-view="lesson"] .lesson-body {
+  -webkit-overflow-scrolling: auto;
+}
+
+/* Kill scrollbar and scrolling in lessons */
+.lesson-body,
+#lBody {
+  overflow: hidden !important;
+  overflow-y: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.lesson-body::-webkit-scrollbar,
+#lBody::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+body[data-view="lesson"] .screen {
+  overflow: hidden !important;
+}
