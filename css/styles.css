@@ -1566,3 +1566,63 @@ body[data-view="shop"] .seg button.on {
   border-color: #E5A800 !important;
   box-shadow: 0 3px 0 #B88300 !important;
 }
+
+/* === Hard override: settings, shop, profile themed === */
+body[data-view="settings"] .screen,
+body[data-view="settings"] #app,
+body[data-view="profile"] .screen,
+body[data-view="shop"] .screen {
+  background: linear-gradient(180deg, #0D4389 0%, #155AB0 100%) !important;
+}
+
+/* Settings: rounded cards */
+body[data-view="settings"] .set-group,
+body[data-view="settings"] .set-row,
+body[data-view="settings"] .view > div {
+  background: rgba(255,255,255,.92) !important;
+  border-radius: 16px !important;
+  border: none !important;
+  margin-bottom: 10px !important;
+}
+body[data-view="settings"] .set-row {
+  border-radius: 14px !important;
+  margin: 6px 0 !important;
+}
+body[data-view="settings"] h2,
+body[data-view="settings"] .u-t {
+  color: #fff !important;
+}
+
+/* Shop: wallet and cards */
+body[data-view="shop"] .wallet,
+body[data-view="shop"] .wallet > div {
+  background: rgba(255,255,255,.15) !important;
+  border: 2px solid rgba(255,255,255,.25) !important;
+  border-radius: 16px !important;
+  color: #fff !important;
+}
+body[data-view="shop"] .wallet .big,
+body[data-view="shop"] .wallet .muted {
+  color: #fff !important;
+}
+body[data-view="shop"] .shop-grid .card,
+body[data-view="shop"] .shop-grid > div,
+body[data-view="shop"] .shop-grid button {
+  background: rgba(255,255,255,.88) !important;
+  border-radius: 18px !important;
+  border: 2px solid rgba(255,255,255,.3) !important;
+}
+
+/* Profile: all white cards */
+body[data-view="profile"] .stat-card,
+body[data-view="profile"] .wallet > div,
+body[data-view="profile"] .chart-wrap,
+body[data-view="profile"] .view > div > div {
+  background: rgba(255,255,255,.88) !important;
+  border-radius: 16px !important;
+  border: 2px solid rgba(255,255,255,.3) !important;
+}
+body[data-view="profile"] h2,
+body[data-view="profile"] .u-t {
+  color: #fff !important;
+}
