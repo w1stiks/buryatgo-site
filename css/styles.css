@@ -1626,3 +1626,46 @@ body[data-view="profile"] h2,
 body[data-view="profile"] .u-t {
   color: #fff !important;
 }
+
+/* Fix Super banner readability */
+body[data-view="profile"] .super-banner {
+  background: linear-gradient(135deg, #8A5CF6, #1CB0F6) !important;
+  color: #fff !important;
+  border-radius: 16px !important;
+  padding: 14px 16px !important;
+}
+body[data-view="profile"] .super-banner .t,
+body[data-view="profile"] .super-banner .d {
+  color: #fff !important;
+}
+
+/* Profile stats and chart - soft blue tint instead of white */
+body[data-view="profile"] .stat-box,
+body[data-view="profile"] .chart {
+  background: rgba(255,255,255,.75) !important;
+  border-radius: 14px !important;
+  border: 2px solid rgba(255,255,255,.4) !important;
+}
+body[data-view="profile"] .stat-box .v,
+body[data-view="profile"] .stat-box .l {
+  color: #0D4389 !important;
+}
+
+/* Shop: rounded mascot stage */
+body[data-view="shop"] .mascot-stage {
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  margin: 8px !important;
+}
+
+/* Shop item cards - soft blue-gray instead of white */
+body[data-view="shop"] .shop-grid .card,
+body[data-view="shop"] .shop-grid > div {
+  background: #E8F0F8 !important;
+  border: 2px solid #D0E0F0 !important;
+  border-radius: 18px !important;
+}
+body[data-view="shop"] .shop-grid .card .nm,
+body[data-view="shop"] .shop-grid .card .pr {
+  color: #0D4389 !important;
+}
