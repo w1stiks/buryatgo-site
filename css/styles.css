@@ -1699,3 +1699,37 @@ body[data-view=profile] .stat-box .v,
 body[data-view=profile] .stat-box .l {
   color: #0D4389 !important;
 }
+
+/* === Glassmorphism profile cards === */
+body[data-view=profile] .stat-box,
+body[data-view="profile"] .stat-box {
+  background: rgba(15, 35, 80, 0.45) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  border-radius: 16px !important;
+  color: #fff !important;
+}
+body[data-view=profile] .stat-box .v,
+body[data-view=profile] .stat-box .l,
+body[data-view="profile"] .stat-box .v,
+body[data-view="profile"] .stat-box .l {
+  color: #fff !important;
+}
+body[data-view=profile] .chart,
+body[data-view="profile"] .chart {
+  background: rgba(15, 35, 80, 0.4) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  border-radius: 16px !important;
+}
+body[data-view=profile] h2.sub,
+body[data-view="profile"] h2.sub,
+body[data-view=profile] .sub {
+  color: #fff !important;
+}
+body[data-view=profile] .chart span,
+body[data-view=profile] .chart b {
+  color: rgba(255,255,255,.85) !important;
+}
