@@ -1769,3 +1769,31 @@ body[data-view=profile] .chart span,
 body[data-view=profile] .chart b {
   color: #A9DDFF !important;
 }
+
+/* === FORCE DARK CARDS (highest priority) === */
+html body[data-view=profile] .stats-grid .stat-box,
+html body[data-view="profile"] .stats-grid .stat-box,
+html body[data-view=profile] .stat-box {
+  background-color: #102A5C !important;
+  background-image: none !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  color: #fff !important;
+}
+html body[data-view=profile] .stats-grid .stat-box .v,
+html body[data-view=profile] .stat-box .v {
+  color: #FFFFFF !important;
+}
+html body[data-view=profile] .stats-grid .stat-box .l,
+html body[data-view=profile] .stat-box .l {
+  color: #B8D4FF !important;
+}
+html body[data-view=profile] .chart,
+html body[data-view="profile"] .chart {
+  background-color: #133470 !important;
+  background-image: none !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+}
+html body[data-view=profile] .chart span,
+html body[data-view=profile] .chart b {
+  color: #B8D4FF !important;
+}
