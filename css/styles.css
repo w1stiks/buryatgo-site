@@ -1453,3 +1453,39 @@ body[data-view="lesson"] .ex-anim {
 body[data-view="lesson"] .sheet {
   border-radius: 24px 24px 0 0;
 }
+
+/* Profile & Shop themed cards */
+body[data-view="profile"] .screen,
+body[data-view="shop"] .screen {
+  background: linear-gradient(180deg, #0D4389 0%, #155AB0 40%, #1a6bc4 100%) !important;
+}
+body[data-view="profile"] .view,
+body[data-view="shop"] .view {
+  background: transparent;
+}
+body[data-view="profile"] .stat-card,
+body[data-view="profile"] .wallet > div,
+body[data-view="shop"] .wallet > div,
+body[data-view="shop"] .shop-grid .card,
+body[data-view="profile"] .chart-wrap {
+  background: rgba(255,255,255,.95) !important;
+  border-radius: 16px !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+}
+body[data-view="profile"] .seg button,
+body[data-view="shop"] .seg button {
+  background: rgba(255,255,255,.2);
+  color: #fff;
+  border-radius: 12px;
+}
+body[data-view="profile"] .seg button.on,
+body[data-view="shop"] .seg button.on {
+  background: #fff;
+  color: #0D4389;
+}
+body[data-view="profile"] h2,
+body[data-view="profile"] .u-t,
+body[data-view="shop"] .disclaimer {
+  color: #fff;
+}

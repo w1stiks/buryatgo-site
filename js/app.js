@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.10.3';
+  const APP_VERSION = 'BETA 1.10.4';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -823,7 +823,7 @@
   }
   function renderShop(scr) {
     const s = st();
-    const items = D.items.filter(i => (i.cat || i.slot) === ui.shopSlot);
+    const items = D.items.filter(i => (i.cat || i.slot) === ui.shopSlot && i.slot !== 'datsan');
     scr.innerHTML = `<div class="view">
       <div class="mascot-stage v4" id="stage">${stageScene()}${STAGE_SKY}
         <div class="say" id="say"></div>
@@ -832,7 +832,7 @@
         <div><span class="big"><img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false></span><div><div class="big" id="wBuzzy">${fmt(s.buzzy)}</div><div class="muted" style="font-size:12px;font-weight:800">Буузы</div></div></div>
         <div><span class="big">🧊</span><div><div class="big">${s.freezes}</div><div class="muted" style="font-size:12px;font-weight:800">Заморозки</div></div></div>
       </div>
-      <div class="seg">${D.slots.map(sl => `<button data-slot="${sl.id}" class="${ui.shopSlot === sl.id ? 'on' : ''}">${sl.icon} ${esc(sl.name)}</button>`).join('')}<button data-slot="pets" class="${ui.shopSlot === 'pets' ? 'on' : ''}">🐾 Питомцы</button></div>
+      <div class="seg">${D.slots.filter(sl => sl.id !== 'datsan').map(sl => `<button data-slot="${sl.id}" class="${ui.shopSlot === sl.id ? 'on' : ''}">${sl.icon} ${esc(sl.name)}</button>`).join('')}<button data-slot="pets" class="${ui.shopSlot === 'pets' ? 'on' : ''}">🐾 Питомцы</button></div>
       <div class="shop-grid">${ui.shopSlot === 'pets' ? petsGrid() : items.map(it => {
         const owned = s.owned.indexOf(it.id) >= 0, eq = s.equip[it.slot] === it.id;
         let tag = '';
