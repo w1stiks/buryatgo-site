@@ -2157,3 +2157,32 @@ html body[data-view=leagues] .lb-divider {
   background: transparent !important;
   box-shadow: none !important;
 }
+
+/* === Themed scrollbar === */
+html body,
+html body .screen,
+html body .view {
+  scrollbar-width: thin;
+  scrollbar-color: #1E4E9E #0B1E42;
+}
+html body::-webkit-scrollbar,
+html body .screen::-webkit-scrollbar,
+html body .view::-webkit-scrollbar {
+  width: 6px;
+}
+html body::-webkit-scrollbar-track,
+html body .screen::-webkit-scrollbar-track,
+html body .view::-webkit-scrollbar-track {
+  background: #0B1E42;
+}
+html body::-webkit-scrollbar-thumb,
+html body .screen::-webkit-scrollbar-thumb,
+html body .view::-webkit-scrollbar-thumb {
+  background: #1E4E9E;
+  border-radius: 10px;
+}
+html body::-webkit-scrollbar-thumb:hover,
+html body .screen::-webkit-scrollbar-thumb:hover,
+html body .view::-webkit-scrollbar-thumb:hover {
+  background: #2B6CB0;
+}
