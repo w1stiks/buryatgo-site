@@ -1669,3 +1669,33 @@ body[data-view="shop"] .shop-grid .card .nm,
 body[data-view="shop"] .shop-grid .card .pr {
   color: #0D4389 !important;
 }
+
+/* === FINAL OVERRIDES (end of file) === */
+body[data-view=profile] .super-banner,
+body[data-view="profile"] .super-banner {
+  background: linear-gradient(135deg, #6D3FD4, #1CB0F6) !important;
+  color: #fff !important;
+  border: 2px solid #F2B705 !important;
+}
+body[data-view=profile] .super-banner .t,
+body[data-view=profile] .super-banner .d,
+body[data-view="profile"] .super-banner .t,
+body[data-view="profile"] .super-banner .d {
+  color: #fff !important;
+  opacity: 1 !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,.3);
+}
+body[data-view=profile] .stat-box,
+body[data-view="profile"] .stat-box {
+  background: #D6E8F5 !important;
+  border: 2px solid #B8D4E8 !important;
+}
+body[data-view=profile] .chart,
+body[data-view="profile"] .chart {
+  background: #D6E8F5 !important;
+  border: 2px solid #B8D4E8 !important;
+}
+body[data-view=profile] .stat-box .v,
+body[data-view=profile] .stat-box .l {
+  color: #0D4389 !important;
+}

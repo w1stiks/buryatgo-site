@@ -1,6 +1,6 @@
 /* BuryatGo service worker: игра открывается и без интернета.
    Свои файлы — из кэша с фоновым обновлением; запросы к серверу аккаунтов не кэшируются. */
-const CACHE = 'buryatgo-v1.16.16-polish';
+const CACHE = 'buryatgo-v1.16.17-final';
 const CORE = [
   './', 'index.html', 'manifest.webmanifest', 'css/styles.css',
   'js/data.js', 'js/store.js', 'js/cloud-config.js', 'js/cloud.js', 'js/pwa.js',
