@@ -381,7 +381,7 @@
     const pool = wordPoolFor(unit, lesson);
     const age = ageOf();
     if (age === 'kids') return kidsQueue(lesson, pool);
-    if (age === 'std') return stdQueue(lesson, pool);
+    // std removed
     const first = !((st().lessons[lesson.id] || {}).done);
     const q = [];
     lesson.words.forEach(w => {
@@ -859,11 +859,10 @@
 
   /* ───────── v1.15: возраст, теги статусов, боты ───────── */
   const AGES = [
-    { id: 'kids', label: '3–5 лет', tag: 'KIDS', emoji: '🧸', d: 'Только картинки и озвучка — читать не нужно' },
-    { id: 'std', label: '5–10 лет', tag: 'Standart', emoji: '🎒', d: 'Больше аудио и подсказок, минимум текста' },
-    { id: 'big', label: '10–15+ лет', tag: 'BIG', emoji: '🎓', d: 'Полный режим: текст, карточки, конструктор фраз' }
+    { id: 'kids', label: 'Детский', tag: 'KIDS', emoji: '🧸', d: 'Картинки и озвучка — читать не нужно' },
+    { id: 'big', label: 'Взрослый', tag: 'BIG', emoji: '🎓', d: 'Полный режим: текст, карточки, конструктор фраз' }
   ];
-  const ageOf = () => { const a = st().age; return a === 'kids' || a === 'std' || a === 'big' ? a : 'big'; };
+  const ageOf = () => { const a = st().age; return a === 'kids' || a === 'big' ? a : 'big'; };
   const ageInfo = id => AGES.find(a => a.id === id) || AGES[2];
   const isAdmin = () => !!st().admin || devRemembered();
   const TAGS = { admin: ['ADMIN', 'tg-admin'], super: ['SUPER', 'tg-super'], kids: ['KIDS', 'tg-kids'], std: ['Standart', 'tg-std'], big: ['BIG', 'tg-big'] };
@@ -897,7 +896,7 @@
   function setAge(id) {
     const s = st(); s.age = id; S.save(); sfx('pop'); haptic('success');
     toast(ageInfo(id).emoji + ' Режим уроков: ' + ageInfo(id).tag);
-    if (id === 'kids') setTimeout(() => speak('Привет! Будем учиться вместе!'), 300);
+    if (id === 'kids') setTimeout(() => kidsVoice('Привет! Будем учиться вместе!'), 300);
   }
   function ageModal(onDone, locked) {
     const m = openModal(`<h2>Сколько лет ученику?</h2><p>От возраста зависит формат уроков.</p><div class="stack age-list">${ageButtons(st().age)}</div>`, { center: true, locked: !!locked });
@@ -2854,7 +2853,7 @@
       setTimeout(() => inp.focus(), 200);
     }
     $$('[data-g]', scr).forEach(b => { b.onclick = () => { ui.onbGoal = parseInt(b.dataset.g, 10); renderOnboarding(scr); }; });
-    $$('[data-age]', scr).forEach(b => { b.onclick = () => { ui.onbAge = b.dataset.age; if (b.dataset.age === 'kids') speak('Привет! Будем учиться вместе!'); renderOnboarding(scr); }; });
+    $$('[data-age]', scr).forEach(b => { b.onclick = () => { ui.onbAge = b.dataset.age; if (b.dataset.age === 'kids') kidsVoice('Привет! Будем учиться вместе!'); renderOnboarding(scr); }; });
     $('#onbNext', scr).onclick = onbNext;
   }
   function onbNext() {
