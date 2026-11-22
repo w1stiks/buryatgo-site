@@ -392,6 +392,18 @@
       <div class="lesson-foot" id="lFoot"></div>
       <div class="sheet" id="lSheet"></div></div>`;
     $('#lQuit').onclick = quitLesson;
+    // Block swipe-down that reveals skip button
+    const body = $('#lBody');
+    if (body) {
+      let startY = 0;
+      body.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+      body.addEventListener('touchmove', e => {
+        const dy = e.touches[0].clientY - startY;
+        if (dy > 0 && body.scrollTop <= 0) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+    }
   }
 
   function quitLesson() {
