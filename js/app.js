@@ -1,6 +1,27 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
+  const APP_VERSION = 'BETA 1.10.1';
+
+  // Global lesson swipe-down lock
+  (function lockLessonSwipe() {
+    let sy = 0;
+    document.addEventListener('touchstart', e => {
+      if (ui.view !== 'lesson') return;
+      sy = e.touches[0].clientY;
+    }, { passive: true, capture: true });
+    document.addEventListener('touchmove', e => {
+      if (ui.view !== 'lesson') return;
+      const dy = e.touches[0].clientY - sy;
+      const body = document.getElementById('lBody');
+      // Block pull-down when at top of lesson
+      if (dy > 6 && body && body.scrollTop <= 1) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, { passive: false, capture: true });
+  })();
+
   const D = window.BG_DATA, S = window.BG_STORE, A = window.BG_AUDIO, M = window.BG_MASCOT;
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
@@ -257,6 +278,7 @@
     const active = s.lastActive === S.today();
     const prem = S.isPremium();
     $('#topbar').innerHTML = `
+      <span class="ver-badge" title="Версия">${APP_VERSION}</span>
       <button class="stat-chip chip-streak ${active ? '' : 'off'}" id="tStreak"><span class="ic">🔥</span><span>${s.streak}</span></button>
       <button class="stat-chip chip-buzzy" id="tBuzzy"><span class="ic"><img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false></span><span>${fmt(s.buzzy)}</span></button>
       <button class="stat-chip chip-xp" id="tXp"><span class="ic">⚡</span><span>${fmt(s.xp)}</span></button>
@@ -392,17 +414,19 @@
       <div class="lesson-foot" id="lFoot"></div>
       <div class="sheet" id="lSheet"></div></div>`;
     $('#lQuit').onclick = quitLesson;
-    // Block swipe-down that reveals skip button
-    const body = $('#lBody');
-    if (body) {
-      let startY = 0;
-      body.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
-      body.addEventListener('touchmove', e => {
-        const dy = e.touches[0].clientY - startY;
-        if (dy > 0 && body.scrollTop <= 0) {
-          e.preventDefault();
+    // Hard block any swipe-down in lesson (prevents skip button reveal)
+    const lesson = $('.lesson', scr);
+    if (lesson) {
+      let sy = 0;
+      const block = e => {
+        if (e.touches && e.touches.length) {
+          const dy = e.touches[0].clientY - sy;
+          if (dy > 8) e.preventDefault();
         }
-      }, { passive: false });
+      };
+      lesson.addEventListener('touchstart', e => { sy = e.touches[0].clientY; }, { passive: true });
+      lesson.addEventListener('touchmove', block, { passive: false });
+      lesson.addEventListener('touchend', () => { sy = 0; }, { passive: true });
     }
   }
 
