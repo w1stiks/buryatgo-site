@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.10.2';
+  const APP_VERSION = 'BETA 1.10.3';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -1672,12 +1672,12 @@
     setTimeout(() => { wxBind(scr); placeDog($('#stage', scr) || $('#stage')); }, 0);
     const stage = $('#stage', scr), hold = $('#mHold', scr); if (!stage || !hold) return;
     $$('.horse-hit, .rider, .dog-wrap, .city-badge, .yurt-hit, .yurt-in, .pl-hit, #walker, .gov-in, .pl-spark', stage).forEach(x => x.remove());
-    if (ui.loc === 'city' || ui.loc === 'datsan') {
+    if (ui.loc === 'city' || false && ui.loc === 'datsan') {
       const h = rideHorseOf(ui.rideHorse);
       if (h) {
         const sc = $('.scene', stage); if (sc) sc.innerHTML = placeScene(ui.loc);
         hold.classList.add('away');
-        stage.insertAdjacentHTML('beforeend', riderHtml(h) + (ui.loc === 'datsan' ? DATSAN_BADGE : CITY_BADGE));
+        stage.insertAdjacentHTML('beforeend', riderHtml(h) + (false && ui.loc === 'datsan' ? DATSAN_BADGE : CITY_BADGE));
         const r = $('#rider', stage); r.classList.add('idle', 'empty'); r.style.transition = 'none'; r.style.transform = placeRiderTf(stage.getBoundingClientRect().width); ui.placeBusy = false;
         requestAnimationFrame(() => placeSetup(scr, h, false));
         r.onclick = () => rideHome(scr, h);
@@ -1707,7 +1707,7 @@
   const WEEK_MS = 7 * 24 * 31000 * 1000;
   const OFFERS = [{ k: 'sweets', n: 'Сладости', i: '🍬' }, { k: 'butter', n: 'Масло', i: '🧈' }, { k: 'milk', n: 'Молоко', i: '🥛' }, { k: 'tea', n: 'Чай', i: '🍵' }];
   /* В дацане конь стоит у ступеней (в центре, чуть дальше), не заслоняя стол и столб */
-  function placeRiderTf(w) { return ui.loc === 'datsan' ? 'translateX(' + (w * -.01) + 'px) translateY(-6px) scale(.72)' : 'translateX(' + (w * .26) + 'px)'; }
+  function placeRiderTf(w) { return false && ui.loc === 'datsan' ? 'translateX(' + (w * -.01) + 'px) translateY(-6px) scale(.72)' : 'translateX(' + (w * .26) + 'px)'; }
   function placeScene(loc) { return loc === 'datsan' ? window.BG_DATSAN.scene(st()) : window.BG_ART.city(); }
   function datsanState() {
     const s = st();
@@ -1765,7 +1765,7 @@
     wkSet(w, hs.x, hs.y, 1);
     if (fresh) w.classList.add('hop-off');
     const svg = $('.scene .city-svg', stage);
-    if (window.BG_PLACES) window.BG_PLACES.pigeons(svg, () => WX.mode, ui.loc === 'datsan'
+    if (window.BG_PLACES) window.BG_PLACES.pigeons(svg, () => WX.mode, false && ui.loc === 'datsan'
       ? { n: 6, area: { x0: 150, x1: 250, y0: 252, y1: 292 } }
       : { n: 10, area: { x0: 30, x1: 370, y0: 244, y1: 292 } });
     if (ui.loc === 'city') placeHit(stage, '.ct-door', '🚪 Войти', () => enterGov(scr), 4);
@@ -1902,10 +1902,10 @@
     r.style.transition = 'transform 1.4s cubic-bezier(.2,.7,.3,1)'; r.style.transform = placeRiderTf(sr.width);
     await wait12(1450);
     r.classList.remove('gallop'); r.classList.add('idle');
-    stage.insertAdjacentHTML('beforeend', ui.loc === 'datsan' ? DATSAN_BADGE : CITY_BADGE);
+    stage.insertAdjacentHTML('beforeend', false && ui.loc === 'datsan' ? DATSAN_BADGE : CITY_BADGE);
     placeSetup(scr, h, true);
     ui.riding = false;
-    toast(ui.loc === 'datsan' ? '🛕 Бато прискакал в Иволгинский дацан! Сделайте подношение или поднимите Хии морин' : '🏛️ Бато в Улан-Удэ! Нажмите на дверь Дома Правительства, чтобы войти');
+    toast(false && ui.loc === 'datsan' ? '🛕 Бато прискакал в Иволгинский дацан! Сделайте подношение или поднимите Хии морин' : '🏛️ Бато в Улан-Удэ! Нажмите на дверь Дома Правительства, чтобы войти');
   }
   async function rideHome(scr, h) {
     if (ui.riding || ui.placeBusy || ui.inGov) return;
@@ -2804,7 +2804,7 @@
     setTimeout(() => {
       const s = st();
       s.premium = { plan: 'lifetime', since: S.today(), until: LIFETIME_UNTIL, autoRenew: false };
-      const bonus = D.premiumBonus || 1000;
+      const bonus = 1000;
       s.buzzy += bonus; s.buzzyEarned += bonus;
       saveReceipt(); S.save(); renderTop();
       if (!modalOpen()) return;

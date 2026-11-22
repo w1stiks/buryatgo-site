@@ -1436,27 +1436,20 @@ body[data-view="lesson"] .screen {
   margin-bottom: 4px;
 }
 
-/* Lesson background: red pattern with blur */
-body[data-view="lesson"] #app,
-body[data-view="lesson"] .screen,
+/* Lesson background: soft blue theme with rounded cards */
 body[data-view="lesson"] .lesson {
-  background: url("img/lesson-bg.jpg") center / cover no-repeat !important;
+  background: linear-gradient(180deg, #0D4389 0%, #155AB0 100%) !important;
 }
-body[data-view="lesson"] .lesson::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: url("img/lesson-bg.jpg") center / cover no-repeat;
-  filter: blur(8px);
-  transform: scale(1.05);
-  z-index: -1;
-}
-body[data-view="lesson"] .lesson {
-  position: relative;
-  z-index: 1;
-}
-body[data-view="lesson"] .lesson-body,
-body[data-view="lesson"] .lesson-top,
-body[data-view="lesson"] .lesson-foot {
+body[data-view="lesson"] .lesson-body {
   background: transparent !important;
+}
+body[data-view="lesson"] .k-wrap,
+body[data-view="lesson"] .ex-anim {
+  background: rgba(255,255,255,.92);
+  border-radius: 24px;
+  padding: 16px;
+  margin: 8px;
+}
+body[data-view="lesson"] .sheet {
+  border-radius: 24px 24px 0 0;
 }
