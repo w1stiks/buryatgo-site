@@ -1425,3 +1425,38 @@ body[data-view="lesson"] .screen {
   pointer-events: none;
   white-space: nowrap;
 }
+
+/* Kids word meaning */
+.k-meaning {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--muted);
+  text-align: center;
+  margin-top: -8px;
+  margin-bottom: 4px;
+}
+
+/* Lesson background: red pattern with blur */
+body[data-view="lesson"] #app,
+body[data-view="lesson"] .screen,
+body[data-view="lesson"] .lesson {
+  background: url("img/lesson-bg.jpg") center / cover no-repeat !important;
+}
+body[data-view="lesson"] .lesson::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("img/lesson-bg.jpg") center / cover no-repeat;
+  filter: blur(8px);
+  transform: scale(1.05);
+  z-index: -1;
+}
+body[data-view="lesson"] .lesson {
+  position: relative;
+  z-index: 1;
+}
+body[data-view="lesson"] .lesson-body,
+body[data-view="lesson"] .lesson-top,
+body[data-view="lesson"] .lesson-foot {
+  background: transparent !important;
+}

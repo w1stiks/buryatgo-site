@@ -347,7 +347,7 @@ window.BG_DATA = (function () {
     },
     {
       id: 'u13', title: 'Школа', subtitle: 'Һургуули, багша, ном…',
-      color: '#8D6BFF', shade: '#6E50DB', premium: false, icon: '📚',
+      color: '#8D6BFF', shade: '#6E50DB', premium: false, icon: '🧑‍🎓',
       lessons: [
         { id: 'u13l1', title: 'В классе', words: ['b_hurguuli', 'b_bagsha', 'b_huragsha'], review: ['b_unshaha'],
           phrases: [

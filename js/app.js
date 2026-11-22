@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.10.1';
+  const APP_VERSION = 'BETA 1.10.2';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -708,6 +708,19 @@
     rec.done = true; rec.times++; rec.best = Math.max(rec.best, acc); rec.last = S.today();
     s.lessons[L.lesson.id] = rec;
     L.lesson.words.forEach(w => { s.words[w] = (s.words[w] || 0) + 1; });
+    // Module completion rewards
+    const doneUnits = D.units.filter(u => u.lessons.every(l => (s.lessons[l.id] || {}).done)).length;
+    if (!s.modRewards) s.modRewards = {};
+    if (doneUnits >= 3 && !s.modRewards.free3) {
+      s.modRewards.free3 = true;
+      s.buzzy += 25000; s.buzzyEarned += 25000;
+      setTimeout(() => { toast('🎉 3 модуля пройдены! +25 000 Бууз'); confetti(); }, 2000);
+    }
+    if (doneUnits >= 15 && !s.modRewards.all15) {
+      s.modRewards.all15 = true;
+      s.buzzy += 50000; s.buzzyEarned += 50000;
+      setTimeout(() => { toast('🏆 Все 15 модулей! +50 000 Бууз'); confetti(); }, 2500);
+    }
     s.stats.lessons++; s.stats.answers += L.answered; s.stats.correct += L.correct;
     if (perfect) s.stats.perfect++;
     const goal = s.settings.dailyGoal;
@@ -953,7 +966,7 @@
   function kBindSay(root, w) { $$('[data-ksay]', root).forEach(b => { b.onclick = e => { e.stopPropagation(); clearTimeout(kVoiceT); speak(w.bu, false, audioOf(w)); b.classList.remove('ping'); void b.offsetWidth; b.classList.add('ping'); }; }); }
   function exKidsIntro(ex, root, foot) {
     const w = D.words[ex.w];
-    root.innerHTML = `<div class="k-wrap"><div class="k-head">👂</div><button class="k-pic big" data-ksay data-silent>${w.emoji || '🔊'}</button>${kSpk()}</div>`;
+    root.innerHTML = `<div class="k-wrap"><div class="k-head">👂</div><button class="k-pic big" data-ksay data-silent>${w.emoji || '🔊'}</button><div class="k-meaning">${esc(w.ru || '')}</div>${kSpk()}</div>`;
     kBindSay(root, w);
     kidsVoice('Послушай и повтори', () => speak(w.bu, false, audioOf(w)));
     const b = $('#lCheck', foot); b.disabled = false; b.innerHTML = '▶'; b.classList.add('k-next');
@@ -1540,14 +1553,14 @@
   function wxDevHtml() {
     return `<div class="dev-wx"><h3>🌦️ Управление погодой</h3><p class="dev-wx-st" id="wxDevSt"></p>
       <div class="wx-seg"><button data-wx="sun">☀️ Солнечно</button><button data-wx="rain">🌧️ Дождь</button><button data-wx="snow">❄️ Снег</button></div>
-      <div class="wx-row"><input type="number" id="wxSec" class="dev-in" min="1" max="3600" value="15" inputmode="numeric"><button class="btn blue" id="wxSetT">⏱️ Задать таймер, сек</button></div>
+      <div class="wx-row"><input type="number" id="wxSec" class="dev-in" min="1" max="31000" value="15" inputmode="numeric"><button class="btn blue" id="wxSetT">⏱️ Задать таймер, сек</button></div>
       <div class="wx-row"><button class="btn ghost dark" id="wxZero">⏹️ Обнулить таймер</button></div>
       <div class="wx-row"><button class="btn" id="wxFreeze">🧊 Заморозить</button><button class="btn" id="wxMelt">💧 Растопить</button></div>
       <div class="wx-row"><button class="btn ghost dark" id="wxMeltSlow">🌤️ Плавное таяние (2,5 мин)</button></div></div>`;
   }
   function wxDevBind(scr) {
     $$('[data-wx]', scr).forEach(b => { b.onclick = () => { wxSet(b.dataset.wx); sfx('pop'); toast(WX_META[b.dataset.wx].join(' ') + ' — включено'); }; });
-    $('#wxSetT', scr).onclick = () => { const n = Math.max(1, Math.min(3600, parseInt($('#wxSec', scr).value, 10) || 0)); WX.until = Date.now() + n * 1000; wxSave(); wxApply(); toast('⏱️ Таймер: ' + wxClock(n)); };
+    $('#wxSetT', scr).onclick = () => { const n = Math.max(1, Math.min(31000, parseInt($('#wxSec', scr).value, 10) || 0)); WX.until = Date.now() + n * 1000; wxSave(); wxApply(); toast('⏱️ Таймер: ' + wxClock(n)); };
     $('#wxZero', scr).onclick = () => { WX.until = Date.now(); wxSave(); wxNext(); toast('⏹️ Таймер обнулён — погода сменилась'); };
     $('#wxFreeze', scr).onclick = () => { wxSetIce(1, 0); wxSave(); wxApply(); toast('🧊 Ручей заморожен'); };
     $('#wxMelt', scr).onclick = () => { wxSetIce(0, 0); wxSave(); wxApply(); toast('💧 Ручей растоплен'); };
@@ -1577,7 +1590,7 @@
   window.addEventListener('resize', () => placeDog());
 
   /* Живые игроки: облачный список присутствия (Firestore «presence»). Онлайн — активен за последние 3 минуты */
-  const LIVE_MS = 3 * 60000;
+  const LIVE_MS = 3 * 100000;
   let liveCache = { t: 0, list: null, err: '' };
   const isLive = p => Date.now() - (p.lastSeen || 0) < LIVE_MS;
   function liveFetch(force) {
@@ -1691,7 +1704,7 @@
   }
   /* ── v1.16: Дом Правительства (вход в здание) и Иволгинский дацан ── */
   const DATSAN_BADGE = '<div class="city-badge">🛕 Иволгинский дацан</div>';
-  const WEEK_MS = 7 * 24 * 3600 * 1000;
+  const WEEK_MS = 7 * 24 * 31000 * 1000;
   const OFFERS = [{ k: 'sweets', n: 'Сладости', i: '🍬' }, { k: 'butter', n: 'Масло', i: '🧈' }, { k: 'milk', n: 'Молоко', i: '🥛' }, { k: 'tea', n: 'Чай', i: '🍵' }];
   /* В дацане конь стоит у ступеней (в центре, чуть дальше), не заслоняя стол и столб */
   function placeRiderTf(w) { return ui.loc === 'datsan' ? 'translateX(' + (w * -.01) + 'px) translateY(-6px) scale(.72)' : 'translateX(' + (w * .26) + 'px)'; }
@@ -1840,7 +1853,7 @@
     if (!w) return;
     const left = (d.khiiLast || 0) + WEEK_MS - Date.now();
     if (left > 0) {
-      const th = Math.max(1, Math.ceil(left / 3600000)), dd = Math.floor(th / 24), hh = th % 24;
+      const th = Math.max(1, Math.ceil(left / 31000000)), dd = Math.floor(th / 24), hh = th % 24;
       toast(`🎏 Хии морин уже поднят на этой неделе. Следующий — через ${dd ? dd + ' дн.' : ''}${dd && hh ? ' ' : ''}${hh ? hh + ' ч.' : ''}`); haptic('error'); return;
     }
     if (!(s.offerInv.khii > 0)) { toast('🎏 Купите флажок «Хии морин» в магазине — раздел «🛕 Дацан»'); haptic('error'); return; }
@@ -2245,7 +2258,7 @@
   function timeLeft() {
     const end = S.weekStart(); end.setDate(end.getDate() + 7);
     const ms = Math.max(0, end.getTime() - Date.now());
-    const d = Math.floor(ms / 86400000), h = Math.floor((ms % 86400000) / 3600000), m = Math.floor((ms % 3600000) / 60000);
+    const d = Math.floor(ms / 86400000), h = Math.floor((ms % 86400000) / 31000000), m = Math.floor((ms % 31000000) / 100000);
     return d > 0 ? `${d} ${plural(d, ['день', 'дня', 'дней'])} ${h} ч` : `${h} ч ${m} мин`;
   }
   function processWeek() {
@@ -2661,7 +2674,7 @@
     return true;
   }
   function agoText(ms) {
-    const m = Math.max(0, Math.round((Date.now() - (ms || 0)) / 60000));
+    const m = Math.max(0, Math.round((Date.now() - (ms || 0)) / 100000));
     if (m < 3) return 'онлайн';
     if (m < 60) return m + ' мин назад';
     if (m < 1440) return Math.round(m / 60) + ' ч назад';
@@ -2740,7 +2753,7 @@
         <h1>BuryatGo <span>Super</span></h1><p>Учите бурятский без ограничений — навсегда</p></div>
       <div class="pw-feats">
         <div class="pw-feat"><div class="fi">🔓</div><div><b>Модули с 4 по 15 (12 модулей)</b><br><small>Бесплатно — модули 1–3. Super открывает все остальные, включая Праздники, Числа, Байкал, Чувства и Путешествие</small></div></div>
-        <div class="pw-feat"><div class="fi"><img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false></div><div><b>Двойные Буузы + 500 сразу</b><br><small>Бонус при покупке, далее ×2 за уроки и серии</small></div></div>
+        <div class="pw-feat"><div class="fi"><img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false></div><div><b>Двойные Буузы + 1000 сразу</b><br><small>Бонус 1000 Бууз при покупке, далее ×2 за уроки и серии</small></div></div>
         <div class="pw-feat"><div class="fi">🧥</div><div><b>Праздничный дэгэл</b><br><small>Эксклюзивная одежда для Бато</small></div></div>
         <div class="pw-feat"><div class="fi">❤️</div><div><b>Поддержка языка</b><br><small>Помогаете создавать новые уроки</small></div></div>
       </div>
@@ -2791,7 +2804,7 @@
     setTimeout(() => {
       const s = st();
       s.premium = { plan: 'lifetime', since: S.today(), until: LIFETIME_UNTIL, autoRenew: false };
-      const bonus = D.premiumBonus || 500;
+      const bonus = D.premiumBonus || 1000;
       s.buzzy += bonus; s.buzzyEarned += bonus;
       saveReceipt(); S.save(); renderTop();
       if (!modalOpen()) return;
@@ -2947,7 +2960,7 @@
 
     setTimeout(() => {
       const sp = $('#splash');
-      if (sp) { sp.classList.add('hide'); setTimeout(() => sp.remove(), 600); }
+      if (sp) { sp.classList.add('hide'); setTimeout(() => sp.remove(), 1000); }
       if (!st().onboarded) return;
       if (sr === 'frozen') {
         const m = openModal(`<div class="big-emo">🧊</div><h2>Серия спасена!</h2><p>Вы пропустили день, но заморозка сохранила вашу серию: ${st().streak} ${plural(st().streak, ['день', 'дня', 'дней'])} 🔥</p><button class="btn blue" data-ok>Ура!</button>`,
