@@ -1332,3 +1332,46 @@ body[data-view=shop] .seg button img, body[data-view=shop] .seg button .ic { fle
   animation: none !important;
   transform: none !important;
 }
+
+/* Force no animation on any emoji or pic inside lessons */
+.lesson .emo,
+.lesson .k-pic,
+.lesson .k-pic2,
+.lesson .k-pic.big,
+.lesson .card-opt,
+.lesson .big-emo,
+#exRoot .emo,
+#exRoot .k-pic,
+#exRoot .k-pic2,
+#exRoot .card-opt,
+.k-wrap .emo,
+.k-wrap .k-pic,
+.k-wrap .k-pic2,
+.k-wrap .card-opt,
+.k-sheet .k-ans,
+.k-sheet .k-big {
+  animation: none !important;
+  animation-name: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* Block swipe-down / pull-to-refresh in lessons */
+.lesson,
+.lesson-body,
+#lBody,
+#exRoot {
+  overscroll-behavior: none;
+  overscroll-behavior-y: none;
+  touch-action: pan-x pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+body[data-view="lesson"] {
+  overscroll-behavior: none;
+  touch-action: none;
+}
+body[data-view="lesson"] .lesson,
+body[data-view="lesson"] .lesson-body {
+  touch-action: pan-y;
+  overscroll-behavior-y: none;
+}
