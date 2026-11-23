@@ -36,6 +36,11 @@ window.BG_AUDIO = (function () {
     wrong(t) { tone(320, t, 0.18, 'square', 0.07, null, 200); tone(220, t + 0.14, 0.26, 'square', 0.07, null, 130); },
     complete(t) { [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, t + i * 0.1, 0.32, 'triangle', 0.22)); },
     coin(t) { tone(1319, t, 0.07, 'square', 0.05); tone(1976, t + 0.07, 0.18, 'square', 0.05); },
+    popper(t) {
+      tone(180, t, 0.09, 'square', 0.2, null, 90);
+      tone(880, t + 0.05, 0.12, 'triangle', 0.22, null, 1760);
+      [1046, 1318, 1568, 2093].forEach((f, i) => tone(f, t + 0.08 + i * 0.045, 0.18, 'sine', 0.12));
+    },
     streak(t) { [392, 523, 659, 784].forEach((f, i) => tone(f, t + i * 0.08, 0.22, 'sawtooth', 0.05)); }
   };
 

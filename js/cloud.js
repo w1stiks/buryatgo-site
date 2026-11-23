@@ -259,7 +259,9 @@ window.BG_CLOUD = (function () {
       xp: I(p.xp), weekXp: I(p.weekXp), league: I(p.league), streak: I(p.streak), lastSeen: I(Date.now()),
       snap: { stringValue: JSON.stringify(p) }
     } };
-    const { r } = await request(presUrl(sess.uid), {
+    const keys = Object.keys(body.fields);
+    const mask = keys.map(f => 'updateMask.fieldPaths=' + f).join('&');
+    const { r } = await request(presUrl(sess.uid) + '?' + mask, {
       method: 'PATCH', headers: { Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' }, body: JSON.stringify(body)
     });
     return r.ok;
@@ -290,6 +292,56 @@ window.BG_CLOUD = (function () {
     }
     return { source: 'cloud', players: out };
   }
+
+  const fsDoc = path => 'https://firestore.googleapis.com/v1/projects/' + encodeURIComponent(CFG.projectId) +
+    '/databases/(default)/documents/' + path;
+  function nyFromFields(f) {
+    if (!f) return null;
+    const on = !!((f.nyOn && f.nyOn.booleanValue) || (f.on && f.on.booleanValue));
+    const id = (f.nyId && f.nyId.stringValue) || (f.id && f.id.stringValue) || '';
+    const at = parseInt(((f.nyAt || f.at || {}).integerValue) || '0', 10) || 0;
+    if (!id) return null;
+    return { on, id, at };
+  }
+  async function publishNy(on) {
+    if (!configured()) throw fail('NOT_CONFIGURED');
+    if (!sess) throw fail('NO_SESSION');
+    const t = await token();
+    const id = on ? ('ny' + Date.now().toString(36)) : (sess.nyId || 'ny0');
+    const at = Date.now();
+    const headers = { Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' };
+    const evFields = {
+      on: { booleanValue: !!on }, id: { stringValue: id }, at: { integerValue: String(at) },
+      nyOn: { booleanValue: !!on }, nyId: { stringValue: id }, nyAt: { integerValue: String(at) }
+    };
+    const evMask = Object.keys(evFields).map(f => 'updateMask.fieldPaths=' + f).join('&');
+    const ev = await request(fsDoc('events/ny') + '?' + evMask, { method: 'PATCH', headers, body: JSON.stringify({ fields: evFields }) });
+    const prFields = { nyOn: evFields.nyOn, nyId: evFields.nyId, nyAt: evFields.nyAt };
+    const prMask = Object.keys(prFields).map(f => 'updateMask.fieldPaths=' + f).join('&');
+    const pr = await request(presUrl(sess.uid) + '?' + prMask, { method: 'PATCH', headers, body: JSON.stringify({ fields: prFields }) });
+    if (!ev.r.ok && !pr.r.ok) throw fail(errCode(ev.j) || errCode(pr.j));
+    sess.nyId = id; writeSess(sess);
+    return { on: !!on, id, at, shared: ev.r.ok };
+  }
+  async function readNy() {
+    if (!configured() || !sess) return null;
+    const t = await token();
+    const ev = await request(fsDoc('events/ny'), { headers: { Authorization: 'Bearer ' + t } });
+    if (ev.r.ok) return nyFromFields(ev.j.fields) || { on: false, id: '', at: 0 };
+    let best = null, page = '';
+    for (let i = 0; i < 4; i++) {
+      const { r, j } = await request(presUrl() + '?pageSize=300' + (page ? '&pageToken=' + encodeURIComponent(page) : ''),
+        { headers: { Authorization: 'Bearer ' + t } });
+      if (!r.ok) break;
+      (j.documents || []).forEach(d => {
+        const n = nyFromFields(d.fields);
+        if (n && n.on && (!best || n.at > best.at)) best = n;
+      });
+      page = j.nextPageToken;
+      if (!page) break;
+    }
+    return best || (ev.r.status === 404 ? { on: false, id: '', at: 0 } : null);
+  }
   setInterval(() => { ping().catch(() => {}); }, 60000);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') ping(true).catch(() => {}); });
   window.addEventListener('load', () => setTimeout(() => ping(true).catch(() => {}), 3000));
@@ -306,7 +358,7 @@ window.BG_CLOUD = (function () {
     user: () => (sess ? sess.login : null),
     syncedAt: () => (sess ? sess.syncedAt || 0 : 0),
     pending: () => !!(sess && (sess.dirty || timer)),
-    signUp, signIn, signOut, push, pull, schedule, startupSync, ping, livePlayers,
+    signUp, signIn, signOut, push, pull, schedule, startupSync, ping, livePlayers, publishNy, readNy,
     onChange(fn) { listeners.push(fn); }
   };
 })();

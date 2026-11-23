@@ -2637,3 +2637,22 @@ body[data-view="shop"] .seg button[data-slot="ny"] {
   color: #fff;
   border-color: #D6E4FF;
 }
+
+/* Новогодняя ночь */
+.ny-night { position: fixed; inset: 0; z-index: 80; pointer-events: none; overflow: hidden; }
+.ny-night.out { opacity: 0; transition: opacity .4s ease; }
+.ny-banner { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); max-width: 92vw; padding: 10px 16px; border-radius: 16px; background: #102A5C; color: #fff; border: 1px solid rgba(255,255,255,.25); font-weight: 800; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+.ny-santa { position: absolute; top: 64px; left: -40%; animation: nyFly 6.6s linear forwards; filter: drop-shadow(0 8px 8px rgba(0,0,0,.25)); }
+@keyframes nyFly { to { left: 108%; } }
+.ny-deer { animation: nyGallop .32s ease-in-out infinite; }
+.ny-nose { animation: nyBlink .4s ease-in-out infinite; }
+@keyframes nyGallop { 50% { transform: translateY(-7px); } }
+@keyframes nyBlink { 50% { opacity: .45; } }
+.ny-gift { position: absolute; z-index: 6; width: 74px; border: 0; background: transparent; padding: 0; cursor: pointer; filter: drop-shadow(0 0 8px rgba(255,212,59,.9)); animation: nyHop 1s ease-in-out infinite; }
+.ny-gift.fall { animation: nyDrop .9s cubic-bezier(.2,.7,.3,1) forwards, nyHop 1s ease-in-out .9s infinite; }
+.ny-gift.open { animation: nyBurst .45s ease forwards; }
+@keyframes nyHop { 50% { transform: translateY(-6px) scale(1.04); } }
+@keyframes nyDrop { from { transform: translateY(-160px) scale(.7); opacity: .2; } to { transform: none; opacity: 1; } }
+@keyframes nyBurst { to { transform: scale(1.4); opacity: 0; } }
+.ny-gift .ny-tip { display: none; position: absolute; left: 50%; bottom: 100%; transform: translateX(-50%); width: max-content; max-width: 180px; margin-bottom: 6px; padding: 6px 8px; border-radius: 10px; background: #102A5C; color: #fff; font-size: 12px; font-weight: 700; }
+.ny-gift:hover .ny-tip, .ny-gift:focus .ny-tip { display: block; }

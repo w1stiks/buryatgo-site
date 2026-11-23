@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.13';
+  const APP_VERSION = 'BETA 1.11.14';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -233,7 +233,7 @@
   const capPlugin = name => (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() && window.Capacitor.Plugins) ? window.Capacitor.Plugins[name] : null;
 
   /* ───────────────── Звук, вибрация, озвучка ───────────────── */
-  const SFX_GROUP = { click: 'sfxClick', pop: 'sfxClick', correct: 'sfxCorrect', complete: 'sfxCorrect', coin: 'sfxCorrect', streak: 'sfxCorrect', wrong: 'sfxWrong' };
+  const SFX_GROUP = { click: 'sfxClick', pop: 'sfxClick', popper: 'sfxClick', correct: 'sfxCorrect', complete: 'sfxCorrect', coin: 'sfxCorrect', streak: 'sfxCorrect', wrong: 'sfxWrong' };
   function sfx(n) { if (st().settings[SFX_GROUP[n]] !== false) A.play(n); }
   function haptic(kind) {
     if (!st().settings.haptics) return;
@@ -333,7 +333,7 @@
   const mini = () => M.svg(st().equip, { cls: 'static' });
 
   /* ───────────────── Навигация ───────────────── */
-  const ui = { loc: 'home', riding: false, rideHorse: null, ritual: false, tab: 'home', view: 'home', shopSlot: 'hat', lesson: null, lbTimer: null, onbStep: 0, onbName: '', onbGoal: 20 };
+  const ui = { loc: 'home', riding: false, rideHorse: null, ritual: false, tab: 'home', view: 'home', shopSlot: 'hat', lesson: null, lbTimer: null, onbStep: 0, onbName: '', onbGoal: 20, onbHero: 'bato', nyPlaying: false };
 
   function setChrome(top, tabs) {
     $('#topbar').classList.toggle('hidden', !top);
@@ -1858,6 +1858,7 @@
         stage.appendChild(b);
       });
     });
+    if (ui.loc === 'home') mountNyGift(stage);
   }
   /* ── v1.16: Дом Правительства (вход в здание) и Иволгинский дацан ── */
   const DATSAN_BADGE = '<div class="city-badge">🛕 Иволгинский дацан</div>';
@@ -2634,6 +2635,7 @@ function horseModal(id) {
           const r = await C.signIn(login, pass);
           closeModal(); haptic('success');
           if (r.restored) { toast('☁️ Прогресс загружен!', 1500); setTimeout(() => location.reload(), 900); }
+          else if (!st().onboarded) { ui.onbStep = Math.max(ui.onbStep, 1); toast('☁️ Вы вошли'); go('onboarding'); }
           else { toast('☁️ Вы вошли. Прогресс сохранён в аккаунт', 2600); render(); }
         }
       } catch (e) {
@@ -2665,7 +2667,6 @@ function horseModal(id) {
     $('#pwaOk', m).onclick = closeModal;
   }
   if (window.BG_CLOUD) BG_CLOUD.onChange(() => { const e = document.getElementById('cloudSub'); if (e) e.textContent = cloudSubText(); });
-  document.addEventListener('click', e => { if (e.target.closest && e.target.closest('#onbLogin')) cloudModal('in'); });
 
   function renderSettings(scr) {
     const s = st(), cfg = s.settings, prem = S.isPremium();
@@ -2838,6 +2839,12 @@ function horseModal(id) {
       <div class="set-group">
         <div class="set-row"><div class="lb">👑 BuryatGo Super<small>${prem ? 'Активна ' + premUntil(s.premium) : 'Выключена'}</small></div><button class="switch ${prem ? 'on' : ''}" id="devPrem" role="switch" aria-checked="${prem}"></button></div>
       </div>
+      <h2 class="sub">Ивенты</h2>
+      <div class="set-group dev-pad">
+        <button class="btn gold" id="nyStart">🎄 Запустить ивент: Новогодняя ночь</button>
+        <button class="btn ghost dark" id="nyStop" style="margin-top:8px">Остановить и сбросить ивент</button>
+        <div class="muted dock-note">Запуск уходит в общую базу. Каждый аккаунт получает подарок один раз за этот запуск.</div>
+      </div>
       ${devXpHtml()}
       ${wxDevHtml()}
       ${devToolsHtml()}
@@ -2865,6 +2872,8 @@ function horseModal(id) {
       render();
     };
     $('#devBack').onclick = devClose;
+    $('#nyStart').onclick = () => nyAdmin(true);
+    $('#nyStop').onclick = () => nyAdmin(false);
     bindDevTools(scr);
     wxDevBind(scr);
     devXpBind(scr);
@@ -3034,10 +3043,19 @@ function horseModal(id) {
     const step = ui.onbStep;
     let body = '';
     if (step === 0) {
-      body = `<div class="om jump">${M.svg({ hat: 'malgai_blue', outfit: 'degel_blue', hand: 'hadak', acc: null }, { mood: 'happy', cls: 'wave' })}</div>
-        <h1>Амар мэндэ!</h1><p>Я Бато. Вместе мы выучим бурятский язык — по 5 минут в день, весело и без стресса.</p>
+      st().hero = ui.onbHero || 'bato';
+      const heroBtn = (id, title, sub) => `<button type="button" class="btn ghost dark goal-opt ${ui.onbHero === id ? 'on' : ''}" data-hero="${id}" style="${ui.onbHero === id ? 'border-color:#F2B705;color:#fff;background:#193F85' : ''}"><span>${title}</span><span>${sub}</span></button>`;
+      body = `<div class="om jump">${M.svg({ hat: ui.onbHero === 'narana' ? null : 'malgai_blue', outfit: 'degel_blue', hand: null, acc: null }, { mood: 'happy', cls: 'wave' })}</div>
+        <h1>Амар мэндэ!</h1><p>Чтобы получить новогодние подарки, нужен свой аккаунт. Гостевой вход отключён.</p>
+        <form class="cloud-form" id="onbForm" autocomplete="on">
+          <input class="cloud-in" id="onbLogin" name="username" placeholder="Логин (латиница, 3–20)" maxlength="20" autocapitalize="none" autocomplete="username" value="${esc(ui.onbLogin || '')}">
+          <input class="cloud-in" id="onbMail" name="email" type="email" placeholder="Почта" maxlength="80" autocomplete="email" value="${esc(ui.onbMail || '')}">
+          <input class="cloud-in" id="onbPass" name="password" type="password" placeholder="Пароль (от 6 символов)" maxlength="64" autocomplete="new-password">
+          <div class="stack" style="margin-top:8px">${heroBtn('bato', 'Бато', 'мальчик')}${heroBtn('narana', 'Нарана', 'девочка')}</div>
+          <p class="cloud-err" id="onbErr"></p>
+        </form>
         <div class="grow"></div>
-        <div class="stack"><button class="btn" id="onbNext">Начать</button>${window.BG_CLOUD && BG_CLOUD.configured() ? '<button class="btn ghost" id="onbLogin">У меня уже есть аккаунт</button>' : ''}</div>`;
+        <div class="stack"><button class="btn" id="onbNext">Зарегистрироваться</button>${window.BG_CLOUD && BG_CLOUD.configured() ? '<button class="btn ghost" id="onbLoginBtn" type="button">У меня уже есть аккаунт</button>' : ''}</div>`;
     } else if (step === 1) {
       body = `<div class="om">${M.svg(st().equip, { mood: 'happy', cls: 'static' })}</div>
         <h1>Как вас зовут?</h1><p>Имя будет в профиле и в таблице лиги.</p>
@@ -3065,10 +3083,40 @@ function horseModal(id) {
     }
     $$('[data-g]', scr).forEach(b => { b.onclick = () => { ui.onbGoal = parseInt(b.dataset.g, 10); renderOnboarding(scr); }; });
     $$('[data-age]', scr).forEach(b => { b.onclick = () => { ui.onbAge = b.dataset.age; if (b.dataset.age === 'kids') kidsVoice('Привет! Будем учиться вместе!'); renderOnboarding(scr); }; });
+    $$('[data-hero]', scr).forEach(b => { b.onclick = () => { ui.onbLogin = ($('#onbLogin') && $('#onbLogin').value) || ''; ui.onbMail = ($('#onbMail') && $('#onbMail').value) || ''; ui.onbHero = b.dataset.hero; const s = st(); s.hero = ui.onbHero; renderOnboarding(scr); }; });
+    const loginBtn = $('#onbLoginBtn', scr);
+    if (loginBtn) loginBtn.onclick = () => cloudModal('in');
     $('#onbNext', scr).onclick = onbNext;
   }
+  async function onbRegister() {
+    const login = ($('#onbLogin') && $('#onbLogin').value || '').trim();
+    const mail = ($('#onbMail') && $('#onbMail').value || '').trim();
+    const pass = ($('#onbPass') && $('#onbPass').value || '');
+    const err = t => { const e = $('#onbErr'); if (e) e.textContent = t || ''; };
+    ui.onbLogin = login; ui.onbMail = mail;
+    if (!/^[a-z0-9_.-]{3,20}$/i.test(login)) { err('Логин: латиница, цифры, от 3 до 20 символов'); haptic('error'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) { err('Введите почту'); haptic('error'); return; }
+    if (pass.length < 6) { err('Пароль — минимум 6 символов'); haptic('error'); return; }
+    if (ui.onbHero !== 'bato' && ui.onbHero !== 'narana') { err('Выберите Бато или Нарану'); return; }
+    const C = window.BG_CLOUD, s = st();
+    s.email = mail; s.hero = ui.onbHero; s.name = login.slice(0, 10);
+    ui.onbName = s.name;
+    const btn = $('#onbNext');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Создаём аккаунт…'; }
+    try {
+      if (!C || !C.configured()) throw new Error('Облако не подключено');
+      await C.signUp(login, pass);
+      err('');
+      ui.onbStep = 1;
+      haptic('success');
+      render();
+    } catch (e) {
+      haptic('error'); err(e.message || 'Не удалось зарегистрироваться');
+      if (btn) { btn.disabled = false; btn.textContent = 'Зарегистрироваться'; }
+    }
+  }
   function onbNext() {
-    if (ui.onbStep === 0) { ui.onbStep = 1; render(); return; }
+    if (ui.onbStep === 0) { onbRegister(); return; }
     if (ui.onbStep === 1) {
       const v = (ui.onbName || '').trim();
       if (!v) { toast('Введите имя'); haptic('error'); return; }
@@ -3121,6 +3169,7 @@ function horseModal(id) {
       if (r === 'lost') toast('💔 Огонёк потух. Верните серию предметом «Возрождение Огонька» в магазине → Заморозки');
       if (st().pendingLeagueResult && !modalOpen()) leagueResultModal();
       if (ui.view === 'shop' && ui.loc && ui.loc !== 'home') return;
+      nyPoll();
       if (ui.view !== 'lesson' && !modalOpen()) render();
     },
     onNotifPermission(granted) {
@@ -3135,6 +3184,145 @@ function horseModal(id) {
     if (native) return; // нативное приложение вызывает BG.onPause/onResume само
     if (document.hidden) window.BG.onPause(); else window.BG.onResume();
   });
+
+  /* ───────────────── Новогодняя ночь ───────────────── */
+  const NY_SEEN = 'buryatgo_ny_seen';
+  function nySeen() { try { return localStorage.getItem(NY_SEEN) || ''; } catch (e) { return ''; } }
+  function nyMark(id) { try { localStorage.setItem(NY_SEEN, id || ''); } catch (e) {} st().nySeen = id || ''; S.save(); }
+  function giftSvg() {
+    return `<svg viewBox="0 0 80 86" width="74" height="80" aria-hidden="true">
+      <ellipse cx="40" cy="80" rx="22" ry="5" fill="rgba(20,40,80,.28)"/>
+      <rect x="14" y="34" width="52" height="40" rx="6" fill="#E03131"/>
+      <rect x="14" y="34" width="52" height="40" rx="6" fill="url(#gp)" opacity=".35"/>
+      <path d="M14 46 H66" stroke="#C92A2A" stroke-width="2"/>
+      <rect x="34" y="34" width="12" height="40" fill="#FFD43B"/>
+      <rect x="14" y="28" width="52" height="12" rx="3" fill="#C92A2A"/>
+      <rect x="34" y="28" width="12" height="12" fill="#FFD43B"/>
+      <path d="M40 30 C30 8 12 16 22 28" fill="#FFD43B"/>
+      <path d="M40 30 C50 8 68 16 58 28" fill="#F2B705"/>
+      <circle cx="40" cy="28" r="4" fill="#FFE066"/>
+      <defs><linearGradient id="gp" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+    </svg>`;
+  }
+  function santaSvg() {
+    return `<svg viewBox="0 0 420 120" width="420" height="120" aria-hidden="true">
+      <g class="ny-deer">
+        <ellipse cx="46" cy="78" rx="28" ry="8" fill="#8D6E63"/>
+        <path d="M22 70 Q10 40 24 36 M18 48 Q6 40 14 32" stroke="#5D4037" stroke-width="3" fill="none"/>
+        <circle cx="70" cy="62" r="10" fill="#A1887F"/><circle cx="78" cy="58" r="3.2" fill="#FF4B4B" class="ny-nose"/>
+        <circle cx="74" cy="60" r="1.3" fill="#241A13"/>
+        <path d="M30 74 Q20 90 28 96 M48 78 Q44 94 52 98" stroke="#6D4C41" stroke-width="4" fill="none" stroke-linecap="round"/>
+      </g>
+      <g class="ny-deer" transform="translate(78 6)">
+        <ellipse cx="46" cy="78" rx="26" ry="7" fill="#8D6E63"/>
+        <path d="M24 70 Q12 44 26 38" stroke="#5D4037" stroke-width="3" fill="none"/>
+        <circle cx="68" cy="64" r="9" fill="#A1887F"/><circle cx="66" cy="62" r="1.2" fill="#241A13"/>
+      </g>
+      <path d="M100 78 H150" stroke="#F2B705" stroke-width="2"/>
+      <circle cx="118" cy="78" r="3" fill="#FFD43B"/><circle cx="136" cy="78" r="3" fill="#FFD43B"/>
+      <g transform="translate(168 34)">
+        <path d="M0 40 Q20 8 90 18 L96 46 Q40 52 0 40Z" fill="#C92A2A" stroke="#F2B705" stroke-width="2"/>
+        <path d="M8 40 Q30 24 88 30" stroke="#FFD43B" stroke-width="2" fill="none"/>
+        <circle cx="46" cy="18" r="16" fill="#F3D2B5"/>
+        <path d="M32 16 Q46 -8 62 14 Q46 8 32 16Z" fill="#E03131"/>
+        <circle cx="60" cy="-6" r="5" fill="#fff"/>
+        <path d="M36 22 Q46 34 58 22 Q46 40 36 22Z" fill="#F7F4EF"/>
+        <rect x="62" y="22" width="28" height="22" rx="4" fill="#8D2A2A"/>
+        <path d="M66 22 L76 10 L86 22" fill="#F2B705"/>
+      </g>
+      <g class="ny-spark"><circle cx="250" cy="70" r="2" fill="#FFE066"/><circle cx="270" cy="84" r="1.6" fill="#fff"/><circle cx="292" cy="64" r="2.2" fill="#FFD43B"/><circle cx="314" cy="80" r="1.4" fill="#fff"/></g>
+    </svg>`;
+  }
+  function mountNyGift(stage) {
+    if (!stage || ui.loc !== 'home') return;
+    const g = st().nyGift; if (!g || g.open) return;
+    let el = $('.ny-gift', stage);
+    if (!el) {
+      stage.insertAdjacentHTML('beforeend', `<button class="ny-gift" style="left:${g.x};top:${g.y}" aria-label="Подарок">${giftSvg()}<span class="ny-tip">Нажмите ПКМ, чтобы открыть подарок!</span></button>`);
+      el = $('.ny-gift', stage);
+    }
+    if (!el || el.dataset.bound) return;
+    el.dataset.bound = '1';
+    const open = e => { if (e) { e.preventDefault(); e.stopPropagation(); } openNyGift(); };
+    el.addEventListener('contextmenu', open);
+    el.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); toast('Нажмите ПКМ, чтобы открыть подарок!'); });
+    let hold = 0;
+    el.addEventListener('touchstart', e => { hold = setTimeout(() => open(e), 500); }, { passive: false });
+    el.addEventListener('touchend', () => clearTimeout(hold));
+    el.addEventListener('touchmove', () => clearTimeout(hold));
+  }
+  function openNyGift() {
+    const s = st(), g = s.nyGift; if (!g || g.open || ui.nyOpening) return;
+    ui.nyOpening = true; g.open = true;
+    const n = Math.floor(Math.random() * (1000 - 250 + 1)) + 250;
+    s.buzzy += n; s.buzzyEarned = (s.buzzyEarned || 0) + n;
+    s.nyGift = null; S.save();
+    sfx('popper'); sfx('coin'); confetti(); haptic('success');
+    const box = $('.ny-gift'); if (box) box.classList.add('open');
+    setTimeout(() => { if (box) box.remove(); }, 500);
+    const m = openModal(`<div class="big-emo">🎁</div><h2>С Новым годом!</h2><p>Вы нашли в подарке <b>+${n}</b> бууз!</p><div class="stack"><button class="btn gold" id="nyOk">Забрать</button></div>`, { center: true });
+    $('#nyOk', m).onclick = () => { closeModal(); renderTop(); if (ui.view === 'shop') render(); };
+    ui.nyOpening = false;
+  }
+  function dropNyGift(id) {
+    const spots = ['8%', '18%', '62%', '74%', '84%'];
+    const x = spots[Math.floor(Math.random() * spots.length)];
+    const y = (58 + Math.floor(Math.random() * 16)) + '%';
+    const s = st();
+    s.nyGift = { id, x, y, open: false };
+    nyMark(id); S.save();
+    if (ui.view === 'shop' && ui.loc === 'home') {
+      const stage = $('#stage');
+      mountNyGift(stage);
+      const el = stage && $('.ny-gift', stage);
+      if (el) el.classList.add('fall');
+    } else toast('🎁 Подарок ждёт у юрты в магазине');
+  }
+  function playNyNight(ev) {
+    if (!ev || !ev.id || ui.nyPlaying) return;
+    if (nySeen() === ev.id || st().nySeen === ev.id) {
+      if (st().nyGift && ui.view === 'shop') mountNyGift($('#stage'));
+      return;
+    }
+    ui.nyPlaying = true;
+    sfx('popper'); confetti();
+    const layer = document.createElement('div');
+    layer.className = 'ny-night';
+    layer.innerHTML = `<div class="ny-banner">✨ Началась Новогодняя ночь! Лови подарок от Санты! ✨</div><div class="ny-santa">${santaSvg()}</div>`;
+    document.body.appendChild(layer);
+    setTimeout(() => { if (layer.parentNode) layer.classList.add('out'); }, 6200);
+    setTimeout(() => {
+      layer.remove();
+      dropNyGift(ev.id);
+      ui.nyPlaying = false;
+    }, 6900);
+  }
+  async function nyAdmin(on) {
+    const C = window.BG_CLOUD;
+    if (!C || !C.user()) { toast('Сначала войдите в аккаунт — ивент пишется в общую базу'); return; }
+    try {
+      const ev = await C.publishNy(on);
+      if (!on) {
+        st().nyGift = null; st().nySeen = ''; nyMark('');
+        $$('.ny-night').forEach(n => n.remove());
+        $$('.ny-gift').forEach(n => n.remove());
+        ui.nyPlaying = false; S.save();
+        toast('Ивент остановлен. Можно запускать снова');
+        return;
+      }
+      toast(ev.shared ? '🎄 Новогодняя ночь запущена для всех' : '🎄 Запущено через список игроков');
+      nyMark(''); st().nySeen = '';
+      playNyNight(ev);
+    } catch (e) { toast(e.message || 'Не удалось запустить ивент'); }
+  }
+  async function nyPoll() {
+    const C = window.BG_CLOUD;
+    if (!C || !C.user || !C.user() || !st().onboarded || ui.nyPlaying) return;
+    try {
+      const ev = await C.readNy();
+      if (ev && ev.on) playNyNight(ev);
+    } catch (e) {}
+  }
 
   /* ───────────────── Инициализация ───────────────── */
   function init() {
@@ -3168,6 +3356,8 @@ function horseModal(id) {
     setTimeout(() => { if (st().onboarded && !st().age && !modalOpen()) ageModal(() => render(), true); }, 1900);
     ui.tab = 'home';
     render();
+    setTimeout(nyPoll, 2200);
+    setInterval(nyPoll, 15000);
 
     setTimeout(() => {
       const sp = $('#splash');

@@ -358,8 +358,11 @@ window.BG_MASCOT = (function () {
       ? armSvg('M130 128Q149 140 152 157', 'M151.3 151L152.6 159.5', 154, 166, sleeve, cuffC, -1)
       : armSvg('M130 128Q143 146 144 166', 'M143.6 159L144 168', 144, 175, sleeve, cuffC, -1);
     const heldSvg = held ? `<g class="m-held" transform="translate(154 166)">${held.svg}</g>` : '';
+    const hero = (window.BG_STORE && BG_STORE.state && BG_STORE.state.hero) || 'bato';
+    const hairFill = hero === 'narana' ? '#6B3A2A' : HAIR;
     const coverHair = !!(hat && ['malgai_blue', 'malgai_gold', 'ushanka', 'beanie', 'fox_hat', 'toortsog', 'hasarta', 'duulga', 'newyear', 'straw'].indexOf(hat.id) >= 0);
-    const hair = coverHair ? '' : `<path d="M55 72 Q57 30 100 30 Q143 30 145 72 Q132 52 114 57 Q102 46 88 57 Q70 52 55 72 Z" fill="${HAIR}"/>`;
+    const hair = coverHair ? '' : `<path d="M55 72 Q57 30 100 30 Q143 30 145 72 Q132 52 114 57 Q102 46 88 57 Q70 52 55 72 Z" fill="${hairFill}"/>`;
+    const locks = hero === 'narana' && !coverHair ? `<path d="M58 70 Q42 108 62 132" stroke="${hairFill}" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M142 70 Q158 108 138 132" stroke="${hairFill}" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M118 34 Q132 18 126 36" fill="#E03131"/><circle cx="132" cy="18" r="4" fill="#E03131"/>` : '';
 
     return `<svg overflow="visible" class="mascot-svg ${held ? 'holding' : ''} ${opts.cls || ''}" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" aria-label="Бато">
       <ellipse cx="100" cy="230" rx="54" ry="7" fill="rgba(0,0,0,.12)"/>
@@ -381,7 +384,7 @@ window.BG_MASCOT = (function () {
           <circle cx="55" cy="86" r="4.5" fill="${SKIN}"/><circle cx="145" cy="86" r="4.5" fill="${SKIN}"/>
           <circle cx="100" cy="78" r="46" fill="${SKIN}"/>
           <path d="M60 100Q72 122 100 124Q128 122 140 100Q128 116 100 117Q72 116 60 100Z" fill="rgba(0,0,0,.05)"/>
-          ${hair}
+          ${hair}${locks}
           ${hat && !BROWS_OK.includes(hat.id) ? '' : `<path class="m-brows" d="M73 70 Q82 66 91 70M109 70 Q118 66 127 70" stroke="${HAIR}" stroke-width="3" fill="none" stroke-linecap="round"/>`}
           <g class="m-eyes">
             <ellipse cx="82" cy="85" rx="5.5" ry="6.5" fill="#1E1E24"/><ellipse cx="118" cy="85" rx="5.5" ry="6.5" fill="#1E1E24"/>
@@ -393,7 +396,7 @@ window.BG_MASCOT = (function () {
           <g class="m-mouth">${mouth}</g><g class="m-chewm"><path d="M91 104Q100 111 109 104Q100 99 91 104Z" fill="#8F2D2D"/></g>
           <g class="m-bitebz"><path d="M92 107Q92 96 100 95Q108 96 108 107Z" fill="#FBF3E4" stroke="#D9C3A0" stroke-width="1.4"/><circle cx="100" cy="95.5" r="1.6" fill="#E8D6B5"/></g>
           ${accSvg(acc)}
-          <g class="m-back"><circle cx="100" cy="78" r="47" fill="${HAIR}"/><path d="M70 60 Q100 44 130 60 M66 80 Q100 66 134 80 M72 102 Q100 92 128 102" stroke="rgba(255,255,255,.12)" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M88 122 Q100 128 112 122" stroke="${HAIR}" stroke-width="7" fill="none" stroke-linecap="round"/></g>
+          <g class="m-back"><circle cx="100" cy="78" r="47" fill="${hairFill}"/><path d="M70 60 Q100 44 130 60 M66 80 Q100 66 134 80 M72 102 Q100 92 128 102" stroke="rgba(255,255,255,.12)" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M88 122 Q100 128 112 122" stroke="${HAIR}" stroke-width="7" fill="none" stroke-linecap="round"/></g>
           ${hatSvg(hat)}
         </g>
       </g>
