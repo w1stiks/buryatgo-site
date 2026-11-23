@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.4';
+  const APP_VERSION = 'BETA 1.11.5';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -106,10 +106,11 @@
   const reachedUnit = (n) => D.units.slice(0, Math.max(0, n - 1)).every(u => u.lessons.every(l => ((st().lessons || {})[l.id] || {}).done));
   const stageScene = (compact) => {
     const s = st();
+    if (!s.nyInstalled) s.nyInstalled = {};
     const ny = {
-      garland: s.equip && s.equip.ny_garland,
-      tree: s.equip && s.equip.ny_tree,
-      treeIndoor: s.equip && s.equip.ny_tree_indoor
+      garland: !!s.nyInstalled.ny_garland,
+      tree: !!s.nyInstalled.ny_tree,
+      treeIndoor: !!s.nyInstalled.ny_tree_indoor
     };
     return `<div class="scene" aria-hidden="true">${window.BG_ART.scene({ compact: !!compact, horses: stageHorses(), sheep: petsState().sheep, kennel: !!(s.dog && s.dog.house), ny })}</div>`;
   };
@@ -922,7 +923,7 @@
   }
   function renderItem(it) {
     const s = st();
-    const owned = s.owned.indexOf(it.id) >= 0, eq = s.equip[it.slot] === it.id;
+    const owned = s.owned.indexOf(it.id) >= 0, eq = it.slot === 'ny' ? !!(s.nyInstalled && s.nyInstalled[it.id]) : s.equip[it.slot] === it.id;
     let tag = '';
     if (eq) tag = `<span class="tag">${it.slot === 'ny' ? 'Установлено' : 'Надето'}</span>`;
     else if (owned && !it.consumable) tag = '<span class="tag" style="background:var(--blue)">Есть</span>';
@@ -950,7 +951,7 @@
         Object.keys(cats).forEach(c => { if (!groups[c]) return; html += '<div class="shop-cat">' + cats[c] + '</div>'; groups[c].forEach(it => { html += renderItem(it); }); });
         return html;
       })() : items.map(it => {
-        const owned = s.owned.indexOf(it.id) >= 0, eq = s.equip[it.slot] === it.id;
+        const owned = s.owned.indexOf(it.id) >= 0, eq = it.slot === 'ny' ? !!(s.nyInstalled && s.nyInstalled[it.id]) : s.equip[it.slot] === it.id;
         let tag = '';
         if (eq) tag = `<span class="tag">${it.slot === 'ny' ? 'Установлено' : 'Надето'}</span>`;
         else if (owned && !it.consumable) tag = '<span class="tag" style="background:var(--blue)">Есть</span>';
@@ -2115,8 +2116,8 @@
         else if (act === 'super') { closeModal(); openPaywall(); }
         else if (act === 'buy') buyItem(it);
         else if (act === 'refill') { if (refillCup(it)) { closeModal(); refreshShop(true); } }
-        else if (act === 'equip') { s.equip[it.slot] = id; S.save(); closeModal(); sfx('pop'); refreshShop(true); }
-        else if (act === 'unequip') { s.equip[it.slot] = it.slot === 'outfit' ? 'tshirt_green' : null; S.save(); closeModal(); refreshShop(false); }
+        else if (act === 'equip') { if (it.slot === 'ny') { if (!s.nyInstalled) s.nyInstalled = {}; s.nyInstalled[id] = true; } else s.equip[it.slot] = id; S.save(); closeModal(); sfx('pop'); refreshShop(true); }
+        else if (act === 'unequip') { if (it.slot === 'ny') { if (s.nyInstalled) delete s.nyInstalled[id]; } else s.equip[it.slot] = it.slot === 'outfit' ? 'tshirt_green' : null; S.save(); closeModal(); refreshShop(false); }
       };
     });
   }
