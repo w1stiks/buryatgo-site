@@ -2642,7 +2642,12 @@ body[data-view="shop"] .seg button[data-slot="ny"] {
 .ny-night { position: fixed; inset: 0; z-index: 80; pointer-events: none; overflow: hidden; }
 .ny-night.out { opacity: 0; transition: opacity .4s ease; }
 .ny-banner { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); max-width: 92vw; padding: 10px 16px; border-radius: 16px; background: #102A5C; color: #fff; border: 1px solid rgba(255,255,255,.25); font-weight: 800; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-.ny-santa { position: absolute; top: 54px; left: -46%; width: min(520px, 92vw); animation: nyFly 6.6s linear forwards; filter: drop-shadow(0 8px 8px rgba(0,0,0,.25)); }
+.ny-night.in-stage { position: absolute; inset: 0; z-index: 12; overflow: hidden; border-radius: inherit; pointer-events: none; }
+.ny-santa { position: absolute; top: 18px; left: -78%; width: 92%; animation: nyFly 6.6s linear forwards; filter: drop-shadow(0 6px 6px rgba(0,0,0,.22)); }
+.ny-night.in-stage .ny-banner { top: 8px; font-size: 13px; max-width: 86%; padding: 8px 10px; }
+.ny-confetti { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none; }
+.ny-reward .ny-buuz { display: flex; justify-content: center; gap: 8px; margin: 2px 0 8px; }
+.ny-reward .ny-buuz img { width: 28px; height: 28px; }
 .ny-santa svg { width: 100%; height: auto; display: block; }
 @keyframes nyFly { to { left: 110%; } }
 .ny-deer { transform-origin: 44px 70px; animation: nyGallop .34s ease-in-out infinite; }

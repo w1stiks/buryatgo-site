@@ -180,5 +180,40 @@ window.BG_AUDIO = (function () {
     }
   }
 
-  return { play, unlock: ensure, setMusic, setMusicVolume, pauseAll, resumeAll, speak, setVoice, listVoices, ttsText };
+  let jingleStop = null;
+  function playJingle() {
+    if (!ensure()) return;
+    stopJingle();
+    const bus = ctx.createGain();
+    bus.gain.setValueAtTime(0.0001, ctx.currentTime);
+    bus.gain.exponentialRampToValueAtTime(0.55, ctx.currentTime + 0.35);
+    bus.connect(sfxBus);
+    const beat = 0.28;
+    const seq = [[659, 0], [659, 1], [659, 2], [659, 4], [659, 5], [659, 6], [659, 8], [784, 9], [523, 10], [587, 11], [659, 12], [698, 16], [698, 17], [698, 18], [698, 19], [698, 20], [659, 21], [659, 22], [659, 23], [784, 24], [784, 25], [698, 26], [587, 27], [523, 28]];
+    const t0 = ctx.currentTime + 0.06;
+    [0, 28].forEach(shift => {
+      seq.forEach(([f, i]) => {
+        tone(f, t0 + (i + shift) * beat, beat * 0.95, 'triangle', 0.22, bus);
+        tone(f * 2, t0 + (i + shift) * beat, beat * 0.28, 'sine', 0.05, bus);
+      });
+    });
+    const stopAt = t0 + 17.5;
+    bus.gain.setValueAtTime(0.7, stopAt - 2.5);
+    bus.gain.exponentialRampToValueAtTime(0.0001, stopAt);
+    const timer = setTimeout(() => { try { bus.disconnect(); } catch (e) {} }, 18500);
+    jingleStop = () => {
+      clearTimeout(timer);
+      try {
+        const now = ctx.currentTime;
+        bus.gain.cancelScheduledValues(now);
+        bus.gain.setValueAtTime(Math.max(bus.gain.value, 0.0001), now);
+        bus.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
+      } catch (e) {}
+      setTimeout(() => { try { bus.disconnect(); } catch (e) {} }, 900);
+      jingleStop = null;
+    };
+  }
+  function stopJingle() { if (jingleStop) jingleStop(); }
+
+  return { play, unlock: ensure, setMusic, setMusicVolume, pauseAll, resumeAll, speak, setVoice, listVoices, ttsText, playJingle, stopJingle };
 })();

@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.17';
+  const APP_VERSION = 'BETA 1.11.18';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -3249,55 +3249,56 @@ function horseModal(id) {
       </g>
     </svg>`;
   }
-  function nyDeer(cls, lead) {
-    return `<g class="ny-deer ${cls}">
-      <path d="M8 64 Q2 54 12 52 Q8 60 14 64Z" fill="#6D4C41"/>
-      <path d="M18 72 C14 88 16 104 22 106 C26 102 24 86 28 72Z" fill="#5D4037"/>
-      <path d="M32 74 C36 92 42 106 46 104 C44 90 40 76 36 70Z" fill="#4E342E"/>
-      <ellipse cx="44" cy="66" rx="30" ry="16" fill="#8D6E63"/>
-      <ellipse cx="38" cy="72" rx="16" ry="8" fill="#BCAAA4"/>
-      <path d="M56 74 C64 90 72 104 76 100 C72 86 66 74 62 68Z" fill="#5D4037"/>
-      <path d="M64 66 C78 80 90 92 94 86 C84 76 74 66 68 60Z" fill="#4E342E"/>
-      <path d="M64 58 C78 46 90 38 96 34 C92 46 80 58 70 62Z" fill="#8D6E63"/>
-      <ellipse cx="102" cy="34" rx="14" ry="9" fill="#A1887F"/>
-      <path d="M94 28 L86 14 L100 26Z" fill="#6D4C41"/>
-      <path d="M96 22 C88 10 80 6 76 2 C84 8 90 14 94 20Z" fill="#5D4037"/>
-      <path d="M98 20 C106 8 114 4 120 2 C112 8 106 14 102 20Z" fill="#5D4037"/>
-      <path d="M92 16 C88 6 94 0 98 0 C96 8 98 14 102 16Z" fill="#4E342E"/>
-      <circle cx="108" cy="33" r="1.6" fill="#241A13"/>
-      ${lead ? '<circle class="ny-nose" cx="114" cy="36" r="3.6" fill="#FF2A2A"/>' : '<ellipse cx="114" cy="36" rx="2.6" ry="1.8" fill="#5D4037"/>'}
-      <circle cx="72" cy="54" r="3.2" fill="#C92A2A"/>
-      <circle cx="72" cy="58.5" r="2.4" fill="#FFD43B"/>
+  function nyDeer(x, y, s, lead) {
+    const A = window.BG_ART;
+    const coat = { coat: '#8B5A2B', dark: '#6B3E1E', mane: '#F6E7D4', blaze: true };
+    const horns = `<g transform="translate(${x} ${y}) scale(${-s} ${s})">
+      <ellipse cx="2" cy="-34" rx="18" ry="7" fill="#F3E0C8" opacity=".7"/>
+      <path d="M-32 -84 C-42 -102 -34 -118 -26 -120 M-38 -104 L-48 -112 M-38 -104 L-30 -114" stroke="#5C3A21" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+      <path d="M-24 -82 C-14 -102 -8 -116 -2 -120 M-12 -104 L-2 -112 M-12 -104 L-18 -116" stroke="#5C3A21" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+      ${lead ? '<circle cx="-50" cy="-56" r="3.6" fill="#FF2A2A"><animate attributeName="opacity" values="1;.35;1" dur=".5s" repeatCount="indefinite"/></circle>' : ''}
+      <circle cx="-6" cy="-48" r="2.8" fill="#FFD43B"/>
     </g>`;
+    return A.horse(x, y, s, coat, lead ? 0 : -0.35, true, false) + horns;
   }
   function santaSvg() {
-    return `<svg viewBox="0 0 560 156" width="520" height="146" aria-hidden="true">
-      <g transform="translate(0 10)">${nyDeer('d1', true)}</g>
-      <g transform="translate(118 16)">${nyDeer('d2', false)}</g>
-      <g transform="translate(228 10)">${nyDeer('d3', false)}</g>
-      <path d="M78 68 C150 52 250 62 340 84" stroke="#C9A227" stroke-width="2.6" fill="none"/>
-      <path d="M190 76 C250 64 300 72 340 90" stroke="#A67C2D" stroke-width="2.2" fill="none"/>
-      <path d="M300 72 C320 68 336 78 348 88" stroke="#C9A227" stroke-width="2.2" fill="none"/>
-      <circle cx="140" cy="60" r="3.2" fill="#FFD43B"/><circle cx="230" cy="70" r="3.2" fill="#FFD43B"/><circle cx="310" cy="74" r="3.2" fill="#FFD43B"/>
-      <g transform="translate(332 38)">
-        <path d="M10 82 Q8 98 24 100 H138 Q156 100 152 82" stroke="#E0B03A" stroke-width="4" fill="none" stroke-linecap="round"/>
-        <path d="M30 80 V100 M128 78 V98" stroke="#C9A227" stroke-width="3"/>
-        <path d="M2 72 C28 26 156 34 176 60 L180 90 C96 110 8 96 2 72Z" fill="#D32222" stroke="#F2B705" stroke-width="2.5"/>
-        <path d="M16 70 C44 48 148 52 166 66" stroke="#FFE066" stroke-width="2.6" fill="none"/>
-        <path d="M18 64 H158" stroke="#F2B705" stroke-width="3"/>
-        <circle cx="78" cy="34" r="16" fill="#F3D2B5"/>
-        <path d="M62 32 C66 6 98 4 102 28 C90 20 72 20 62 32Z" fill="#E03131"/>
-        <circle cx="104" cy="8" r="6" fill="#fff"/>
-        <path d="M66 40 C78 56 94 52 96 40 C86 50 74 50 66 40Z" fill="#F7F4EF"/>
-        <circle cx="72" cy="32" r="1.5" fill="#241A13"/><circle cx="84" cy="32" r="1.5" fill="#241A13"/>
-        <path d="M74 42 Q80 46 86 42" stroke="#C92A2A" stroke-width="1.3" fill="none"/>
-        <g class="ny-sack">
-          <ellipse cx="138" cy="64" rx="22" ry="16" fill="#8E2424"/>
-          <path d="M122 56 Q138 44 154 56 Q146 52 138 52 Q130 52 122 56Z" fill="#F2B705"/>
-          <rect x="128" y="60" width="18" height="12" rx="2" fill="#C92A2A" stroke="#FFD43B" stroke-width="1.4"/>
+    return `<svg viewBox="0 0 520 210" width="520" height="210" aria-hidden="true">
+      ${nyDeer(70, 168, 0.62, true)}
+      ${nyDeer(168, 172, 0.58, false)}
+      ${nyDeer(258, 168, 0.6, false)}
+      <path d="M150 92 C210 78 300 86 360 108" stroke="#C9A227" stroke-width="2.4" fill="none"/>
+      <path d="M250 100 C310 90 350 98 368 112" stroke="#A67C2D" stroke-width="2" fill="none"/>
+      <circle cx="190" cy="96" r="3" fill="#FFD43B"/><circle cx="270" cy="102" r="3" fill="#FFD43B"/>
+      <g transform="translate(348 118)">
+        <path d="M6 46 Q4 58 16 60 H118 Q132 60 128 46" stroke="#E0B03A" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <path d="M22 44 V60 M108 42 V58" stroke="#C9A227" stroke-width="2.6"/>
+        <path d="M0 40 C18 8 120 12 138 32 L142 52 C70 66 4 56 0 40Z" fill="#D32222" stroke="#F2B705" stroke-width="2"/>
+        <path d="M10 36 H128" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".9"/>
+        <path d="M12 28 H124" stroke="#F2B705" stroke-width="2"/>
+        <g transform="translate(58 -6) scale(.34)">
+          <ellipse cx="100" cy="230" rx="40" ry="6" fill="rgba(0,0,0,.12)"/>
+          <path d="M62 150 H138 Q146 150 144 168 L136 210 H64 L56 168 Q54 150 62 150Z" fill="#E03131"/>
+          <path d="M60 164 H140" stroke="#fff" stroke-width="8"/>
+          <path d="M64 198 H136" stroke="#fff" stroke-width="8"/>
+          <circle cx="88" cy="180" r="4" fill="#FFD43B"/><circle cx="112" cy="180" r="4" fill="#FFD43B"/>
+          <circle cx="100" cy="78" r="46" fill="#D9A273"/>
+          <path d="M73 70 Q82 66 91 70 M109 70 Q118 66 127 70" stroke="#241A13" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <ellipse cx="82" cy="86" rx="5.5" ry="6.5" fill="#1E1E24"/><ellipse cx="118" cy="86" rx="5.5" ry="6.5" fill="#1E1E24"/>
+          <circle cx="84" cy="83.5" r="2" fill="#fff"/><circle cx="120" cy="83.5" r="2" fill="#fff"/>
+          <ellipse cx="70" cy="100" rx="8" ry="5" fill="#FF8A8A" opacity=".55"/><ellipse cx="130" cy="100" rx="8" ry="5" fill="#FF8A8A" opacity=".55"/>
+          <path d="M92 108 Q100 116 108 108" stroke="#8F2D2D" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+          <path d="M58 104 Q72 150 100 156 Q128 150 142 104 Q120 128 100 130 Q80 128 58 104Z" fill="#F7F4EF"/>
+          <path d="M78 112 Q100 122 122 112 Q108 118 100 118 Q90 118 78 112Z" fill="#F7F4EF"/>
+          <path d="M64 46 Q100 8 136 46 Q118 28 100 30 Q82 28 64 46Z" fill="#E03131"/>
+          <path d="M62 48 H138" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="100" cy="18" r="8" fill="#fff"/>
+        </g>
+        <g>
+          <ellipse cx="118" cy="34" rx="16" ry="12" fill="#8E2424"/>
+          <path d="M106 28 Q118 18 130 28" fill="#F2B705"/>
+          <rect x="110" y="30" width="14" height="10" rx="2" fill="#C92A2A" stroke="#FFD43B"/>
         </g>
       </g>
-      <g class="ny-spark"><circle cx="508" cy="96" r="2.4" fill="#FFE066"/><circle cx="526" cy="110" r="1.7" fill="#fff"/><circle cx="542" cy="88" r="2" fill="#FFD43B"/></g>
     </svg>`;
   }
   function mountNyGift(stage) {
@@ -3349,10 +3350,11 @@ function horseModal(id) {
     s.buzzy += n; s.buzzyEarned = (s.buzzyEarned || 0) + n;
     s.nyGift = null; S.save();
     sfx('popper'); sfx('coin'); confetti(); haptic('success');
+    if (A.stopJingle) A.stopJingle();
     const box = $('.ny-gift');
     if (box) { box.classList.remove('charging'); box.classList.add('open'); }
     setTimeout(() => { if (box) box.remove(); }, 720);
-    const m = openModal(`<div class="ny-reward"><div class="big-emo">🎁</div><div class="ny-buuz">🥟 ✨ 🥟 ✨ 🥟</div><h2>С Новым годом!</h2><p>Вы нашли в подарке <b>+${n}</b> бууз!</p><div class="stack"><button class="btn gold" id="nyOk">Забрать</button></div></div>`, { center: true });
+    const m = openModal(`<div class="ny-reward"><div class="big-emo">🎁</div><div class="ny-buuz">${BZI}${BZI}${BZI}</div><h2>С Новым годом!</h2><p>Вы нашли в подарке <b>+${n}</b> бууз!</p><div class="stack"><button class="btn gold" id="nyOk">Забрать</button></div></div>`, { center: true });
     $('#nyOk', m).onclick = () => { closeModal(); renderTop(); if (ui.view === 'shop') render(); };
     ui.nyOpening = false;
   }
@@ -3423,6 +3425,60 @@ function horseModal(id) {
     };
     requestAnimationFrame(step);
   }
+  let nyConfettiRun = 0;
+  function nyConfetti() {
+    const prev = document.getElementById('nyConfetti'); if (prev) prev.remove();
+    const c = document.createElement('canvas');
+    c.id = 'nyConfetti'; c.className = 'ny-confetti';
+    document.body.appendChild(c);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const W = window.innerWidth, H = window.innerHeight;
+    c.width = W * dpr; c.height = H * dpr;
+    c.style.width = W + 'px'; c.style.height = H + 'px';
+    const x = c.getContext('2d');
+    x.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const colors = ['#FF4B4B', '#FFD43B', '#58CC02', '#1CB0F6', '#CE82FF', '#fff', '#FF9600', '#FFE066'];
+    const P = [];
+    [0.08, 0.92].forEach((ox, side) => {
+      const dir = side === 0 ? 1 : -1;
+      for (let i = 0; i < 48; i++) {
+        P.push({
+          x: W * ox, y: H * 0.38,
+          vx: dir * (1.5 + Math.random() * 6) + (Math.random() - 0.5) * 3,
+          vy: -7 - Math.random() * 7,
+          w: 5 + Math.random() * 6, h: 8 + Math.random() * 7,
+          r: Math.random() * 6, vr: (Math.random() - 0.5) * 0.28,
+          c: colors[(i + side) % colors.length], star: i % 6 === 0
+        });
+      }
+    });
+    const id = ++nyConfettiRun, t0 = performance.now();
+    function star(ctx) {
+      ctx.beginPath();
+      for (let k = 0; k < 10; k++) {
+        const a = -Math.PI / 2 + k * Math.PI / 5;
+        const R = k % 2 ? 2.4 : 6.5;
+        ctx.lineTo(Math.cos(a) * R, Math.sin(a) * R);
+      }
+      ctx.closePath(); ctx.fill();
+    }
+    function frame(t) {
+      if (id !== nyConfettiRun) return;
+      const el = t - t0;
+      x.clearRect(0, 0, W, H);
+      P.forEach(p => {
+        p.vy += 0.14; p.vx *= 0.995; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        x.save(); x.translate(p.x, p.y); x.rotate(p.r);
+        x.globalAlpha = Math.max(0, 1 - el / 4600);
+        x.fillStyle = p.c;
+        if (p.star) star(x); else x.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        x.restore();
+      });
+      if (el < 4600) requestAnimationFrame(frame);
+      else { x.clearRect(0, 0, W, H); c.remove(); }
+    }
+    requestAnimationFrame(frame);
+  }
   function playNyNight(ev) {
     if (!ev || !ev.id || ui.nyPlaying) return;
     if (nySeen() === ev.id || st().nySeen === ev.id) {
@@ -3430,11 +3486,15 @@ function horseModal(id) {
       return;
     }
     ui.nyPlaying = true;
-    sfx('popper'); confetti();
+    sfx('popper');
+    setTimeout(() => sfx('popper'), 180);
+    nyConfetti();
+    if (st().settings.sfxCorrect !== false && A.playJingle) A.playJingle();
+    const stage = $('#stage');
     const layer = document.createElement('div');
-    layer.className = 'ny-night';
+    layer.className = 'ny-night' + (stage ? ' in-stage' : '');
     layer.innerHTML = `<div class="ny-banner">✨ Началась Новогодняя ночь! Лови подарок от Санты! ✨</div><div class="ny-santa">${santaSvg()}</div>`;
-    document.body.appendChild(layer);
+    (stage || document.body).appendChild(layer);
     let thrown = false;
     setTimeout(() => {
       if (thrown || nySeen() === ev.id && st().nyGift) return;
