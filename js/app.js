@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.19';
+  const APP_VERSION = 'BETA 1.11.20';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -127,11 +127,11 @@
   Object.keys(D.words || {}).forEach(id => { const w = D.words[id]; w._id = id; const k = normWord(w.bu); if (k && !WORD_BY_TEXT[k]) WORD_BY_TEXT[k] = id; });
   /* Сначала пробуем audio/<код>.m4a, потом .mp3, потом синтезатор. Отсутствующие файлы запоминаются. */
   function audioFor(id) {
-    if (!id) return null;
-    const k = String(id).toLowerCase();
-    return ['audio/' + k + '.m4a', 'audio/' + k + '.mp3'];
+    if (!id || !A.hasFile) return null;
+    const k = String(id).toLowerCase().replace(/^audio\//, '').replace(/\.(m4a|mp3)$/, '');
+    return A.hasFile(k) ? 'audio/' + k + '.m4a' : null;
   }
-  const audioOf = w => (w && w.audio ? 'audio/' + w.audio : (w ? audioFor(w._id) : null));
+  const audioOf = w => (w && A.fileFor ? A.fileFor(w.bu) : null);
   /* Phrase audio map: normalized text -> filename */
   const PHRASE_AUDIO = {
     'амар мэндэ сэсэг': 'p01_amar_mende_seseg',
@@ -200,20 +200,10 @@
   };
   function speakPhrase(words) {
     if (!words || !words.length) return;
-    const key = words.map(w => String(w).replace(/[.,!?]/g, '').toLowerCase()).join(' ').trim();
-    const id = PHRASE_AUDIO[key];
-    if (id) { speak(words.join(' '), false, audioFor(id)); return; }
-    // fallback: play words one by one
-    let i = 0;
-    const next = () => {
-      if (i >= words.length) return;
-      const w = words[i++];
-      const clean = String(w).replace(/[.,!?]/g, '').toLowerCase();
-      const wid = Object.keys(D.words).find(k => D.words[k].bu && D.words[k].bu.toLowerCase().replace(/[.,!?]/g, '') === clean);
-      const audio = wid ? audioFor(wid) : null;
-      speak(w, false, audio, null, next);
-    };
-    next();
+    const text = words.join(' ');
+    const file = A.fileFor ? A.fileFor(text) : null;
+    if (!file) { console.warn('Нет озвучки для фразы:', text); return; }
+    speak(text, false, file);
   }
   const leagueAcc = n => n.replace(/ая$/, 'ую');
   const leaguePrep = n => n.replace(/ая$/, 'ой');
@@ -260,37 +250,18 @@
     });
     return t;
   }
-  function tokenAudio(key) {
-    if (!key) return null;
-    if (PHRASE_AUDIO[key] && PHRASE_AUDIO[key] !== 'p09_sagaan_hara') return audioFor(PHRASE_AUDIO[key]);
-    if (WORD_BY_TEXT[key]) return audioFor(WORD_BY_TEXT[key]);
-    const id = Object.keys(WORD_BY_TEXT).find(k => k.split(' ')[0] === key);
-    return id ? audioFor(WORD_BY_TEXT[id]) : null;
-  }
   function speak(text, slow, audio, onEnded) {
     if (!st().settings.tts) { if (typeof onEnded === 'function') setTimeout(onEnded, 0); return; }
     const cfg = st().settings;
     const base = cfg.ttsRate === 0.85 ? 0.92 : (cfg.ttsRate || 0.92);
-    const key = normWord(text);
-    if (!audio) {
-      if (PHRASE_AUDIO[key] && PHRASE_AUDIO[key] !== 'p09_sagaan_hara') audio = audioFor(PHRASE_AUDIO[key]);
-      else audio = tokenAudio(key);
-    }
-    if (!audio && key && key.split(' ').length > 1) {
-      const parts = key.split(' ').filter(p => p !== 'p09_sagaan_hara');
-      let i = 0;
-      const next = () => {
-        if (i >= parts.length) { if (typeof onEnded === 'function') onEnded(); return; }
-        const file = tokenAudio(parts[i++]);
-        if (!file) { next(); return; }
-        A.speak(text, base * (slow ? 0.75 : 1), file, cfg.voice || '', next);
-      };
-      next();
+    let file = Array.isArray(audio) ? audio[0] : audio;
+    if (!file && A.fileFor) file = A.fileFor(text);
+    if (!file && A.isBuryat && A.isBuryat(text)) {
+      console.warn('Нет озвучки для фразы:', text);
+      if (typeof onEnded === 'function') setTimeout(onEnded, 0);
       return;
     }
-    const buryat = /[һөүҺӨҮ]/.test(String(text || '')) || !!WORD_BY_TEXT[key] || !!PHRASE_AUDIO[key];
-    if (!audio && buryat) { if (typeof onEnded === 'function') setTimeout(onEnded, 0); return; }
-    A.speak(pronounce(text), base * (slow ? 0.75 : 1), audio, cfg.voice || '', onEnded);
+    A.speak(file ? String(text || '') : pronounce(text), base * (slow ? 0.75 : 1), file || null, cfg.voice || '', onEnded);
   }
 
   /* ───────────────── Тосты, конфетти, модалки ───────────────── */
@@ -2176,11 +2147,13 @@
   function mascotTalk() {
     const hold = $('#mHold'), say = $('#say');
     if (!hold || !say) return;
-    const ph = D.mascotPhrases[Math.floor(Math.random() * D.mascotPhrases.length)];
+    const list = D.mascotPhrases.filter(ph => ph && ph.audio && A.hasFile && A.hasFile(String(ph.audio).replace(/^audio\//, '').replace(/\.m4a$/, '')));
+    if (!list.length) return;
+    const ph = list[Math.floor(Math.random() * list.length)];
     hold.classList.remove('jump'); void hold.offsetWidth; hold.classList.add('jump');
     say.innerHTML = `${esc(ph.bu)}<small>${esc(ph.ru)}</small>`;
     say.classList.add('show');
-    speak(ph.bu);
+    speak(ph.bu, false, ph.audio);
     haptic('light');
     clearTimeout(sayTimer);
     sayTimer = setTimeout(() => say.classList.remove('show'), 2600);
@@ -3265,35 +3238,41 @@ function horseModal(id) {
   }
   function santaSvg() {
     return `<svg viewBox="0 0 430 130" width="430" height="130" aria-hidden="true">
-      <g transform="translate(4 46)">
-        <path d="M18 58 Q8 72 28 74 H132" stroke="#E0B03A" stroke-width="3.2" fill="none" stroke-linecap="round"/>
-        <path d="M118 62 Q146 70 158 52" stroke="#E0B03A" stroke-width="3.2" fill="none" stroke-linecap="round"/>
-        <path d="M36 58 V72 M124 60 V72" stroke="#C9A227" stroke-width="2.4"/>
-        <path d="M8 52 L8 16 Q8 6 20 6 H46 L46 42" fill="#B71C1C" stroke="#F2B705" stroke-width="2"/>
-        <path d="M20 50 C40 24 100 22 150 34 Q164 40 162 54 C100 66 24 62 20 50Z" fill="#D32222" stroke="#F2B705" stroke-width="2"/>
-        <path d="M128 38 Q158 24 166 50" stroke="#F2B705" stroke-width="3" fill="none"/>
-        <path d="M24 46 H148" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>
-        <ellipse cx="30" cy="34" rx="13" ry="10" fill="#8E2424"/>
-        <path d="M20 30 Q30 20 40 30" fill="#F2B705"/>
-        <g transform="translate(78 4) scale(.36)">
-          <path d="M70 118 H130 Q136 118 134 132 L128 156 H72 L66 132 Q64 118 70 118Z" fill="#E03131"/>
-          <path d="M66 128 H134" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
-          <circle cx="100" cy="78" r="42" fill="#D9A273"/>
-          <path d="M76 70 Q84 66 92 70 M108 70 Q116 66 124 70" stroke="#241A13" stroke-width="3" fill="none" stroke-linecap="round"/>
-          <ellipse cx="86" cy="84" rx="5" ry="6" fill="#1E1E24"/><ellipse cx="114" cy="84" rx="5" ry="6" fill="#1E1E24"/>
-          <circle cx="88" cy="82" r="1.8" fill="#fff"/><circle cx="116" cy="82" r="1.8" fill="#fff"/>
-          <ellipse cx="74" cy="96" rx="7" ry="4.5" fill="#FF8A8A" opacity=".55"/><ellipse cx="126" cy="96" rx="7" ry="4.5" fill="#FF8A8A" opacity=".55"/>
-          <path d="M94 98 Q100 104 106 98" stroke="#8F2D2D" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-          <path d="M62 96 Q78 132 100 140 Q122 132 138 96 Q124 118 100 122 Q76 118 62 96Z" fill="#F7F4EF"/>
-          <path d="M78 104 Q100 114 122 104 Q108 110 100 110 Q90 110 78 104Z" fill="#F7F4EF"/>
-          <path d="M68 58 Q100 18 132 58 Q116 42 100 44 Q84 42 68 58Z" fill="#E03131"/>
-          <path d="M64 58 H136" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
-          <circle cx="128" cy="28" r="8" fill="#fff"/>
-        </g>
+      <g transform="translate(4 36)">
+        <path d="M22 70 Q10 84 30 86 H128" stroke="#E0B03A" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+        <path d="M112 74 Q148 82 160 62" stroke="#E0B03A" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+        <path d="M40 72 V86 M120 74 V86" stroke="#C9A227" stroke-width="2.4"/>
+        <path d="M8 64 L8 28 Q8 16 22 16 H52 L52 50" fill="#B71C1C" stroke="#F2B705" stroke-width="2"/>
+        <path d="M18 62 C36 46 108 44 156 52 Q168 56 164 68 C96 80 22 74 18 62Z" fill="#C62828" stroke="#F2B705" stroke-width="2"/>
+        <path d="M124 50 Q156 34 166 60" stroke="#F2B705" stroke-width="3" fill="none"/>
+        <ellipse cx="34" cy="48" rx="16" ry="13" fill="#7A1F1F"/>
+        <path d="M22 42 Q34 32 46 42" fill="#F2B705"/>
+        <rect x="24" y="30" width="14" height="11" rx="2" fill="#E03131" stroke="#FFD43B" stroke-width="1.2"/>
+        <path d="M26 30 Q31 22 36 30" fill="#FFD43B"/>
+        <rect x="40" y="26" width="12" height="12" rx="2" fill="#2E9E4F" stroke="#FFD43B" stroke-width="1.2"/>
+        <path d="M42 26 Q46 18 50 26" fill="#F2B705"/>
+        <rect x="30" y="18" width="12" height="11" rx="2" fill="#1C7ED6" stroke="#fff" stroke-width="1.1"/>
+        <path d="M32 18 Q36 11 40 18" fill="#fff"/>
+        <path d="M78 58 H132 Q136 58 134 68 H76 Q74 58 78 58Z" fill="#E03131"/>
+        <path d="M76 56 H134" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="104" cy="34" r="16" fill="#D9A273"/>
+        <path d="M92 30 Q98 27 104 30 M108 30 Q114 27 120 30" stroke="#241A13" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <ellipse cx="98" cy="36" rx="2.4" ry="3" fill="#1E1E24"/><ellipse cx="112" cy="36" rx="2.4" ry="3" fill="#1E1E24"/>
+        <circle cx="98.8" cy="35" r="0.9" fill="#fff"/><circle cx="112.8" cy="35" r="0.9" fill="#fff"/>
+        <ellipse cx="92" cy="42" rx="3.5" ry="2" fill="#FF8A8A" opacity=".6"/><ellipse cx="116" cy="42" rx="3.5" ry="2" fill="#FF8A8A" opacity=".6"/>
+        <path d="M86 40 Q100 62 118 40 Q108 52 100 54 Q92 52 86 40Z" fill="#F7F4EF"/>
+        <path d="M94 44 Q104 50 114 44 Q106 48 104 48 Q100 48 94 44Z" fill="#F7F4EF"/>
+        <path d="M88 22 Q104 4 122 22 Q112 14 104 15 Q96 14 88 22Z" fill="#E03131"/>
+        <path d="M86 22 H124" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="124" cy="8" r="4.5" fill="#fff"/>
+        <path d="M86 54 Q74 62 70 68" stroke="#E03131" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M122 54 Q134 62 140 68" stroke="#E03131" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <circle cx="70" cy="69" r="3.2" fill="#D9A273"/><circle cx="140" cy="69" r="3.2" fill="#D9A273"/>
+        <path d="M22 66 H150" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
       </g>
-      <path d="M86 62 L162 78 L198 92" stroke="#F2B705" stroke-width="2.2" fill="none"/>
-      <path d="M162 78 L246 94" stroke="#E0B03A" stroke-width="2" fill="none"/>
-      <path d="M162 78 L294 96" stroke="#C9A227" stroke-width="1.8" fill="none"/>
+      <path d="M74 105 L164 102 L198 94" stroke="#F2B705" stroke-width="2.2" fill="none"/>
+      <path d="M144 105 L246 94" stroke="#E0B03A" stroke-width="2" fill="none"/>
+      <path d="M144 105 L294 96" stroke="#C9A227" stroke-width="1.8" fill="none"/>
       ${nyDeer(214, 118, 0.46, false, 'd3')}
       ${nyDeer(262, 116, 0.48, false, 'd2')}
       ${nyDeer(310, 118, 0.5, true, 'd1')}
