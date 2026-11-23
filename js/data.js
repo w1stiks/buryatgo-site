@@ -446,9 +446,10 @@ window.BG_DATA = (function () {
     { id: 'degel_winter', slot: 'outfit', name: 'Зимний дэгэл', price: 600, color: '#4a3728', trim: '#F3E6D2', belt: '#C92A2A', style: 'degel', fur: true, desc: 'Утеплённый дэгэл с меховой оторочкой' },
     { id: 'uuzha', slot: 'outfit', name: 'Уужа (жилет)', price: 280, color: '#8B4513', trim: '#FFD43B', style: 'vest', desc: 'Бурятский жилет' },
     { id: 'hete', slot: 'hand', name: 'Хэтэ (нож-огниво)', price: 350, color: '#C0C0C0', style: 'knife', desc: 'Серебряный нож-огниво на пояс' },
+    { id: 'axe', slot: 'hand', name: 'Топор', price: 50, icon: '🪓', desc: 'Для рубки ёлки в лесу' },
     /* New Year items */
     { id: 'ny_garland', slot: 'ny', name: 'Гирлянда для юрты', price: 500, icon: '💡', desc: 'Светящаяся гирлянда на крышу юрты' },
-    { id: 'ny_tree', slot: 'ny', name: 'Уличная новогодняя ёлка', price: 800, icon: '🎄', desc: 'Ёлка во дворе рядом с юртой' },
+    { id: 'ny_tree', slot: 'ny', name: 'Уличная новогодняя ёлка', price: 0, icon: '🎄', desc: 'Сруби в зимнем лесу', quest: true },
     { id: 'ny_garland2', slot: 'ny', name: 'Гирлянда персонажа', price: 300, icon: '✨', desc: 'Праздничный декор' },
     { id: 'ny_sheep', slot: 'ny', name: 'Костюм овец', price: 400, icon: '🐑', desc: 'Колпаки Санты на овец' },
     { id: 'ny_horse', slot: 'ny', name: 'Костюм лошади', price: 450, icon: '🐴', desc: 'Попона с бубенцами' },

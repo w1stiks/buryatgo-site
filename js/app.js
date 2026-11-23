@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.5';
+  const APP_VERSION = 'BETA 1.11.6';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -905,6 +905,9 @@
 
   /* ───────────────── Магазин персонажа ───────────────── */
 
+  const HAND_ICONS = {
+    axe: `<svg viewBox="0 0 64 64" width="64" height="64"><rect x="28" y="20" width="8" height="36" rx="2" fill="#8B4513"/><path d="M20 16 L36 16 L40 24 L32 28 L24 24 Z" fill="#C0C0C0" stroke="#888" stroke-width="1"/><path d="M22 18 L34 18 L36 22 L30 24 L24 22 Z" fill="#E0E0E0"/></svg>`
+  };
   const NY_ICONS = {
     ny_garland: `<svg viewBox="0 0 64 64" width="64" height="64"><path d="M8 20 Q32 8 56 20" stroke="#FFD43B" stroke-width="2" fill="none"/><circle cx="16" cy="22" r="4" fill="#FF4B4B"/><circle cx="28" cy="16" r="4" fill="#FFD43B"/><circle cx="40" cy="18" r="4" fill="#1CB0F6"/><circle cx="52" cy="22" r="4" fill="#58CC02"/><circle cx="16" cy="22" r="6" fill="#FF4B4B" opacity=".3"/><circle cx="28" cy="16" r="6" fill="#FFD43B" opacity=".3"/><circle cx="40" cy="18" r="6" fill="#1CB0F6" opacity=".3"/><circle cx="52" cy="22" r="6" fill="#58CC02" opacity=".3"/></svg>`,
     ny_tree: `<svg viewBox="0 0 64 64" width="64" height="64"><polygon points="32,8 48,28 40,28 52,44 12,44 24,28 16,28" fill="#2F8F5B"/><rect x="28" y="44" width="8" height="10" fill="#8B4513"/><polygon points="32,4 34,10 28,10" fill="#FF4B4B"/><circle cx="24" cy="32" r="3" fill="#FF4B4B"/><circle cx="40" cy="36" r="3" fill="#FFD43B"/><circle cx="32" cy="40" r="3" fill="#1CB0F6"/><ellipse cx="32" cy="56" rx="14" ry="4" fill="#fff" opacity=".6"/></svg>`,
@@ -915,6 +918,7 @@
     ny_tree_indoor: `<svg viewBox="0 0 64 64" width="64" height="64"><polygon points="32,6 46,24 40,24 50,40 14,40 24,24 18,24" fill="#2F8F5B"/><rect x="28" y="40" width="8" height="8" fill="#8B4513"/><rect x="24" y="48" width="16" height="6" rx="2" fill="#C92A2A"/><polygon points="32,2 34,8 30,8" fill="#FFD43B"/><circle cx="24" cy="30" r="2" fill="#FFD43B"/><circle cx="40" cy="34" r="2" fill="#FFD43B"/><circle cx="32" cy="36" r="2" fill="#FF4B4B"/><rect x="26" y="52" width="4" height="6" fill="#1CB0F6"/><rect x="34" y="52" width="4" height="6" fill="#FF4B4B"/></svg>`
   };
   function itemPreview(it) {
+    if (HAND_ICONS[it.id]) return HAND_ICONS[it.id];
     if (NY_ICONS[it.id]) return NY_ICONS[it.id];
     if (it.dog) return window.BG_ART.dogSvg('dog-svg', null, { [it.slot]: it.id });
     if (it.slot === 'bonus' || it.offer) return `<div class="bonus-icon">${it.icon || '🧊'}</div>`;
@@ -933,7 +937,7 @@
   }
   function renderShop(scr) {
     const s = st();
-    const items = D.items.filter(i => (i.cat || i.slot) === ui.shopSlot && i.slot !== 'datsan');
+    const items = D.items.filter(i => (i.cat || i.slot) === ui.shopSlot && i.slot !== 'datsan' && !(i.quest && s.owned.indexOf(i.id) < 0));
     scr.innerHTML = `<div class="view">
       <div class="mascot-stage v4" id="stage">${stageScene()}${STAGE_SKY}
         <div class="say" id="say"></div>
@@ -1992,7 +1996,7 @@
     if (ui.ritual || ui.riding || ui.skating || ui.sheltered) return;
     const hs = stageHorses() || [], h = hs[i] || hs[0]; if (!h) return;
     const stage = $('#stage', scr), hold = $('#mHold', scr);
-    ui.riding = true; ui.rideHorse = h.id; sfx('pop'); haptic('light');
+    if (Math.random() < 0.5) { goForest(); return; } ui.riding = true; ui.rideHorse = h.id; sfx('pop'); haptic('light');
     const sr = stage.getBoundingClientRect(), gr = g.getBoundingClientRect();
     hold.classList.add('away');                              /* Бато идёт к коню */
     const dw = $('.dog-wrap', stage); if (dw) dw.classList.add('away');
@@ -2026,7 +2030,7 @@
   async function rideHome(scr, h) {
     if (ui.riding || ui.placeBusy || ui.inGov) return;
     const stage = $('#stage', scr), r = $('#rider', stage); if (!r) return;
-    ui.riding = true; sfx('pop'); haptic('light');
+    if (Math.random() < 0.5) { goForest(); return; } ui.riding = true; sfx('pop'); haptic('light');
     $$('.pl-hit, .pl-spark', stage).forEach(x => x.remove());
     const wk = $('#walker', stage);
     if (wk) { const hp = horseSpot(stage); await wkWalk(wk, hp.x, hp.y, 1, 120); wk.remove(); r.classList.remove('empty', 'idle'); r.classList.add('mount'); await wait12(480); r.classList.remove('mount'); }
@@ -2242,7 +2246,38 @@
     });
   }
 
-  function horseModal(id) {
+  
+  /* Forest quest */
+  function goForest() {
+    ui.loc = 'forest';
+    const scr = $('#screen');
+    scr.innerHTML = `<div class="view forest-view">
+      <div class="forest-scene" style="background:linear-gradient(180deg,#6FA8EC 0%,#B9D6FA 40%,#E6F1FF 100%);border-radius:16px;padding:20px;position:relative;min-height:200px">
+        <div style="position:absolute;top:20px;left:30px;font-size:48px">🌲</div>
+        <div style="position:absolute;top:40px;left:80px;font-size:56px">🌲</div>
+        <div style="position:absolute;top:30px;right:60px;font-size:52px">🌲</div>
+        <div style="position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-size:40px">🐴</div>
+        <div style="position:absolute;bottom:10px;left:0;right:0;height:30px;background:#fff;opacity:.4;border-radius:0 0 16px 16px"></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:12px;justify-content:center">
+        <button class="btn blue" id="chopBtn">🪓 Срубить ёлку</button>
+        <button class="btn ghost dark" id="backHome">🏠 Вернуться к юрте</button>
+      </div>
+    </div>`;
+    $('#chopBtn').onclick = chopTree;
+    $('#backHome').onclick = () => { ui.loc = 'home'; go('shop'); };
+  }
+  function chopTree() {
+    const s = st();
+    const hasAxe = s.equip && s.equip.hand === 'axe';
+    if (!hasAxe) { toast('🪓 Нужен топор! Купи его в магазине в разделе «В руку» за 50 бууз и возьми в руку'); return; }
+    if (s.owned.indexOf('ny_tree') >= 0) { toast('🎄 Ёлка уже срублена!'); return; }
+    s.owned.push('ny_tree');
+    S.save();
+    toast('🎄 Ты срубил пушистую новогоднюю ёлку! Она добавлена в раздел «Новогоднее»');
+    sfx('pop');
+  }
+function horseModal(id) {
     const s = st(), hs = horseState(), h = D.horses.find(x => x.id === id);
     if (!h) return;
     const prem = S.isPremium(), own = hs.owned.indexOf(id) >= 0;
