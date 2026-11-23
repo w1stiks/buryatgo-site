@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.10.20';
+  const APP_VERSION = 'BETA 1.10.21';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -120,16 +120,82 @@
     return ['audio/' + k + '.m4a', 'audio/' + k + '.mp3'];
   }
   const audioOf = w => (w && w.audio ? 'audio/' + w.audio : (w ? audioFor(w._id) : null));
-  /* Play phrase word-by-word using recorded audio */
+  /* Phrase audio map: normalized text -> filename */
+  const PHRASE_AUDIO = {
+    'амар мэндэ сэсэг': 'p01_amar_mende_seseg',
+    'баяртай бато': 'p02_bayartay_bato',
+    'сайн байна гүт': 'p03_sayn_bayna_gut',
+    'һайн баярлаа': 'p04_hayn_bayarlaa',
+    'минии нэрэ бато': 'p05_minii_nere_bato',
+    'тиимэ би сэсэг': 'p06_tiime_bi_seseg',
+    'хөхэ тэнгэри': 'p07_hohe_tengeri',
+    'улаан шара ногоон': 'p08_ulaan_shara_nogoon',
+    'сагаан һара': 'p09_sagaan_hara',
+    'минии эжы': 'p10_minii_ezhy',
+    'минии аба': 'p11_minii_aba',
+    'минии гэр бүлэ': 'p12_minii_ger_bule',
+    'би сай уунаб': 'p13_bi_say_uunab',
+    'бууза амтатай': 'p14_buuza_amtatay',
+    'байгал далай': 'p15_baygal_dalay',
+    'минии морин': 'p16_minii_morin',
+    'һайн нохой': 'p17_hayn_nohoy',
+    'минии хонин': 'p18_minii_honin',
+    'минии дэгэл': 'p19_minii_degel',
+    'шэнэ малгай': 'p20_shene_malgay',
+    'минии гэр': 'p21_minii_ger',
+    'минии толгой': 'p22_minii_tolgoy',
+    'хоёр нюдэн': 'p23_hoyor_nyuden',
+    'хоёр гар': 'p24_hoyor_gar',
+    'ута үһэн': 'p25_uta_uhen',
+    'хүйтэн үбэл': 'p26_huyten_ubel',
+    'халуун зун': 'p27_haluun_zun',
+    'сахаһан орожо байна': 'p28_sahan_orozho_bayna',
+    'бороо орожо байна': 'p29_boroo_orozho_bayna',
+    'би ябанаб': 'p30_bi_yabanab',
+    'бато унтана': 'p31_bato_untana',
+    'би ном уншанаб': 'p32_bi_nom_unshanab',
+    'минии багша': 'p33_minii_bagsha',
+    'би һургуулида ябанаб': 'p34_bi_hurguulida_yabanab',
+    'шэнэ ном': 'p35_shene_nom',
+    'минии дэбтэр': 'p36_minii_debter',
+    'сагаан һараар': 'p37_sagaan_haraar',
+    'һайн дуун': 'p38_hayn_duun',
+    'һайн наадан': 'p39_hayn_naadan',
+    'нэгэн хоёр гурбан': 'p40_negen_hoyor_gurban',
+    'табан бууза': 'p41_taban_buuza',
+    'нэгэн үдэр': 'p42_negen_uder',
+    'гурбан жэл': 'p43_gurban_zhel',
+    'байгал нуур': 'p44_baygal_nuur',
+    'ольхон арал': 'p45_olhon_aral',
+    'томо загаһан': 'p46_tomo_zagahan',
+    'нуурай эрэ': 'p47_nuuray_ere',
+    'би сайд дуратай': 'p48_bi_sayd_duratay',
+    'эхэ баяшалан': 'p49_ehe_bayashalan',
+    'ухаатай хүбүүн': 'p50_uhaatay_hubuun',
+    'зоригтой бато': 'p51_zorigtoy_bato',
+    'хото руу ябанаб': 'p52_hoto_ruu_yabanab',
+    'урта зам': 'p53_urta_zam',
+    'шэнэ гүүр': 'p54_shene_guur',
+    'тэргэнэй буудал': 'p55_tergenay_buudal',
+    'амар мэндэ': 'p56_amar_mende',
+    'сайн байна': 'p57_sayn_bayna',
+    'баярлаа': 'p58_bayarlaa',
+    'һайн': 'p59_hayn',
+    'баяртай': 'p60_bayartay'
+  };
   function speakPhrase(words) {
     if (!words || !words.length) return;
+    const key = words.map(w => String(w).replace(/[.,!?]/g, '').toLowerCase()).join(' ').trim();
+    const id = PHRASE_AUDIO[key];
+    if (id) { speak(words.join(' '), false, audioFor(id)); return; }
+    // fallback: play words one by one
     let i = 0;
     const next = () => {
       if (i >= words.length) return;
       const w = words[i++];
       const clean = String(w).replace(/[.,!?]/g, '').toLowerCase();
-      const id = Object.keys(D.words).find(k => D.words[k].bu && D.words[k].bu.toLowerCase().replace(/[.,!?]/g, '') === clean);
-      const audio = id ? audioFor(id) : null;
+      const wid = Object.keys(D.words).find(k => D.words[k].bu && D.words[k].bu.toLowerCase().replace(/[.,!?]/g, '') === clean);
+      const audio = wid ? audioFor(wid) : null;
       speak(w, false, audio, null, next);
     };
     next();
