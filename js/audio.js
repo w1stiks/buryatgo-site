@@ -117,11 +117,13 @@ window.BG_AUDIO = (function () {
     const fireEnd = () => { if (typeof onEnded === 'function') { try { onEnded(); } catch (e) {} } };
     let list = audioFile ? (Array.isArray(audioFile) ? audioFile : [audioFile]) : [];
     list = list.filter(f => f && !missingAudio[f]);
+    // skip known empty files
+    list = list.filter(f => !f.includes('p09_sagaan_hara'));
     if (list.length) {
       const token = ++playToken;
       const tryAt = i => {
         if (token !== playToken) return;
-        if (i >= list.length) { synth(text, rate, g, fireEnd); return; }
+        if (i >= list.length) { fireEnd(); return; } // no synth fallback for recorded audio
         const f = list[i];
         let done = false;
         const next = () => { if (done) return; done = true; missingAudio[f] = true; tryAt(i + 1); };
