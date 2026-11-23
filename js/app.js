@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.25';
+  const APP_VERSION = 'BETA 1.11.26';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -399,7 +399,8 @@
     const unit = D.lessonIndex[gi].unit, lesson = D.lessonIndex[gi].lesson;
     const rec = st().lessons[lesson.id];
     const done = !!(rec && rec.done);
-    const open = gi === 0 || unit.lessons[0] === lesson || !!((st().lessons[D.lessonIndex[gi - 1].lesson.id] || {}).done);
+    const prev = gi > 0 ? D.lessonIndex[gi - 1].lesson : null;
+    const open = gi === 0 || !!((st().lessons[prev.id] || {}).done);
     return { done, open, premiumLocked: !!(unit.superOnly || unit.premium) && !S.isPremium(), times: rec ? rec.times : 0 };
   }
   function currentGi() {
@@ -505,6 +506,9 @@
   }
 
   function startLesson(gi) {
+    const x = lessonState(gi);
+    if (!x.open) { toast('🔒 Сначала пройдите предыдущие модули'); haptic('error'); return; }
+    if (x.premiumLocked) { openPaywall(); return; }
     const unit = D.lessonIndex[gi].unit, lesson = D.lessonIndex[gi].lesson;
     ui.lesson = { age: ageOf(), gi, unit, lesson, queue: buildQueue(unit, lesson), done: 0, mistakes: 0, combo: 0, maxCombo: 0, answered: 0, correct: 0,
       cur: null, ready: false, answer: null, checked: false, evaluate: null, finished: false, onContinue: null };
