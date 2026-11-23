@@ -2642,17 +2642,38 @@ body[data-view="shop"] .seg button[data-slot="ny"] {
 .ny-night { position: fixed; inset: 0; z-index: 80; pointer-events: none; overflow: hidden; }
 .ny-night.out { opacity: 0; transition: opacity .4s ease; }
 .ny-banner { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); max-width: 92vw; padding: 10px 16px; border-radius: 16px; background: #102A5C; color: #fff; border: 1px solid rgba(255,255,255,.25); font-weight: 800; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-.ny-santa { position: absolute; top: 64px; left: -40%; animation: nyFly 6.6s linear forwards; filter: drop-shadow(0 8px 8px rgba(0,0,0,.25)); }
-@keyframes nyFly { to { left: 108%; } }
-.ny-deer { animation: nyGallop .32s ease-in-out infinite; }
-.ny-nose { animation: nyBlink .4s ease-in-out infinite; }
-@keyframes nyGallop { 50% { transform: translateY(-7px); } }
-@keyframes nyBlink { 50% { opacity: .45; } }
-.ny-gift { position: absolute; z-index: 6; width: 74px; border: 0; background: transparent; padding: 0; cursor: pointer; filter: drop-shadow(0 0 8px rgba(255,212,59,.9)); animation: nyHop 1s ease-in-out infinite; }
-.ny-gift.fall { animation: nyDrop .9s cubic-bezier(.2,.7,.3,1) forwards, nyHop 1s ease-in-out .9s infinite; }
-.ny-gift.open { animation: nyBurst .45s ease forwards; }
+.ny-santa { position: absolute; top: 54px; left: -46%; width: min(520px, 92vw); animation: nyFly 6.6s linear forwards; filter: drop-shadow(0 8px 8px rgba(0,0,0,.25)); }
+.ny-santa svg { width: 100%; height: auto; display: block; }
+@keyframes nyFly { to { left: 110%; } }
+.ny-deer { transform-origin: 44px 70px; animation: nyGallop .34s ease-in-out infinite; }
+.ny-deer.d2 { animation-delay: -.12s; }
+.ny-deer.d3 { animation-delay: -.2s; }
+.ny-nose { animation: nyNose .45s ease-in-out infinite; }
+@keyframes nyGallop { 50% { transform: translateY(-8px); } }
+@keyframes nyNose { 50% { opacity: .35; } }
+.ny-gift { position: absolute; z-index: 6; width: 84px; margin-left: -28px; border: 0; background: transparent; padding: 0; cursor: pointer; touch-action: none; overflow: visible; --p: 0; }
+.ny-gift .ny-bob { display: block; animation: nyHop 1.05s ease-in-out infinite; filter: drop-shadow(0 0 8px rgba(255,212,59,.85)); }
+.ny-gift.landed .ny-bob { animation: nyLand .4s ease, nyHop 1.05s ease-in-out .4s infinite; }
+.ny-gift.charging .ny-bob { animation: nyShake .09s linear infinite; filter: drop-shadow(0 0 14px #FFD43B); }
+.ny-gift.charging .ny-bob svg { transform: scale(calc(1 + var(--p) * .18)); transform-origin: 50% 70%; }
+.ny-gift.open .ny-bob { animation: none; }
+.ny-ring { position: absolute; left: 50%; top: 46%; width: 86px; height: 86px; margin: -43px 0 0 -43px; border-radius: 50%; background: conic-gradient(#FFE066 calc(var(--p) * 360deg), rgba(255,255,255,.3) 0); -webkit-mask: radial-gradient(farthest-side, transparent 64%, #000 66%); mask: radial-gradient(farthest-side, transparent 64%, #000 66%); opacity: 0; pointer-events: none; }
+.ny-gift.charging .ny-ring { opacity: 1; }
+.ny-glow { opacity: 0; }
+.ny-gift.open .ny-lid { animation: nyLid .55s ease forwards; transform-origin: 40px 34px; }
+.ny-gift.open .ny-bow { animation: nyBow .4s ease forwards; transform-origin: 40px 28px; }
+.ny-gift.open .ny-glow { animation: nyGlow .55s ease forwards; }
+.ny-gift .ny-tip { display: block; position: absolute; left: 50%; bottom: calc(100% - 4px); transform: translateX(-50%); width: max-content; max-width: 46vw; padding: 6px 8px; border-radius: 10px; background: #102A5C; color: #fff; border: 1px solid rgba(255,255,255,.2); font-size: 12px; font-weight: 800; line-height: 1.25; text-align: center; white-space: normal; pointer-events: none; }
+.ny-gift.tip-left .ny-tip { left: 0; transform: none; }
+.ny-gift.tip-right .ny-tip { left: auto; right: 0; transform: none; }
+.ny-gift.open .ny-tip, .ny-gift.charging .ny-tip { display: none; }
+.ny-flygift { position: fixed; z-index: 86; width: 64px; margin: -30px 0 0 -32px; pointer-events: none; filter: drop-shadow(0 8px 8px rgba(0,0,0,.28)); }
+.ny-snowbit { position: fixed; z-index: 86; width: 7px; height: 7px; margin: -3px 0 0 -3px; border-radius: 50%; background: #fff; pointer-events: none; animation: nySnowPop .52s ease forwards; }
+.ny-reward .ny-buuz { font-size: 22px; letter-spacing: 2px; margin: 4px 0 8px; }
 @keyframes nyHop { 50% { transform: translateY(-6px) scale(1.04); } }
-@keyframes nyDrop { from { transform: translateY(-160px) scale(.7); opacity: .2; } to { transform: none; opacity: 1; } }
-@keyframes nyBurst { to { transform: scale(1.4); opacity: 0; } }
-.ny-gift .ny-tip { display: none; position: absolute; left: 50%; bottom: 100%; transform: translateX(-50%); width: max-content; max-width: 180px; margin-bottom: 6px; padding: 6px 8px; border-radius: 10px; background: #102A5C; color: #fff; font-size: 12px; font-weight: 700; }
-.ny-gift:hover .ny-tip, .ny-gift:focus .ny-tip { display: block; }
+@keyframes nyLand { 0% { transform: translateY(-10px) scale(1.08, .9); } 60% { transform: translateY(0) scale(.96, 1.06); } 100% { transform: none; } }
+@keyframes nyShake { 25% { transform: translateX(-1.5px) rotate(-2deg); } 75% { transform: translateX(1.5px) rotate(2deg); } }
+@keyframes nyLid { to { transform: translateY(-30px) rotate(-18deg); opacity: 0; } }
+@keyframes nyBow { to { transform: translateY(-16px) scale(1.35); opacity: 0; } }
+@keyframes nyGlow { from { opacity: 0; } to { opacity: .9; } }
+@keyframes nySnowPop { to { transform: translate(var(--dx), var(--dy)); opacity: 0; } }

@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.16';
+  const APP_VERSION = 'BETA 1.11.17';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -3229,47 +3229,75 @@ function horseModal(id) {
   function nySeen() { try { return localStorage.getItem(NY_SEEN) || ''; } catch (e) { return ''; } }
   function nyMark(id) { try { localStorage.setItem(NY_SEEN, id || ''); } catch (e) {} st().nySeen = id || ''; S.save(); }
   function giftSvg() {
-    return `<svg viewBox="0 0 80 86" width="74" height="80" aria-hidden="true">
-      <ellipse cx="40" cy="80" rx="22" ry="5" fill="rgba(20,40,80,.28)"/>
-      <rect x="14" y="34" width="52" height="40" rx="6" fill="#E03131"/>
-      <rect x="14" y="34" width="52" height="40" rx="6" fill="url(#gp)" opacity=".35"/>
-      <path d="M14 46 H66" stroke="#C92A2A" stroke-width="2"/>
-      <rect x="34" y="34" width="12" height="40" fill="#FFD43B"/>
-      <rect x="14" y="28" width="52" height="12" rx="3" fill="#C92A2A"/>
-      <rect x="34" y="28" width="12" height="12" fill="#FFD43B"/>
-      <path d="M40 30 C30 8 12 16 22 28" fill="#FFD43B"/>
-      <path d="M40 30 C50 8 68 16 58 28" fill="#F2B705"/>
-      <circle cx="40" cy="28" r="4" fill="#FFE066"/>
-      <defs><linearGradient id="gp" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+    return `<svg viewBox="0 0 80 90" width="74" height="82" aria-hidden="true">
+      <ellipse cx="40" cy="84" rx="22" ry="4.5" fill="rgba(16,42,92,.28)"/>
+      <ellipse class="ny-glow" cx="40" cy="46" rx="16" ry="26" fill="#FFE066"/>
+      <g class="ny-box">
+        <rect x="14" y="36" width="52" height="40" rx="6" fill="#E03131"/>
+        <path d="M14 50 H66" stroke="#C92A2A" stroke-width="2"/>
+        <rect x="34" y="36" width="12" height="40" fill="#FFD43B"/>
+        <path d="M16 38 H30 L26 48 H14Z" fill="#fff" opacity=".28"/>
+      </g>
+      <g class="ny-lid">
+        <rect x="12" y="28" width="56" height="12" rx="3" fill="#C92A2A"/>
+        <rect x="34" y="28" width="12" height="12" fill="#FFD43B"/>
+      </g>
+      <g class="ny-bow">
+        <path d="M40 30 C30 8 10 16 22 28Z" fill="#FFD43B"/>
+        <path d="M40 30 C50 8 70 16 58 28Z" fill="#F2B705"/>
+        <circle cx="40" cy="29" r="4.5" fill="#FFE066"/>
+      </g>
     </svg>`;
   }
+  function nyDeer(cls, lead) {
+    return `<g class="ny-deer ${cls}">
+      <path d="M8 64 Q2 54 12 52 Q8 60 14 64Z" fill="#6D4C41"/>
+      <path d="M18 72 C14 88 16 104 22 106 C26 102 24 86 28 72Z" fill="#5D4037"/>
+      <path d="M32 74 C36 92 42 106 46 104 C44 90 40 76 36 70Z" fill="#4E342E"/>
+      <ellipse cx="44" cy="66" rx="30" ry="16" fill="#8D6E63"/>
+      <ellipse cx="38" cy="72" rx="16" ry="8" fill="#BCAAA4"/>
+      <path d="M56 74 C64 90 72 104 76 100 C72 86 66 74 62 68Z" fill="#5D4037"/>
+      <path d="M64 66 C78 80 90 92 94 86 C84 76 74 66 68 60Z" fill="#4E342E"/>
+      <path d="M64 58 C78 46 90 38 96 34 C92 46 80 58 70 62Z" fill="#8D6E63"/>
+      <ellipse cx="102" cy="34" rx="14" ry="9" fill="#A1887F"/>
+      <path d="M94 28 L86 14 L100 26Z" fill="#6D4C41"/>
+      <path d="M96 22 C88 10 80 6 76 2 C84 8 90 14 94 20Z" fill="#5D4037"/>
+      <path d="M98 20 C106 8 114 4 120 2 C112 8 106 14 102 20Z" fill="#5D4037"/>
+      <path d="M92 16 C88 6 94 0 98 0 C96 8 98 14 102 16Z" fill="#4E342E"/>
+      <circle cx="108" cy="33" r="1.6" fill="#241A13"/>
+      ${lead ? '<circle class="ny-nose" cx="114" cy="36" r="3.6" fill="#FF2A2A"/>' : '<ellipse cx="114" cy="36" rx="2.6" ry="1.8" fill="#5D4037"/>'}
+      <circle cx="72" cy="54" r="3.2" fill="#C92A2A"/>
+      <circle cx="72" cy="58.5" r="2.4" fill="#FFD43B"/>
+    </g>`;
+  }
   function santaSvg() {
-    return `<svg viewBox="0 0 420 120" width="420" height="120" aria-hidden="true">
-      <g class="ny-deer">
-        <ellipse cx="46" cy="78" rx="28" ry="8" fill="#8D6E63"/>
-        <path d="M22 70 Q10 40 24 36 M18 48 Q6 40 14 32" stroke="#5D4037" stroke-width="3" fill="none"/>
-        <circle cx="70" cy="62" r="10" fill="#A1887F"/><circle cx="78" cy="58" r="3.2" fill="#FF4B4B" class="ny-nose"/>
-        <circle cx="74" cy="60" r="1.3" fill="#241A13"/>
-        <path d="M30 74 Q20 90 28 96 M48 78 Q44 94 52 98" stroke="#6D4C41" stroke-width="4" fill="none" stroke-linecap="round"/>
+    return `<svg viewBox="0 0 560 156" width="520" height="146" aria-hidden="true">
+      <g transform="translate(0 10)">${nyDeer('d1', true)}</g>
+      <g transform="translate(118 16)">${nyDeer('d2', false)}</g>
+      <g transform="translate(228 10)">${nyDeer('d3', false)}</g>
+      <path d="M78 68 C150 52 250 62 340 84" stroke="#C9A227" stroke-width="2.6" fill="none"/>
+      <path d="M190 76 C250 64 300 72 340 90" stroke="#A67C2D" stroke-width="2.2" fill="none"/>
+      <path d="M300 72 C320 68 336 78 348 88" stroke="#C9A227" stroke-width="2.2" fill="none"/>
+      <circle cx="140" cy="60" r="3.2" fill="#FFD43B"/><circle cx="230" cy="70" r="3.2" fill="#FFD43B"/><circle cx="310" cy="74" r="3.2" fill="#FFD43B"/>
+      <g transform="translate(332 38)">
+        <path d="M10 82 Q8 98 24 100 H138 Q156 100 152 82" stroke="#E0B03A" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <path d="M30 80 V100 M128 78 V98" stroke="#C9A227" stroke-width="3"/>
+        <path d="M2 72 C28 26 156 34 176 60 L180 90 C96 110 8 96 2 72Z" fill="#D32222" stroke="#F2B705" stroke-width="2.5"/>
+        <path d="M16 70 C44 48 148 52 166 66" stroke="#FFE066" stroke-width="2.6" fill="none"/>
+        <path d="M18 64 H158" stroke="#F2B705" stroke-width="3"/>
+        <circle cx="78" cy="34" r="16" fill="#F3D2B5"/>
+        <path d="M62 32 C66 6 98 4 102 28 C90 20 72 20 62 32Z" fill="#E03131"/>
+        <circle cx="104" cy="8" r="6" fill="#fff"/>
+        <path d="M66 40 C78 56 94 52 96 40 C86 50 74 50 66 40Z" fill="#F7F4EF"/>
+        <circle cx="72" cy="32" r="1.5" fill="#241A13"/><circle cx="84" cy="32" r="1.5" fill="#241A13"/>
+        <path d="M74 42 Q80 46 86 42" stroke="#C92A2A" stroke-width="1.3" fill="none"/>
+        <g class="ny-sack">
+          <ellipse cx="138" cy="64" rx="22" ry="16" fill="#8E2424"/>
+          <path d="M122 56 Q138 44 154 56 Q146 52 138 52 Q130 52 122 56Z" fill="#F2B705"/>
+          <rect x="128" y="60" width="18" height="12" rx="2" fill="#C92A2A" stroke="#FFD43B" stroke-width="1.4"/>
+        </g>
       </g>
-      <g class="ny-deer" transform="translate(78 6)">
-        <ellipse cx="46" cy="78" rx="26" ry="7" fill="#8D6E63"/>
-        <path d="M24 70 Q12 44 26 38" stroke="#5D4037" stroke-width="3" fill="none"/>
-        <circle cx="68" cy="64" r="9" fill="#A1887F"/><circle cx="66" cy="62" r="1.2" fill="#241A13"/>
-      </g>
-      <path d="M100 78 H150" stroke="#F2B705" stroke-width="2"/>
-      <circle cx="118" cy="78" r="3" fill="#FFD43B"/><circle cx="136" cy="78" r="3" fill="#FFD43B"/>
-      <g transform="translate(168 34)">
-        <path d="M0 40 Q20 8 90 18 L96 46 Q40 52 0 40Z" fill="#C92A2A" stroke="#F2B705" stroke-width="2"/>
-        <path d="M8 40 Q30 24 88 30" stroke="#FFD43B" stroke-width="2" fill="none"/>
-        <circle cx="46" cy="18" r="16" fill="#F3D2B5"/>
-        <path d="M32 16 Q46 -8 62 14 Q46 8 32 16Z" fill="#E03131"/>
-        <circle cx="60" cy="-6" r="5" fill="#fff"/>
-        <path d="M36 22 Q46 34 58 22 Q46 40 36 22Z" fill="#F7F4EF"/>
-        <rect x="62" y="22" width="28" height="22" rx="4" fill="#8D2A2A"/>
-        <path d="M66 22 L76 10 L86 22" fill="#F2B705"/>
-      </g>
-      <g class="ny-spark"><circle cx="250" cy="70" r="2" fill="#FFE066"/><circle cx="270" cy="84" r="1.6" fill="#fff"/><circle cx="292" cy="64" r="2.2" fill="#FFD43B"/><circle cx="314" cy="80" r="1.4" fill="#fff"/></g>
+      <g class="ny-spark"><circle cx="508" cy="96" r="2.4" fill="#FFE066"/><circle cx="526" cy="110" r="1.7" fill="#fff"/><circle cx="542" cy="88" r="2" fill="#FFD43B"/></g>
     </svg>`;
   }
   function mountNyGift(stage) {
@@ -3277,18 +3305,42 @@ function horseModal(id) {
     const g = st().nyGift; if (!g || g.open) return;
     let el = $('.ny-gift', stage);
     if (!el) {
-      stage.insertAdjacentHTML('beforeend', `<button class="ny-gift" style="left:${g.x};top:${g.y}" aria-label="Подарок">${giftSvg()}<span class="ny-tip">Нажмите ПКМ, чтобы открыть подарок!</span></button>`);
+      const edge = parseFloat(g.x) < 28 ? ' tip-left' : (parseFloat(g.x) > 66 ? ' tip-right' : '');
+      stage.insertAdjacentHTML('beforeend', `<button class="ny-gift${edge}" data-silent style="left:${g.x};top:${g.y}" aria-label="Подарок"><span class="ny-ring"></span><span class="ny-bob">${giftSvg()}</span><span class="ny-tip">Удерживайте подарок, чтобы открыть!</span></button>`);
       el = $('.ny-gift', stage);
     }
     if (!el || el.dataset.bound) return;
     el.dataset.bound = '1';
-    const open = e => { if (e) { e.preventDefault(); e.stopPropagation(); } openNyGift(); };
-    el.addEventListener('contextmenu', open);
-    el.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); toast('Нажмите ПКМ, чтобы открыть подарок!'); });
-    let hold = 0;
-    el.addEventListener('touchstart', e => { hold = setTimeout(() => open(e), 500); }, { passive: false });
-    el.addEventListener('touchend', () => clearTimeout(hold));
-    el.addEventListener('touchmove', () => clearTimeout(hold));
+    el.style.setProperty('--p', '0');
+    let pressing = false, raf = 0, t0 = 0;
+    const HOLD = 1500;
+    const paint = p => { el.style.setProperty('--p', String(p)); el.classList.toggle('charging', p > 0 && p < 1); };
+    const stop = () => {
+      if (!pressing) return;
+      pressing = false;
+      cancelAnimationFrame(raf);
+      paint(0);
+    };
+    const down = e => {
+      if (e.button != null && e.button !== 0) return;
+      if (e.cancelable) e.preventDefault();
+      e.stopPropagation();
+      pressing = true;
+      t0 = performance.now();
+      const tick = now => {
+        if (!pressing) return;
+        const p = Math.min(1, (now - t0) / HOLD);
+        paint(p);
+        if (p >= 1) { pressing = false; openNyGift(); return; }
+        raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    };
+    el.addEventListener('pointerdown', down);
+    el.addEventListener('pointerup', stop);
+    el.addEventListener('pointerleave', stop);
+    el.addEventListener('pointercancel', stop);
+    el.addEventListener('contextmenu', e => e.preventDefault());
   }
   function openNyGift() {
     const s = st(), g = s.nyGift; if (!g || g.open || ui.nyOpening) return;
@@ -3297,25 +3349,79 @@ function horseModal(id) {
     s.buzzy += n; s.buzzyEarned = (s.buzzyEarned || 0) + n;
     s.nyGift = null; S.save();
     sfx('popper'); sfx('coin'); confetti(); haptic('success');
-    const box = $('.ny-gift'); if (box) box.classList.add('open');
-    setTimeout(() => { if (box) box.remove(); }, 500);
-    const m = openModal(`<div class="big-emo">🎁</div><h2>С Новым годом!</h2><p>Вы нашли в подарке <b>+${n}</b> бууз!</p><div class="stack"><button class="btn gold" id="nyOk">Забрать</button></div>`, { center: true });
+    const box = $('.ny-gift');
+    if (box) { box.classList.remove('charging'); box.classList.add('open'); }
+    setTimeout(() => { if (box) box.remove(); }, 720);
+    const m = openModal(`<div class="ny-reward"><div class="big-emo">🎁</div><div class="ny-buuz">🥟 ✨ 🥟 ✨ 🥟</div><h2>С Новым годом!</h2><p>Вы нашли в подарке <b>+${n}</b> бууз!</p><div class="stack"><button class="btn gold" id="nyOk">Забрать</button></div></div>`, { center: true });
     $('#nyOk', m).onclick = () => { closeModal(); renderTop(); if (ui.view === 'shop') render(); };
     ui.nyOpening = false;
   }
   function dropNyGift(id) {
-    const spots = ['8%', '18%', '62%', '74%', '84%'];
+    const spots = ['12%', '22%', '58%', '70%', '78%'];
     const x = spots[Math.floor(Math.random() * spots.length)];
-    const y = (58 + Math.floor(Math.random() * 16)) + '%';
+    const y = (60 + Math.floor(Math.random() * 12)) + '%';
     const s = st();
     s.nyGift = { id, x, y, open: false };
     nyMark(id); S.save();
-    if (ui.view === 'shop' && ui.loc === 'home') {
-      const stage = $('#stage');
-      mountNyGift(stage);
-      const el = stage && $('.ny-gift', stage);
-      if (el) el.classList.add('fall');
-    } else toast('🎁 Подарок ждёт у юрты в магазине');
+    if (ui.view === 'shop' && ui.loc === 'home') mountNyGift($('#stage'));
+    else toast('🎁 Подарок ждёт у юрты в магазине');
+  }
+  function throwNyGift(id) {
+    const spots = ['12%', '22%', '58%', '70%', '78%'];
+    const x = spots[Math.floor(Math.random() * spots.length)];
+    const y = (60 + Math.floor(Math.random() * 12)) + '%';
+    const s = st();
+    s.nyGift = { id, x, y, open: false };
+    nyMark(id); S.save();
+    const stage = $('#stage');
+    const santa = document.querySelector('.ny-santa');
+    if (!stage || !santa || ui.view !== 'shop' || ui.loc !== 'home') {
+      if (!(ui.view === 'shop' && ui.loc === 'home')) toast('🎁 Подарок ждёт у юрты в магазине');
+      else mountNyGift(stage);
+      return;
+    }
+    const sr = santa.getBoundingClientRect(), tr = stage.getBoundingClientRect();
+    const startX = sr.left + sr.width * 0.78;
+    const startY = sr.top + sr.height * 0.62;
+    const endX = tr.left + tr.width * parseFloat(x) / 100 + 28;
+    const endY = tr.top + tr.height * parseFloat(y) / 100 + 16;
+    const fly = document.createElement('div');
+    fly.className = 'ny-flygift';
+    fly.innerHTML = giftSvg();
+    document.body.appendChild(fly);
+    const dur = 1200, t0 = performance.now();
+    const step = now => {
+      const t = Math.min(1, (now - t0) / dur);
+      const flight = Math.min(1, t / 0.8);
+      const ease = 1 - Math.pow(1 - flight, 2);
+      const px = startX + (endX - startX) * ease;
+      const py = startY + (endY - startY) * ease - Math.sin(flight * Math.PI) * 120;
+      const rot = ease * 210;
+      if (t > 0.8) {
+        const b = (t - 0.8) / 0.2;
+        const hop = Math.sin(b * Math.PI) * 14;
+        fly.style.transform = `translate(${endX}px, ${endY - hop}px) rotate(${rot * (1 - b)}deg)`;
+      } else fly.style.transform = `translate(${px}px, ${py}px) rotate(${rot}deg)`;
+      if (t < 1) requestAnimationFrame(step);
+      else {
+        for (let i = 0; i < 8; i++) {
+          const bit = document.createElement('i');
+          bit.className = 'ny-snowbit';
+          const ang = (Math.PI * 2 * i) / 8;
+          bit.style.left = endX + 'px';
+          bit.style.top = endY + 'px';
+          bit.style.setProperty('--dx', (Math.cos(ang) * 22) + 'px');
+          bit.style.setProperty('--dy', (Math.sin(ang) * 14 - 6) + 'px');
+          document.body.appendChild(bit);
+          setTimeout(() => bit.remove(), 560);
+        }
+        fly.remove();
+        mountNyGift(stage);
+        const el = $('.ny-gift', stage);
+        if (el) el.classList.add('landed');
+      }
+    };
+    requestAnimationFrame(step);
   }
   function playNyNight(ev) {
     if (!ev || !ev.id || ui.nyPlaying) return;
@@ -3329,10 +3435,16 @@ function horseModal(id) {
     layer.className = 'ny-night';
     layer.innerHTML = `<div class="ny-banner">✨ Началась Новогодняя ночь! Лови подарок от Санты! ✨</div><div class="ny-santa">${santaSvg()}</div>`;
     document.body.appendChild(layer);
+    let thrown = false;
+    setTimeout(() => {
+      if (thrown || nySeen() === ev.id && st().nyGift) return;
+      thrown = true;
+      throwNyGift(ev.id);
+    }, 3200);
     setTimeout(() => { if (layer.parentNode) layer.classList.add('out'); }, 6200);
     setTimeout(() => {
       layer.remove();
-      dropNyGift(ev.id);
+      if (!thrown && !st().nyGift) dropNyGift(ev.id);
       ui.nyPlaying = false;
     }, 6900);
   }
