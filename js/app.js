@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.1';
+  const APP_VERSION = 'BETA 1.11.2';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -895,7 +895,17 @@
   }
 
   /* ───────────────── Магазин персонажа ───────────────── */
+
+  const NY_ICONS = {
+    ny_garland: `<svg viewBox="0 0 64 64" width="64" height="64"><path d="M8 20 Q32 8 56 20" stroke="#FFD43B" stroke-width="2" fill="none"/><circle cx="16" cy="22" r="4" fill="#FF4B4B"/><circle cx="28" cy="16" r="4" fill="#FFD43B"/><circle cx="40" cy="18" r="4" fill="#1CB0F6"/><circle cx="52" cy="22" r="4" fill="#58CC02"/><circle cx="16" cy="22" r="6" fill="#FF4B4B" opacity=".3"/><circle cx="28" cy="16" r="6" fill="#FFD43B" opacity=".3"/><circle cx="40" cy="18" r="6" fill="#1CB0F6" opacity=".3"/><circle cx="52" cy="22" r="6" fill="#58CC02" opacity=".3"/></svg>`,
+    ny_tree: `<svg viewBox="0 0 64 64" width="64" height="64"><polygon points="32,8 48,28 40,28 52,44 12,44 24,28 16,28" fill="#2F8F5B"/><rect x="28" y="44" width="8" height="10" fill="#8B4513"/><polygon points="32,4 34,10 28,10" fill="#FF4B4B"/><circle cx="24" cy="32" r="3" fill="#FF4B4B"/><circle cx="40" cy="36" r="3" fill="#FFD43B"/><circle cx="32" cy="40" r="3" fill="#1CB0F6"/><ellipse cx="32" cy="56" rx="14" ry="4" fill="#fff" opacity=".6"/></svg>`,
+    ny_garland2: `<svg viewBox="0 0 64 64" width="64" height="64"><path d="M6 32 Q20 20 32 32 Q44 44 58 32" stroke="#FFD43B" stroke-width="3" fill="none"/><circle cx="14" cy="26" r="5" fill="#FF4B4B"/><circle cx="28" cy="38" r="5" fill="#FFD43B"/><circle cx="42" cy="26" r="5" fill="#1CB0F6"/><circle cx="56" cy="34" r="5" fill="#58CC02"/><circle cx="14" cy="26" r="7" fill="#FF4B4B" opacity=".3"/><circle cx="28" cy="38" r="7" fill="#FFD43B" opacity=".3"/></svg>`,
+    ny_sheep: `<svg viewBox="0 0 64 64" width="64" height="64"><ellipse cx="32" cy="40" rx="16" ry="12" fill="#f5f5f5"/><circle cx="32" cy="28" r="8" fill="#f5f5f5"/><circle cx="28" cy="26" r="2" fill="#333"/><circle cx="36" cy="26" r="2" fill="#333"/><polygon points="32,14 28,22 36,22" fill="#FF4B4B"/><circle cx="32" cy="12" r="3" fill="#fff"/><path d="M20 42 Q16 50 20 52" stroke="#FF4B4B" stroke-width="3" fill="none"/><path d="M44 42 Q48 50 44 52" stroke="#FF4B4B" stroke-width="3" fill="none"/></svg>`,
+    ny_horse: `<svg viewBox="0 0 64 64" width="64" height="64"><ellipse cx="32" cy="36" rx="18" ry="10" fill="#8B4513"/><circle cx="48" cy="28" r="7" fill="#8B4513"/><rect x="28" y="32" width="20" height="8" fill="#C92A2A"/><path d="M28 32 L32 28 L36 32" fill="#FFD43B"/><circle cx="46" cy="26" r="2" fill="#333"/><path d="M50 22 L52 16 L48 18" stroke="#FFD43B" stroke-width="2" fill="none"/><circle cx="52" cy="15" r="2" fill="#FFD43B"/></svg>`,
+    ny_dog: `<svg viewBox="0 0 64 64" width="64" height="64"><ellipse cx="32" cy="40" rx="14" ry="10" fill="#D4A574"/><circle cx="32" cy="26" r="9" fill="#D4A574"/><ellipse cx="24" cy="20" rx="4" ry="6" fill="#D4A574"/><ellipse cx="40" cy="20" rx="4" ry="6" fill="#D4A574"/><circle cx="28" cy="24" r="2" fill="#333"/><circle cx="36" cy="24" r="2" fill="#333"/><ellipse cx="32" cy="30" rx="3" ry="2" fill="#333"/><polygon points="32,10 28,20 36,20" fill="#FF4B4B"/><circle cx="32" cy="8" r="3" fill="#fff"/><rect x="22" y="36" width="20" height="10" rx="3" fill="#C92A2A"/><path d="M26 40 L32 44 L38 40" stroke="#fff" stroke-width="1" fill="none"/></svg>`
+  };
   function itemPreview(it) {
+    if (NY_ICONS[it.id]) return NY_ICONS[it.id];
     if (it.dog) return window.BG_ART.dogSvg('dog-svg', null, { [it.slot]: it.id });
     if (it.slot === 'bonus' || it.offer) return `<div class="bonus-icon">${it.icon || '🧊'}</div>`;
     if (it.food) return M.preview('buuza_plate');
