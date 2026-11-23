@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.2';
+  const APP_VERSION = 'BETA 1.11.3';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -104,7 +104,14 @@
   };
   /* v1.8.3: дошёл ли игрок до n-го модуля (все уроки предыдущих модулей пройдены) */
   const reachedUnit = (n) => D.units.slice(0, Math.max(0, n - 1)).every(u => u.lessons.every(l => ((st().lessons || {})[l.id] || {}).done));
-  const stageScene = (compact) => `<div class="scene" aria-hidden="true">${window.BG_ART.scene({ compact: !!compact, horses: stageHorses(), sheep: petsState().sheep, kennel: !!(st().dog && st().dog.house) })}</div>`;
+  const stageScene = (compact) => {
+    const s = st();
+    const ny = {
+      garland: s.equip && s.equip.ny_garland,
+      tree: s.equip && s.equip.ny_tree
+    };
+    return `<div class="scene" aria-hidden="true">${window.BG_ART.scene({ compact: !!compact, horses: stageHorses(), sheep: petsState().sheep, kennel: !!(s.dog && s.dog.house), ny })}</div>`;
+  };
 
   if (D.words && D.words.buuza) D.words.buuza.emoji = BZ_IMG;
   D.units.forEach(u => { if (u.icon === '\u{1F95F}' || u.icon === '🥟') u.icon = BZ_IMG; });

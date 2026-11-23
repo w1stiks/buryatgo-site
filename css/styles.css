@@ -2459,3 +2459,7 @@ body[data-view="shop"] .seg button[data-slot="ny"] {
   background: linear-gradient(135deg, #1a4a9a, #0d2d6b) !important;
   border: 1px solid #4FC3F7 !important;
 }
+
+body[data-view="shop"] .seg button[data-slot="ny"] {
+  color: #FFFFFF !important;
+}

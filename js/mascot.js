@@ -308,7 +308,7 @@ window.BG_MASCOT = (function () {
       : mood === 'sad'
         ? `<path d="M90 109Q100 101 110 109" stroke="#5A2A2A" stroke-width="3.5" fill="none" stroke-linecap="round"/>`
         : `<path d="M89 102Q100 112 111 102" stroke="#5A2A2A" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
-    const pants = out.pants || '#34405E';
+    const pants = (out.style === 'pants' ? out.color : out.pants) || '#34405E';
     const sc = out.socks, scd = '#D9A436';
     const SOCK = '#FBF7EE', SOCK_L = '#6E604C', SOCK_C = '#2F5FB3', SOCK_P = '#CFE0F7';
     const socks = sc && !robe ? `<rect x="79.5" y="198" width="16" height="22" rx="6" fill="${SOCK}" stroke="${SOCK_L}" stroke-width="1.3"/><rect x="104.5" y="198" width="16" height="22" rx="6" fill="${SOCK}" stroke="${SOCK_L}" stroke-width="1.3"/>
