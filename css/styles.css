@@ -2321,3 +2321,75 @@ body[data-view="settings"] .back-btn {
   background: #193F85 !important;
   color: #fff !important;
 }
+
+
+/* Restore blur background on main screens */
+body[data-view="home"] .screen,
+body[data-view="shop"] .screen,
+body[data-view="leagues"] .screen,
+body[data-view="profile"] .screen {
+  background: url("img/lesson-bg.jpg") center / cover no-repeat !important;
+}
+body[data-view="home"] .screen::before,
+body[data-view="shop"] .screen::before,
+body[data-view="leagues"] .screen::before,
+body[data-view="profile"] .screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("img/lesson-bg.jpg") center / cover no-repeat;
+  filter: blur(12px);
+  transform: scale(1.08);
+  z-index: -1;
+}
+
+/* Age modal dark style */
+.modal .age-pick,
+.modal .age-card {
+  background: #102A5C !important;
+  border: 1px solid rgba(255,255,255,.2) !important;
+  border-radius: 20px !important;
+  color: #fff !important;
+}
+.modal .age-card.on,
+.modal .age-card.active {
+  border: 2px solid #4FC3F7 !important;
+  background: #193F85 !important;
+}
+.modal .age-card h3,
+.modal .age-card b,
+.modal .age-card .title {
+  color: #FFFFFF !important;
+}
+.modal .age-card small,
+.modal .age-card .sub,
+.modal p {
+  color: #B8D4FF !important;
+}
+
+/* Settings header text white */
+body[data-view="settings"] .set-head,
+body[data-view="settings"] .settings-head {
+  background: #102A5C !important;
+}
+body[data-view="settings"] .set-head h2,
+body[data-view="settings"] .settings-head h2,
+body[data-view="settings"] .set-head span,
+body[data-view="settings"] .settings-head span {
+  color: #FFFFFF !important;
+}
+body[data-view="settings"] .set-head .x-btn,
+body[data-view="settings"] .settings-head .x-btn,
+body[data-view="settings"] .back-btn,
+body[data-view="settings"] .x-btn {
+  background: #193F85 !important;
+  color: #FFFFFF !important;
+}
+
+/* Profile: no white corners */
+body[data-view="profile"] .view,
+body[data-view="profile"] .screen,
+body[data-view="profile"] #profile,
+body[data-view="profile"] .profile-wrap {
+  background: transparent !important;
+}
