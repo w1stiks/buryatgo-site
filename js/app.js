@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.28';
+  const APP_VERSION = 'BETA 1.11.29';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -2868,6 +2868,17 @@ function horseModal(id) {
         <div class="dev-row"><input type="number" id="devAmt" inputmode="numeric" min="1" step="1" placeholder="Сумма"><button class="btn small" id="devAdd">Начислить</button><button class="btn small red" id="devSub">Списать</button></div>
         <div class="dev-row"><input type="number" id="devSet" inputmode="numeric" min="0" step="1" value="${s.buzzy}"><button class="btn small blue" id="devSetBtn">Точный баланс</button></div>
       </div>
+      <h2 class="sub">Двор</h2>
+      <div class="set-group dev-pad">
+        <div class="dev-row"><span class="dev-lbl">🐑 Овцы</span><input type="number" id="devSheep" min="0" max="${D.sheepMax}" step="1" value="${petsState().sheep}"><button class="btn small blue" id="devSheepSet">Ок</button></div>
+        <div class="dev-grid" style="margin-top:8px">
+          <button class="btn small blue" id="devDog">${s.dog ? 'Убрать собаку' : 'Завести собаку'}</button>
+          <button class="btn small blue" id="devHorse">Выдать коня</button>
+          <button class="btn small" id="devNyReset">Подарок заново</button>
+          <button class="btn small" id="devItems">Выдать вещи</button>
+        </div>
+        <div class="muted dock-note">Овцы, собака и конь появляются на сцене у юрты. «Подарок заново» даёт снова поймать подарок этого ивента. «Выдать вещи» кладёт одежду и предметы магазина в инвентарь.</div>
+      </div>
       <h2 class="sub">Серия и заморозки</h2>
       <div class="set-group dev-pad">
         <div class="dev-row"><span class="dev-lbl">🔥 Серия</span><input type="number" id="devStreak" min="0" step="1" value="${s.streak || 0}"><button class="btn small blue" id="devStreakSet">Ок</button></div>
@@ -2914,6 +2925,20 @@ function horseModal(id) {
     $('#devBack').onclick = devClose;
     $('#devStreakSet').onclick = () => { s.streak = Math.max(0, parseInt($('#devStreak').value, 10) || 0); s.bestStreak = Math.max(s.bestStreak || 0, s.streak); S.save(); renderTop(); toast('🔥 Серия: ' + s.streak); };
     $('#devFreezeSet').onclick = () => { s.freezes = Math.max(0, Math.min(2, parseInt($('#devFreeze').value, 10) || 0)); S.save(); toast('🧊 Заморозки: ' + s.freezes); };
+    $('#devSheepSet').onclick = () => { const p = petsState(); p.sheep = Math.max(0, Math.min(D.sheepMax, parseInt($('#devSheep').value, 10) || 0)); S.save(); toast('🐑 Овец: ' + p.sheep); };
+    $('#devDog').onclick = () => { s.dog = s.dog ? null : { name: 'Банхар', house: true }; S.save(); toast(s.dog ? '🐕 Собака заведена' : 'Собака убрана'); render(); };
+    $('#devHorse').onclick = () => {
+      const hs = horseState();
+      if (hs.lucky || hs.owned.length) { toast('Конь уже есть'); return; }
+      const pick = D.horses[Math.floor(Math.random() * D.horses.length)];
+      hs.lucky = pick.id; S.save(); toast('🐎 Выдан конь: ' + pick.name);
+    };
+    $('#devNyReset').onclick = () => { s.nyGift = null; s.nySeen = ''; nyMark(''); toast('🎁 Этот ивент можно поймать снова'); };
+    $('#devItems').onclick = () => {
+      let n = 0;
+      (D.items || []).forEach(it => { if (!it || !it.id || it.consumable || it.revive || it.food) return; if (s.owned.indexOf(it.id) < 0) { s.owned.push(it.id); n++; } });
+      S.save(); toast(n ? '🧥 Выдано предметов: ' + n : 'Все вещи уже есть');
+    };
     $('#devSetBtn').onclick = () => { if (setExactBuzzy($('#devSet').value)) $('#devSet').value = st().buzzy; };
     $('#nyStart').onclick = () => nyAdmin(true, Date.now());
     $('#nyPlan').onclick = () => {

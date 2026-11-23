@@ -2716,4 +2716,9 @@ body[data-view=developer] select,
 body[data-view=developer] input[type="datetime-local"] {
   background: #0B1E42 !important; color: #fff !important; border: 1px solid rgba(255,255,255,.22) !important; color-scheme: dark;
 }
-body[data-view=developer] .dev-player { background: transparent; color: #fff; }
+body[data-view=developer] .dp-modal,
+body[data-view=developer] .modal .sheet,
+.dp-modal { color: #102A5C; }
+.dp-cell { background: #102A5C !important; border: 1px solid rgba(255,255,255,.16) !important; }
+.dp-cell small { color: #B8D4FF !important; }
+.dp-cell b { color: #fff !important; white-space: normal !important; overflow: visible !important; }
