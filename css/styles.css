@@ -2243,3 +2243,21 @@ body[data-view="settings"] .voice-sel {
 body[data-view="settings"] .toggle.off {
   background: #1E4E9E !important;
 }
+
+/* Achievements: remove inner borders */
+body[data-view="profile"] .ach-card .ach-info,
+body[data-view="profile"] .ach-card .ach-text,
+body[data-view="profile"] .ach-row > div,
+body[data-view="profile"] .ach-row .info {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* Bottom corners: no white triangles */
+body, html, #app, .screen {
+  background: #0D4389 !important;
+}
+#tabbar {
+  background: #102A5C !important;
+}
