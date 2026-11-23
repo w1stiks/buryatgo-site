@@ -437,10 +437,7 @@ window.BG_DATA = (function () {
     { id: 'off_butter', slot: 'datsan', name: 'Масло ×2', offer: 'butter', qty: 2, price: 20, icon: '🧈', desc: 'Топлёное масло (тоһон) — им заправляют лампады-зула в храме' },
     { id: 'off_milk', slot: 'datsan', name: 'Молоко ×2', offer: 'milk', qty: 2, price: 10, icon: '🥛', desc: 'Белая пища (саган дээжэ) — символ чистоты и благополучия' },
     { id: 'off_tea', slot: 'datsan', name: 'Чай ×2', offer: 'tea', qty: 2, price: 10, icon: '🍵', desc: 'Плиточный чай для подношения в дацане' },
-    { id: 'khii_flag', slot: 'datsan', name: 'Флажок «Хии морин»', offer: 'khii', qty: 1, price: 50, icon: '🎏', desc: 'Молитвенный флажок «конь удачи»: освятите и поднимите его на столб в Иволгинском дацане — раз в неделю для благополучия и защиты' }
-  ];
-
-
+    { id: 'khii_flag', slot: 'datsan', name: 'Флажок «Хии морин»', offer: 'khii', qty: 1, price: 50, icon: '🎏', desc: 'Молитвенный флажок «конь удачи»: освятите и поднимите его на столб в Иволгинском дацане — раз в неделю для благополучия и защиты' },
     /* New clothing */
     { id: 'pants_classic', slot: 'outfit', name: 'Классические штаны', price: 80, color: '#2B3A5C', style: 'pants', desc: 'Обычные штаны' },
     { id: 'pants_sport', slot: 'outfit', name: 'Спортивки', price: 100, color: '#1F5C3A', style: 'pants', desc: 'Спортивные штаны с лампасами' },
@@ -449,15 +446,14 @@ window.BG_DATA = (function () {
     { id: 'degel_winter', slot: 'outfit', name: 'Зимний дэгэл', price: 600, color: '#4a3728', trim: '#F3E6D2', belt: '#C92A2A', style: 'degel', fur: true, desc: 'Утеплённый дэгэл с меховой оторочкой' },
     { id: 'uuzha', slot: 'outfit', name: 'Уужа (жилет)', price: 280, color: '#8B4513', trim: '#FFD43B', style: 'vest', desc: 'Бурятский жилет' },
     { id: 'hete', slot: 'hand', name: 'Хэтэ (нож-огниво)', price: 350, color: '#C0C0C0', style: 'knife', desc: 'Серебряный нож-огниво на пояс' },
-
-
     /* New Year items */
     { id: 'ny_garland', slot: 'ny', name: 'Гирлянда для юрты', price: 500, icon: '💡', desc: 'Светящаяся гирлянда на крышу юрты' },
     { id: 'ny_tree', slot: 'ny', name: 'Новогодняя ёлка', price: 800, icon: '🎄', desc: 'Ёлка рядом с юртой' },
     { id: 'ny_garland2', slot: 'ny', name: 'Гирлянда персонажа', price: 300, icon: '✨', desc: 'Праздничный декор' },
     { id: 'ny_sheep', slot: 'ny', name: 'Костюм овец', price: 400, icon: '🐑', desc: 'Колпаки Санты на овец' },
     { id: 'ny_horse', slot: 'ny', name: 'Костюм лошади', price: 450, icon: '🐴', desc: 'Попона с бубенцами' },
-    { id: 'ny_dog', slot: 'ny', name: 'Костюм собаки', price: 350, icon: '🐕', desc: 'Свитерок с оленями' },
+    { id: 'ny_dog', slot: 'ny', name: 'Костюм собаки', price: 350, icon: '🐕', desc: 'Свитерок с оленями' }
+  ];
 
   const slots = [
     { id: 'hat', name: 'Шапки', icon: '🎩' },
