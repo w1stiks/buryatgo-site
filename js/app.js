@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.10.28';
+  const APP_VERSION = 'BETA 1.11.0';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -901,6 +901,16 @@
     if (it.food) return M.preview('buuza_plate');
     return M.preview(it.id);
   }
+  function renderItem(it) {
+    const s = st();
+    const owned = s.owned.indexOf(it.id) >= 0, eq = s.equip[it.slot] === it.id;
+    let tag = '';
+    if (eq) tag = '<span class="tag">Надето</span>';
+    else if (owned && !it.consumable) tag = '<span class="tag" style="background:var(--blue)">Есть</span>';
+    else if (it.premiumOnly) tag = '<span class="tag super">SUPER</span>';
+    const price = it.consumable ? `<img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}` : owned ? (eq ? '✔ Надето' : 'Надеть') : `<img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}`;
+    return `<button class="item-card ${eq ? 'equipped' : ''}" data-id="${it.id}">${tag}<div class="pv">${itemPreview(it)}</div><div class="nm">${esc(it.name)}</div><div class="price">${price}</div></button>`;
+  }
   function renderShop(scr) {
     const s = st();
     const items = D.items.filter(i => (i.cat || i.slot) === ui.shopSlot && i.slot !== 'datsan');
@@ -913,7 +923,14 @@
         <div><span class="big">🧊</span><div><div class="big">${s.freezes}</div><div class="muted" style="font-size:12px;font-weight:800">Заморозки</div></div></div>
       </div>
       <div class="seg">${D.slots.filter(sl => sl.id !== 'datsan').map(sl => `<button data-slot="${sl.id}" class="${ui.shopSlot === sl.id ? 'on' : ''}">${sl.icon} ${esc(sl.name)}</button>`).join('')}<button data-slot="pets" class="${ui.shopSlot === 'pets' ? 'on' : ''}">🐾 Питомцы</button></div>
-      <div class="shop-grid">${ui.shopSlot === 'pets' ? petsGrid() : items.map(it => {
+      <div class="shop-grid">${ui.shopSlot === 'pets' ? petsGrid() : (ui.shopSlot === 'outfit' ? (function(){
+        const cats = { degel: 'Дэгэлы', pants: 'Штаны', vest: 'Жилеты', other: 'Другое' };
+        const groups = {};
+        items.forEach(it => { const c = it.style === 'degel' ? 'degel' : it.style === 'pants' ? 'pants' : it.style === 'vest' ? 'vest' : 'other'; (groups[c] = groups[c] || []).push(it); });
+        let html = '';
+        Object.keys(cats).forEach(c => { if (!groups[c]) return; html += '<div class="shop-cat">' + cats[c] + '</div>'; groups[c].forEach(it => { html += renderItem(it); }); });
+        return html;
+      })() : items.map(it => {
         const owned = s.owned.indexOf(it.id) >= 0, eq = s.equip[it.slot] === it.id;
         let tag = '';
         if (eq) tag = '<span class="tag">Надето</span>';
@@ -923,7 +940,7 @@
         const refill = !!(it.cup && owned && isCupEmpty(it.id));
         if (refill) tag = '<span class="tag" style="background:#868E96">Пустая</span>';
         return `<button class="item-card ${eq ? 'equipped' : ''} ${refill ? 'refill' : ''}" data-id="${it.id}" ${refill ? 'data-refill="1"' : ''}>${tag}<div class="pv">${itemPreview(it)}</div><div class="nm">${esc(it.name)}${it.id === 'buuza_plate' && owned ? ' · 🥟' + (s.buuz || 0) : ''}${it.offer ? ' · ' + ((s.offerInv || {})[it.offer] || 0) + ' шт.' : ''}</div><div class="price">${refill ? `🔄 Наполнить ${BZI} ${D.cupRefill}` : price}</div></button>`;
-      }).join('')}</div>
+      }).join(''))}</div>
       <p class="disclaimer">Нажмите на Бато — он скажет что-нибудь по-бурятски! Буузы зарабатываются за уроки, серии и достижения.</p></div>`;
     $$('.seg button', scr).forEach(b => { b.onclick = () => { ui.shopSlot = b.dataset.slot; renderShop(scr); }; });
     $$('.item-card', scr).forEach(b => { b.onclick = () => b.dataset.refill ? (refillCup(D.itemsById[b.dataset.id]) && refreshShop(true)) : b.dataset.lucky ? luckyModal() : b.dataset.pet ? sheepModal() : b.dataset.horse ? horseModal(b.dataset.horse) : itemModal(b.dataset.id); });
@@ -1454,7 +1471,7 @@
   const wxRnd = (a, b) => a + Math.random() * (b - a);
   function wxLoad() {
     try { const w = JSON.parse(localStorage.getItem(WX_KEY) || 'null'); if (w && WX_META[w.mode] && isFinite(w.until)) return w; } catch (e) { /* нет данных */ }
-    return { mode: 'sun', until: Date.now() + wxRnd(D.wxSun[0], D.wxSun[1]) * 1000, ice: 0, iceT: Date.now(), iceDir: 0 };
+    return { mode: 'snow', until: Date.now() + 999999999, ice: 1, iceT: Date.now(), iceDir: 0 };
   }
   let WX = wxLoad();
   const wxSave = () => { try { localStorage.setItem(WX_KEY, JSON.stringify(WX)); } catch (e) { /* память недоступна */ } };
@@ -1473,7 +1490,7 @@
     else if (cur > 0 && WX.iceDir >= 0) wxSetIce(cur, -1);     /* после снега — плавно тает */
     wxSave(); wxApply();
   }
-  function wxNext() { wxSet(WX.mode !== 'sun' ? 'sun' : (Math.random() < .55 ? 'rain' : 'snow')); }
+  function wxNext() { wxSet('snow'); }
   const wxClock = sec => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
   function wxApply() {
     const now = Date.now(), ice = wxIce(now);

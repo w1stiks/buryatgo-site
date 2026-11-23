@@ -2440,3 +2440,22 @@ input[type="time"]#notifTime {
   color-scheme: dark !important;
   padding: 6px 10px !important;
 }
+
+
+/* Clothing categories */
+.shop-cat {
+  grid-column: 1 / -1;
+  padding: 12px 4px 6px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #B8D4FF;
+  border-bottom: 1px solid rgba(255,255,255,.15);
+  margin-top: 8px;
+}
+.shop-cat:first-child { margin-top: 0; }
+
+/* NY tab accent */
+body[data-view="shop"] .seg button[data-slot="ny"] {
+  background: linear-gradient(135deg, #1a4a9a, #0d2d6b) !important;
+  border: 1px solid #4FC3F7 !important;
+}
