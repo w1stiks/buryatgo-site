@@ -43,7 +43,7 @@ window.BG_CLOUD = (function () {
     BAD_LOGIN: 'Логин: латинские буквы, цифры, точка, _ или -, от 3 до 20 символов',
     INVALID_EMAIL: 'Логин: латинские буквы, цифры, точка, _ или -, от 3 до 20 символов',
     OPERATION_NOT_ALLOWED: 'Вход по паролю не включён на сервере (Firebase → Authentication)',
-    PERMISSION_DENIED: 'Сервер отклонил сохранение — проверьте правила Firestore',
+    PERMISSION_DENIED: 'Firebase закрыл общую базу. Прогресс аккаунта пишется, а ивент и список игроков — нет. В Firestore → Правила добавьте коллекции events и presence',
     NOT_CONFIGURED: 'Облако ещё не подключено (js/cloud-config.js)',
     NO_SESSION: 'Войдите в аккаунт',
     TOKEN_EXPIRED: 'Сессия устарела — войдите снова',
@@ -63,7 +63,7 @@ window.BG_CLOUD = (function () {
     const j = await r.json().catch(() => ({}));
     return { r, j };
   }
-  const errCode = j => (j && j.error && (j.error.message || j.error.status)) || '';
+  const errCode = j => (j && j.error && (j.error.status || j.error.message)) || '';
   const idt = p => 'https://identitytoolkit.googleapis.com/v1/accounts:' + p + '?key=' + encodeURIComponent(CFG.apiKey);
 
   function fromAuth(j, login) {
@@ -118,6 +118,7 @@ window.BG_CLOUD = (function () {
     clearTimeout(timer); timer = null;
     try {
       const t = await token();
+      stripForeignAdmin();
       const st = Store().state;
       const data = JSON.stringify(st), sentSig = sig(st);
       const body = JSON.stringify({ fields: {
@@ -156,10 +157,18 @@ window.BG_CLOUD = (function () {
   }
 
   /* Подмена прогресса на устройстве сохранением из облака */
+  function stripForeignAdmin() {
+    const S = Store();
+    if (!S || !S.state) return;
+    let who = '';
+    try { who = localStorage.getItem('buryatgo_dev_login_v1') || ''; } catch (e) {}
+    if (!sess || who !== sess.login) S.state.admin = false;
+  }
   function applyRemote(state) {
     const S = Store();
     if (sess) { sess.hash = sig(state); sess.dirty = false; writeSess(sess); }
     S.state = state;
+    stripForeignAdmin();
     S.save();
   }
 

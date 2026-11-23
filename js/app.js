@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.15';
+  const APP_VERSION = 'BETA 1.11.16';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -1027,7 +1027,7 @@
   ];
   const ageOf = () => { const a = st().age; return a === 'kids' || a === 'big' ? a : 'big'; };
   const ageInfo = id => AGES.find(a => a.id === id) || AGES[2];
-  const isAdmin = () => !!st().admin || devRemembered();
+  const isAdmin = () => devRemembered();
   const TAGS = { admin: ['ADMIN', 'tg-admin'], super: ['SUPER', 'tg-super'], kids: ['ДЕТСКИЙ', 'tg-kids'], std: ['Стандарт', 'tg-std'], big: ['ВЗРОСЛЫЙ', 'tg-big'] };
   function tagHtml(kind, upper) {
     const t = TAGS[kind]; if (!t) return '';
@@ -1531,8 +1531,10 @@
   function rideHorseOf(id) { const hs = stageHorses() || []; return hs.find(x => x.id === id) || hs[0] || null; }
   /* ───────── v1.13: погода, коньки, одежда собаки, пасхалка разработчика ───────── */
   const DEV_PASS = '2014';
-  const DEV_KEY = 'buryatgo_dev_auth_v1';
-  const devRemembered = () => { try { if (localStorage.getItem(DEV_KEY) === '1') return true; } catch (e) { /* нет памяти */ } return !!(S.state && S.state.admin); };
+  const DEV_LOGIN_KEY = 'buryatgo_dev_login_v1';
+  const devLogin = () => { try { return localStorage.getItem(DEV_LOGIN_KEY) || ''; } catch (e) { return ''; } };
+  const currentLogin = () => { try { return (window.BG_CLOUD && BG_CLOUD.user && BG_CLOUD.user()) || ''; } catch (e) { return ''; } };
+  const devRemembered = () => { const who = devLogin(), cur = currentLogin(); return !!(who && cur && who === cur); };
   const WX_KEY = 'buryatgo_weather_v1';
   const WX_META = { sun: ['☀️', 'Солнечно'], rain: ['🌧️', 'Дождь'], snow: ['❄️', 'Снег'] };
   const wxRnd = (a, b) => a + Math.random() * (b - a);
@@ -1723,7 +1725,13 @@
     const inp = $('#devPass', m), err = $('#devErr', m);
     const ok = v => { v = String(v || '').trim().toLowerCase().replace(/\s+/g, ''); return v === DEV_PASS || v === 'secret-password:' + DEV_PASS; };
     const tryIt = () => {
-      if (ok(inp.value)) { ui.devAuth = true; try { localStorage.setItem(DEV_KEY, '1'); } catch (e) { /* без памяти */ } st().admin = true; S.save(); closeModal(); sfx('coin'); haptic('success'); toast('🔓 Доступ администратора открыт'); go('developer'); return; }
+      if (ok(inp.value)) {
+        ui.devAuth = true;
+        const who = currentLogin();
+        try { if (who) localStorage.setItem(DEV_LOGIN_KEY, who); else localStorage.removeItem(DEV_LOGIN_KEY); } catch (e) {}
+        st().admin = !!who; S.save();
+        closeModal(); sfx('coin'); haptic('success'); toast('🔓 Доступ администратора открыт'); go('developer'); return;
+      }
       err.textContent = 'Неверный пароль'; inp.classList.remove('shake'); void inp.offsetWidth; inp.classList.add('shake');
       haptic('error'); sfx('wrong'); inp.select();
     };
@@ -1797,7 +1805,7 @@
       const day = c.list.filter(p => Date.now() - (p.lastSeen || 0) < 864e5).length;
       b.innerHTML = `<div class="live-h"><i class="dot ${on.length ? 'on' : ''}"></i>Сейчас в игре: <b id="liveN">${on.length}</b><span>за сутки ${day} · всего ${c.list.length}</span></div>` +
         (on.length ? `<div class="live-list">${on.slice(0, 20).map(p => `<div class="live-p ${p.me ? 'me' : ''}"><span class="lp-av">${M.svg(p.equip || {}, { cls: 'mini' })}</span>
-          <span class="lp-n">${esc(p.name || 'Ученик')}${p.me ? ' (вы)' : ''}${tagsFor({ admin: p.admin, premium: p.premium, age: p.age }, true, true)}<small>${esc((D.leagues[p.league] || D.leagues[0]).name)} лига · 🔥 ${p.streak || 0}</small></span><b>${fmt(p.weekXp || 0)} XP</b></div>`).join('')}</div>`
+          <span class="lp-n">${esc(p.name || 'Ученик')}${p.me ? ' (вы)' : ''}${tagsFor({ admin: p.me && isAdmin(), premium: p.premium, age: p.age }, true, true)}<small>${esc((D.leagues[p.league] || D.leagues[0]).name)} лига · 🔥 ${p.streak || 0}</small></span><b>${fmt(p.weekXp || 0)} XP</b></div>`).join('')}</div>`
           : '<div class="live-note">Сейчас в сети никого нет.</div>');
     });
   }
@@ -1845,7 +1853,7 @@
     };
     $$('[data-dage]', scr).forEach(b => { b.onclick = () => { setAge(b.dataset.dage); $$('[data-dage]', scr).forEach(x => { x.classList.toggle('blue', x === b); x.classList.toggle('ghost', x !== b); x.classList.toggle('dark', x !== b); }); }; });
     $('#devForget', scr).onclick = () => {
-      try { localStorage.removeItem(DEV_KEY); } catch (e) { /* память недоступна */ }
+      try { localStorage.removeItem(DEV_LOGIN_KEY); } catch (e) {}
       st().admin = false; S.save();
       toast('🔒 Пароль забыт — при следующем входе он понадобится'); devClose();
     };
@@ -2871,7 +2879,8 @@ function horseModal(id) {
       <div class="set-group dev-pad">
         <button class="btn gold" id="nyStart">🎄 Запустить ивент: Новогодняя ночь</button>
         <button class="btn ghost dark" id="nyStop" style="margin-top:8px">Остановить и сбросить ивент</button>
-        <div class="muted dock-note">Запуск уходит в общую базу. Каждый аккаунт получает подарок один раз за этот запуск.</div>
+        <div class="muted dock-note">Запуск уходит в общую базу. Каждый аккаунт получает подарок один раз за этот запуск. Если сервер пишет, что Firebase закрыл базу — один раз вставьте правила.</div>
+        <button class="btn ghost dark" id="nyRules" type="button" style="margin-top:8px">Скопировать правила Firestore</button>
       </div>
       ${devXpHtml()}
       ${wxDevHtml()}
@@ -2902,6 +2911,12 @@ function horseModal(id) {
     $('#devBack').onclick = devClose;
     $('#nyStart').onclick = () => nyAdmin(true);
     $('#nyStop').onclick = () => nyAdmin(false);
+    $('#nyRules').onclick = () => {
+      const rules = "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /users/{uid} {\n      allow read, write: if request.auth != null && request.auth.uid == uid;\n    }\n    match /presence/{uid} {\n      allow read: if request.auth != null;\n      allow create, update: if request.auth != null && request.auth.uid == uid;\n    }\n    match /events/{id} {\n      allow read: if request.auth != null;\n      allow write: if request.auth != null;\n    }\n  }\n}\n";
+      const done = () => toast('Правила скопированы. Firebase → Firestore → Правила → вставить → Опубликовать');
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(rules).then(done).catch(() => { window.prompt('Скопируйте правила', rules); });
+      else window.prompt('Скопируйте правила', rules);
+    };
     bindDevTools(scr);
     wxDevBind(scr);
     devXpBind(scr);
@@ -3373,6 +3388,7 @@ function horseModal(id) {
 
     processWeek();
     if (st().hero === 'narana') { st().hero = 'bato'; S.save(); }
+    if (st().admin && !devRemembered()) { st().admin = false; S.save(); }
     const sr = S.checkStreak();
     applyReminder();
 
