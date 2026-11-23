@@ -462,7 +462,6 @@ window.BG_DATA = (function () {
     { id: 'outfit', name: 'Одежда', icon: '👘' },
     { id: 'hand', name: 'В руку', icon: '🏹' },
     { id: 'food', name: 'Еда', icon: '🥟' },
-    { id: 'datsan', name: 'Дацан', icon: '🛕' },
     { id: 'acc', name: 'Аксессуары', icon: '🕶️' },
     { id: 'dogwear', name: 'Одежда для собаки', icon: '🐕' },
     { id: 'bonus', name: 'Заморозки', icon: '🧊' },

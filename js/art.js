@@ -297,7 +297,7 @@ window.BG_ART = (function () {
     const nyCoat = '<path d="M28 42Q34 33 52 33Q70 34 75 44L74 56Q52 62 30 56Q25 50 28 42Z" fill="#E03131"/><path d="M36 46h2.2l1.1 2.2 1.1-2.2H43l-1.8 1.4.7 2.2-1.8-1.3-1.8 1.3.7-2.2z" fill="#fff"/><path d="M52 50h2l1 2 1-2h2l-1.6 1.2.6 2-1.6-1.1-1.6 1.1.6-2z" fill="#fff"/><circle cx="44" cy="54" r="1.4" fill="#fff"/><circle cx="62" cy="44" r="1.3" fill="#fff"/>';
     const hat = w.ny ? nyHat : g(w.dhat);
     const coat = w.ny ? nyCoat : g(w.dcoat);
-    return { hat, acc: g(w.dacc), coat, backHat: hat ? `<g transform="translate(-25 -2)">${hat}</g>` : '' };
+    return { hat, acc: w.ny ? '' : g(w.dacc), coat, backHat: hat ? `<g transform="translate(-25 -2)">${hat}</g>` : '' };
   }
   /* v1.13: зимняя попона коня (видна только во время снега или в превью) */
   const HORSE_COAT = '<g class="h-coat"><path d="M-25 -47Q-9 -57 17 -55Q32 -52 32 -40L30 -28Q4 -23 -23 -28Q-30 -37 -25 -47Z" fill="#C92A2A"/><path d="M-24 -29Q4 -24 30 -29" stroke="#F8F0E3" stroke-width="3.4" fill="none" stroke-linecap="round"/><path d="M-17 -50L-15 -29M25 -52L27 -30" stroke="#F2B705" stroke-width="1.6"/><path d="M-20 -38H26" stroke="#F2B705" stroke-width="1" stroke-dasharray="3 2"/></g>';

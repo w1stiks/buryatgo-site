@@ -61,7 +61,7 @@
 
   function ward() {
     const orn = (x, y) => `<rect x="${x - 4}" y="${y - 4}" width="8" height="8" transform="rotate(45 ${x} ${y})" fill="none" stroke="#2D7DD2" stroke-width="1.6"/><circle cx="${x}" cy="${y}" r="1.6" fill="#F2C14E"/>`;
-    const door = (x, cls) => `<g class="${cls}"><rect x="${x}" y="104" width="32" height="66" rx="2" fill="#D2532F" stroke="#8E2F1A" stroke-width="1.4"/><rect x="${x + 4}" y="109" width="24" height="56" rx="2" fill="none" stroke="#F2C14E" stroke-width="1.4"/>${orn(x + 16, 128)}${orn(x + 16, 148)}</g>`;
+    const door = (x, cls, knob) => `<g class="${cls}"><rect x="${x}" y="104" width="32" height="66" rx="2" fill="#D2532F" stroke="#8E2F1A" stroke-width="1.4"/><rect x="${x + 4}" y="109" width="24" height="56" rx="2" fill="none" stroke="#F2C14E" stroke-width="1.4"/>${orn(x + 16, 128)}${orn(x + 16, 148)}<circle cx="${x + knob}" cy="137" r="1.8" fill="#F2C14E"/></g>`;
     return `<g class="yi-ward" role="button" aria-label="Гардероб">
       <rect x="318" y="200" width="6" height="7" fill="#6E2414"/><rect x="382" y="200" width="6" height="7" fill="#6E2414"/>
       <ellipse cx="353" cy="207" rx="42" ry="3.5" fill="rgba(50,20,5,.28)"/>
@@ -71,8 +71,7 @@
       <path d="M322 111H384" stroke="#9C7743" stroke-width="1.6"/>
       <path d="M337 111L329 120L327 166H347L345 120Z" fill="#2D7DD2" stroke="#1C5596" stroke-width="1"/><path d="M337 112V166" stroke="#F2C14E" stroke-width="1.2"/>
       <path d="M367 111L359 120L357 160H377L375 120Z" fill="#7C3AED" stroke="#4C1D95" stroke-width="1"/><path d="M367 112V160" stroke="#F2C14E" stroke-width="1.2"/>
-      ${door(320, 'yi-wd-l')}${door(354, 'yi-wd-r')}
-      <circle cx="349" cy="137" r="1.8" fill="#F2C14E"/><circle cx="357" cy="137" r="1.8" fill="#F2C14E"/>
+      ${door(320, 'yi-wd-l', 29)}${door(354, 'yi-wd-r', 3)}
       <rect x="320" y="174" width="66" height="11" rx="1.5" fill="#C64A2C" stroke="#8E2F1A"/><rect x="320" y="187" width="66" height="11" rx="1.5" fill="#C64A2C" stroke="#8E2F1A"/>
       <circle cx="353" cy="179.5" r="2" fill="#F2C14E"/><circle cx="353" cy="192.5" r="2" fill="#F2C14E"/>
     </g>`;
@@ -104,7 +103,7 @@
   function interior(mascotSvg, sl, opts) {
     const c = (sl && sl.c) || '#2D7DD2', cuff = (sl && sl.cuff) || '#F2C14E';
     opts = opts || {};
-    const indoor = opts.tree ? `<g class="ny-indoor" transform="translate(104 248)"><ellipse cx="0" cy="4" rx="16" ry="4" fill="rgba(40,15,5,.28)"/><rect x="-12" y="-4" width="24" height="8" rx="2" fill="#C92A2A"/><rect x="-3" y="-14" width="6" height="12" fill="#5C3A21"/><polygon points="0,-64 16,-38 -16,-38" fill="#14522C"/><polygon points="0,-46 20,-20 -20,-20" fill="#1C6E3C"/><polygon points="0,-30 24,-6 -24,-6" fill="#24824A"/><polygon points="0,-72 3.4,-62 -3.4,-62" fill="#FFD43B"/><circle cx="-6" cy="-40" r="2.3" fill="#FF2A2A"/><circle cx="6" cy="-26" r="2.3" fill="#FFD700"/><circle cx="-2" cy="-14" r="2.1" fill="#00A8FF"/><circle cx="8" cy="-46" r="2.1" fill="#00E676"/></g>` : '';
+    const indoor = opts.tree ? `<g class="ny-indoor" transform="translate(338 274)"><ellipse cx="0" cy="4" rx="16" ry="4" fill="rgba(40,15,5,.28)"/><rect x="-12" y="-4" width="24" height="8" rx="2" fill="#C92A2A"/><rect x="-3" y="-14" width="6" height="12" fill="#5C3A21"/><polygon points="0,-64 16,-38 -16,-38" fill="#14522C"/><polygon points="0,-46 20,-20 -20,-20" fill="#1C6E3C"/><polygon points="0,-30 24,-6 -24,-6" fill="#24824A"/><polygon points="0,-72 3.4,-62 -3.4,-62" fill="#FFD43B"/><circle cx="-6" cy="-40" r="2.3" fill="#FF2A2A"/><circle cx="6" cy="-26" r="2.3" fill="#FFD700"/><circle cx="-2" cy="-14" r="2.1" fill="#00A8FF"/><circle cx="8" cy="-46" r="2.1" fill="#00E676"/></g>` : '';
     const inner = String(mascotSvg).replace(/^\s*<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
     let poles = '';
     for (let i = 0; i <= 15; i++) poles += `<path d="M200 -34L${-40 + i * 32} 84" stroke="#C0552B" stroke-width="3.2"/>`;

@@ -283,28 +283,27 @@ window.BG_MASCOT = (function () {
 
   function pantsDetailSvg(o) {
     const c = o.color;
-    const belt = `<path d="M74 170 H126" stroke="#2C241C" stroke-width="5" stroke-linecap="round"/><rect x="93" y="166" width="14" height="9" rx="2" fill="#E6C36A" stroke="#8A6A22" stroke-width="1"/>`;
+    const belt = `<path d="M66 168 H134" stroke="#2C241C" stroke-width="6" stroke-linecap="round"/><rect x="93" y="164" width="14" height="10" rx="2" fill="#E6C36A" stroke="#8A6A22" stroke-width="1"/>`;
     if (o.id === 'pants_sport') {
-      return `${belt}<path d="M78 174 H96 Q100 176 96 222 H80 Q74 200 78 174Z" fill="${c}"/><path d="M104 174 H122 Q126 200 120 222 H104 Q100 176 104 174Z" fill="${c}"/>
-        <path d="M79 176 V220" stroke="#F4FBFF" stroke-width="3.2" stroke-linecap="round"/><path d="M121 176 V220" stroke="#7EC8FF" stroke-width="3.2" stroke-linecap="round"/>
-        <path d="M88 178 V218 M112 178 V218" stroke="rgba(255,255,255,.22)" stroke-width="1"/>`;
+      return `${belt}<path d="M66 172 H98 Q104 178 100 224 H74 Q58 200 66 172Z" fill="${c}"/><path d="M102 172 H134 Q142 200 126 224 H100 Q96 178 102 172Z" fill="${c}"/>
+        <path d="M68 176 V220" stroke="#F4FBFF" stroke-width="3.4" stroke-linecap="round"/><path d="M132 176 V220" stroke="#7EC8FF" stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M84 176 V220 M116 176 V220" stroke="rgba(255,255,255,.22)" stroke-width="1.2"/>`;
     }
     if (o.id === 'pants_jeans') {
-      return `${belt}<path d="M78 174 H96 Q99 178 96 222 H80 Q75 202 78 174Z" fill="#2B5B84"/><path d="M104 174 H122 Q125 202 120 222 H104 Q101 178 104 174Z" fill="#2B5B84"/>
-        <path d="M82 178 V218 M92 178 V218 M108 178 V218 M118 178 V218" stroke="#D5E6F5" stroke-width=".8" stroke-dasharray="2 1.6"/>
-        <path d="M80 188 h9 v8 h-9 z M111 188 h9 v8 h-9 z" fill="none" stroke="#E7F1FA" stroke-width="1.1"/>
-        <path d="M87 174 Q86 184 79 186 M113 174 Q114 184 121 186" stroke="#F2B705" stroke-width="1.3" fill="none"/>
-        <circle cx="84" cy="196" r="1.1" fill="#E7F1FA"/><circle cx="116" cy="196" r="1.1" fill="#E7F1FA"/>`;
+      return `${belt}<path d="M66 172 H98 Q103 178 99 224 H74 Q58 202 66 172Z" fill="#2B5B84"/><path d="M102 172 H134 Q142 202 126 224 H101 Q97 178 102 172Z" fill="#2B5B84"/>
+        <path d="M74 178 V220 M90 178 V220 M110 178 V220 M126 178 V220" stroke="#D5E6F5" stroke-width=".9" stroke-dasharray="2 1.6"/>
+        <path d="M70 188 h12 v9 h-12 z M118 188 h12 v9 h-12 z" fill="none" stroke="#E7F1FA" stroke-width="1.2"/>
+        <path d="M86 172 Q84 184 72 188 M114 172 Q116 184 128 188" stroke="#F2B705" stroke-width="1.4" fill="none"/>
+        <circle cx="78" cy="198" r="1.2" fill="#E7F1FA"/><circle cx="124" cy="198" r="1.2" fill="#E7F1FA"/>`;
     }
     if (o.id === 'pants_umden') {
-      return `${belt}<path d="M74 174 Q64 198 72 220 H100 Q102 196 96 174Z" fill="${c}"/><path d="M104 174 Q98 196 100 220 H128 Q136 198 126 174Z" fill="${c}"/>
-        <path d="M73 210 H99 M101 210 H127" stroke="#E6C98A" stroke-width="3.4" stroke-linecap="round"/>
-        <path d="M78 188 Q88 196 96 186 M104 186 Q114 196 124 188" stroke="#E6C98A" stroke-width="1.3" fill="none"/>
-        <path d="M80 200 h6 M114 200 h6" stroke="#F3E6C8" stroke-width="1.2"/>`;
+      return `${belt}<path d="M64 172 Q48 200 62 226 H102 Q108 196 98 172Z" fill="${c}"/><path d="M102 172 Q92 196 98 226 H138 Q152 200 136 172Z" fill="${c}"/>
+        <path d="M64 214 H100 M100 214 H136" stroke="#E6C98A" stroke-width="3.6" stroke-linecap="round"/>
+        <path d="M72 190 Q86 200 96 188 M104 188 Q116 200 130 190" stroke="#E6C98A" stroke-width="1.4" fill="none"/>`;
     }
-    return `${belt}<path d="M79 174 H96 Q99 178 96 222 H81 Q75 202 79 174Z" fill="${c}"/><path d="M104 174 H121 Q125 202 119 222 H104 Q101 178 104 174Z" fill="${c}"/>
-      <path d="M87.5 178 V218 M112.5 178 V218" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/>
-      <path d="M81 186 H94 M106 186 H119" stroke="rgba(0,0,0,.18)" stroke-width="1"/>`;
+    return `${belt}<path d="M66 172 H98 Q103 178 99 224 H74 Q58 202 66 172Z" fill="${c}"/><path d="M102 172 H134 Q142 202 126 224 H101 Q97 178 102 172Z" fill="${c}"/>
+      <path d="M84 178 V220 M116 178 V220" stroke="rgba(255,255,255,.35)" stroke-width="1.3"/>
+      <path d="M72 188 H94 M106 188 H128" stroke="rgba(0,0,0,.18)" stroke-width="1"/>`;
   }
 
   /* Рука: рукав с обводкой, манжета и кисть с большим пальцем */

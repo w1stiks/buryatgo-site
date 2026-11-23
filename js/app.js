@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.12';
+  const APP_VERSION = 'BETA 1.11.13';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -1494,8 +1494,9 @@
   /* ───────── v1.12: поездка верхом в Улан-Удэ и обратно ───────── */
   const CITY_BADGE = '<div class="city-badge">🏙️ Улан-Удэ · Площадь Советов</div>';
   function riderHtml(h) {
+    const fest = !!(st().nyInstalled && st().nyInstalled.ny_horse);
     return `<div class="rider" id="rider" role="button" aria-label="Бато верхом"><div class="rd-in">
-      <div class="rd-horse"><svg class="horse-svg" viewBox="-62 -96 124 104" xmlns="http://www.w3.org/2000/svg">${window.BG_ART.horse(0, 0, 1, h, 0, true)}</svg></div>
+      <div class="rd-horse"><svg class="horse-svg" viewBox="-62 -108 124 118" xmlns="http://www.w3.org/2000/svg">${window.BG_ART.horse(0, 0, 1, h, 0, true, fest)}</svg></div>
       <div class="rd-bato">${M.svg(st().equip, { mood: 'happy', cls: 'static' })}</div>
       <div class="rd-leg"><i></i></div></div></div>`;
   }
@@ -1826,7 +1827,8 @@
     setTimeout(() => { wxBind(scr); placeDog($('#stage', scr) || $('#stage')); }, 0);
     const stage = $('#stage', scr), hold = $('#mHold', scr); if (!stage || !hold) return;
     $$('.horse-hit, .rider, .dog-wrap, .city-badge, .forest-hint, .yurt-hit, .yurt-in, .pl-hit, #walker, .gov-in, .pl-spark', stage).forEach(x => x.remove());
-    if (ui.loc === 'city' || ui.loc === 'forest' || false && ui.loc === 'datsan') {
+    if (ui.loc === 'datsan') ui.loc = 'city';
+    if (ui.loc === 'city' || ui.loc === 'forest') {
       const h = rideHorseOf(ui.rideHorse);
       if (h) {
         const sc = $('.scene', stage); if (sc) sc.innerHTML = ui.loc === 'forest' ? forestSceneHtml() : placeScene(ui.loc);
@@ -1866,7 +1868,7 @@
     if (ui.loc === 'forest') return 'translateX(' + (w * -.28) + 'px) translateY(6px)';
     return false && ui.loc === 'datsan' ? 'translateX(' + (w * -.01) + 'px) translateY(-6px) scale(.72)' : 'translateX(' + (w * .26) + 'px)';
   }
-  function placeScene(loc) { return loc === 'datsan' ? window.BG_DATSAN.scene(st()) : window.BG_ART.city(); }
+  function placeScene() { return window.BG_ART.city(); }
   function datsanState() {
     const s = st();
     if (!s.datsan || typeof s.datsan !== 'object') s.datsan = { offers: 0, recent: [], flags: [], khiiLast: 0 };
@@ -1928,10 +1930,6 @@
       : { n: 10, area: { x0: 30, x1: 370, y0: 244, y1: 292 } });
     if (ui.loc === 'city') placeHit(stage, '.ct-door', '🚪 Войти', () => enterGov(scr), 4);
     else if (ui.loc === 'forest') { if (!forestGot()) placeHit(stage, '.fr-target', 'Срубить', () => chopForest(scr), 8); }
-    else {
-      placeHit(stage, '.ds-table', '🙏 Подношение', () => offerModal(scr), 6);
-      placeHit(stage, '.ds-pole', '🎏 Хии морин', () => hangKhii(scr), 0);
-    }
     if (ui.loc === 'city' && ui.inGov) { w.style.opacity = '0'; mountGov(stage, scr, true); }
   }
   function govK(p) { return Math.max(.28, Math.min(.6, 36 * p.k / 101)); }
@@ -2054,7 +2052,7 @@
     r.style.transform = `translateX(${sr.width / 2 + rw}px) scale(1)`;   /* вправо, за край экрана */
     await wait12(1550);
     stage.classList.add('fade'); await wait12(280);
-    ui.loc = toForest ? 'forest' : (window.__BG_DEST || (Math.random() < .5 ? 'datsan' : 'city')); ui.inGov = false; ui.placeBusy = false;
+    ui.loc = toForest ? 'forest' : 'city'; ui.inGov = false; ui.placeBusy = false;
     const sc = $('.scene', stage); if (sc) sc.innerHTML = ui.loc === 'forest' ? forestSceneHtml() : placeScene(ui.loc);
     if (dw) dw.remove();
     stage.classList.remove('fade');
@@ -2171,7 +2169,8 @@
       btn = s.freezes >= 2 ? '<button class="btn" disabled>Максимум 2 заморозки</button>'
         : `<button class="btn gold" data-act="buy">Купить за <img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}</button>`;
     } else if (!owned) {
-      if (it.premiumOnly && !S.isPremium()) btn = '<button class="btn purple" data-act="super">👑 Доступно в Super</button>';
+      if (it.id === 'ny_dog' && !dogState()) btn = '<button class="btn" disabled>Сначала заведите собаку в разделе «Питомцы»</button>';
+      else if (it.premiumOnly && !S.isPremium()) btn = '<button class="btn purple" data-act="super">👑 Доступно в Super</button>';
       else btn = `<button class="btn gold" data-act="buy">Купить за <img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}</button>`;
     } else if (eq) {
       btn = it.slot === 'outfit' && id === 'tshirt_green' ? '<button class="btn" disabled>Базовая одежда</button>' : '<button class="btn ghost dark" data-act="unequip">Снять</button>';
@@ -2191,7 +2190,16 @@
         else if (act === 'super') { closeModal(); openPaywall(); }
         else if (act === 'buy') buyItem(it);
         else if (act === 'refill') { if (refillCup(it)) { closeModal(); refreshShop(true); } }
-        else if (act === 'equip') { if (it.slot === 'ny') { if (!s.nyInstalled) s.nyInstalled = {}; s.nyInstalled[id] = true; } else s.equip[it.slot] = id; S.save(); closeModal(); sfx('pop'); refreshShop(true); }
+        else if (act === 'equip') {
+          if (it.id === 'ny_dog') {
+            if (!dogState()) { toast('Сначала заведите собаку в разделе «Питомцы»'); return; }
+            s.equip.dhat = null; s.equip.dacc = null; s.equip.dcoat = null;
+          }
+          if (it.dog && s.nyInstalled) delete s.nyInstalled.ny_dog;
+          if (it.slot === 'ny') { if (!s.nyInstalled) s.nyInstalled = {}; s.nyInstalled[id] = true; }
+          else s.equip[it.slot] = id;
+          S.save(); closeModal(); sfx('pop'); refreshShop(true);
+        }
         else if (act === 'unequip') { if (it.slot === 'ny') { if (s.nyInstalled) delete s.nyInstalled[id]; } else s.equip[it.slot] = it.slot === 'outfit' ? 'tshirt_green' : null; S.save(); closeModal(); refreshShop(false); }
       };
     });
@@ -2199,7 +2207,7 @@
 
   function buyItem(it) {
     const s = st();
-    if (it.dog && !dogState()) { toast('🐕 Сначала заведите собаку в разделе «Питомцы»'); return; }
+    if ((it.dog || it.id === 'ny_dog') && !dogState()) { toast('Сначала заведите собаку в разделе «Питомцы»'); return; }
     if (it.revive && !(s.lostStreak && s.lostStreak.n > 0)) { toast('🔥 Огонёк и так горит'); return; }
     if (it.food && s.owned.indexOf('buuza_plate') < 0) { toast('🍽️ Сначала купите «Тарелку бууз»'); haptic('error'); return; }
     if (it.food && (s.buuz || 0) >= 99) { toast('🥟 Тарелка полна (99)'); return; }
@@ -2215,7 +2223,7 @@
     else if (it.food) { s.buuz = Math.min(99, (s.buuz || 0) + it.food); s.equip.hand = 'buuza_plate'; }
     else if (it.offer) { s.offerInv = s.offerInv || {}; s.offerInv[it.offer] = Math.min(99, (s.offerInv[it.offer] || 0) + (it.qty || 1)); }
     else if (it.consumable) { s.freezes = Math.min(2, s.freezes + 1); }
-    else { if (s.owned.indexOf(it.id) < 0) s.owned.push(it.id); if (it.slot !== 'ny') s.equip[it.slot] = it.id; if (it.cup) cupsState()[it.id] = true; if (it.plate) s.buuz = Math.min(99, (s.buuz || 0) + it.plate); }
+    else { if (s.owned.indexOf(it.id) < 0) s.owned.push(it.id); if (it.dog && s.nyInstalled) delete s.nyInstalled.ny_dog; if (it.slot !== 'ny') s.equip[it.slot] = it.id; if (it.id === 'ny_dog') { s.equip.dhat = null; s.equip.dacc = null; s.equip.dcoat = null; if (!s.nyInstalled) s.nyInstalled = {}; s.nyInstalled.ny_dog = true; } if (it.cup) cupsState()[it.id] = true; if (it.plate) s.buuz = Math.min(99, (s.buuz || 0) + it.plate); }
     S.save();
     closeModal();
     sfx('coin'); haptic('success'); confetti();
@@ -3111,8 +3119,9 @@ function horseModal(id) {
       processWeek();
       const r = S.checkStreak();
       if (r === 'lost') toast('💔 Огонёк потух. Верните серию предметом «Возрождение Огонька» в магазине → Заморозки');
-      if (ui.view !== 'lesson' && !modalOpen()) render();
       if (st().pendingLeagueResult && !modalOpen()) leagueResultModal();
+      if (ui.view === 'shop' && ui.loc && ui.loc !== 'home') return;
+      if (ui.view !== 'lesson' && !modalOpen()) render();
     },
     onNotifPermission(granted) {
       if (!granted) {
