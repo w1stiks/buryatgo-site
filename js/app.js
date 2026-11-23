@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.10.26';
+  const APP_VERSION = 'BETA 1.10.27';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -2560,7 +2560,7 @@
         ${row('🔉 Громкость музыки', '', `<input type="range" id="musVol" min="0" max="1" step="0.05" value="${cfg.musicVol}" style="width:130px">`)}
         ${row('🗣️ Озвучка слов', 'Синтез речи устройства', sw('tts', cfg.tts))}
         <div class="set-row" style="flex-wrap:wrap"><div class="lb">🐢 Скорость речи</div>${pills('rate', [[0.6, 'Медленно'], [0.85, 'Нормально'], [1.05, 'Быстро']], cfg.ttsRate)}</div>
-        ${row('🎙️ Голос', 'По умолчанию — женский голос (Irina)', '<select id="voiceSel" class="voice-sel"><option value="female">Женский голос</option><option value="male">Мужской голос</option></select>')}
+        ${row('🎙️ Голос', 'По умолчанию — мужской голос', '<select id="voiceSel" class="voice-sel"><option value="male" selected>Мужской голос</option><option value="female">Женский голос</option></select>')}
         ${row('🔊 Проверить озвучку', '«Амар мэндэ!»', '<button class="btn small blue" id="ttsTest">Слушать</button>')}
         ${row('👋 Проверить прощание', '«Баяртай!» звучит как «Баяртэ»', '<button class="btn small blue" id="ttsBye">Слушать</button>')}
         ${row('📳 Вибрация', 'Тактильный отклик', sw('haptics', cfg.haptics))}
@@ -2607,7 +2607,7 @@
     $('#ttsTest').onclick = () => { if (!cfg.tts) { toast('Включите озвучку слов'); return; } speak('Амар мэндэ!'); };
     $('#ttsBye').onclick = () => { if (!cfg.tts) { toast('Включите озвучку слов'); return; } speak('Баяртай!'); };
     const vs = $('#voiceSel');
-    vs.value = cfg.voice === 'male' ? 'male' : 'female';
+    vs.value = cfg.voice === 'female' ? 'female' : 'male';
     vs.onchange = () => { cfg.voice = vs.value; S.save(); A.setVoice(cfg.voice); speak('Амар мэндэ!'); };
     const nt = $('#notifTime');
     nt.onchange = () => { if (!nt.value) return; cfg.notifTime = nt.value; S.save(); if (cfg.notif) { applyReminder(); toast('⏰ Напоминание в ' + nt.value); } };

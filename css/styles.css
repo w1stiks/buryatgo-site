@@ -2428,3 +2428,15 @@ body[data-view="profile"] #app {
 .modal .age-opt small {
   color: #B8D4FF !important;
 }
+
+
+/* Time input dark */
+body[data-view="settings"] input[type="time"],
+input[type="time"]#notifTime {
+  background: #0B1E42 !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255,255,255,.25) !important;
+  border-radius: 10px !important;
+  color-scheme: dark !important;
+  padding: 6px 10px !important;
+}
