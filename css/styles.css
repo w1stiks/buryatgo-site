@@ -2584,3 +2584,31 @@ body[data-view="shop"] .seg button[data-slot="ny"] {
   25% { opacity: 1; }
   100% { opacity: 0; }
 }
+
+.forest-hint {
+  position: absolute;
+  top: 58px;
+  right: 10px;
+  z-index: 6;
+  max-width: 190px;
+  background: #102A5C;
+  color: #fff;
+  font: 700 12px/1.35 system-ui, sans-serif;
+  padding: 8px 10px;
+  border-radius: 14px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.28);
+  pointer-events: none;
+}
+.fr-target .stump { opacity: 0; }
+.fr-target .crown, .fr-target .stump { transform-box: fill-box; transform-origin: 50% 100%; }
+.fr-target.shake .crown { animation: treeShake .14s linear 4; }
+.fr-target.fall .crown { animation: treeFall .5s ease-in forwards; }
+.fr-target.down .crown { opacity: 0; }
+.fr-target.down .stump { opacity: 1; }
+.walker.chop .wk-in { animation: axeChop .22s ease-in-out 3; transform-origin: 70% 70%; }
+@keyframes axeChop {
+  0% { transform: rotate(0); }
+  35% { transform: rotate(-22deg); }
+  70% { transform: rotate(10deg); }
+  100% { transform: rotate(0); }
+}

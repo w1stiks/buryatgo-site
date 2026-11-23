@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.8';
+  const APP_VERSION = 'BETA 1.11.9';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -1791,13 +1791,14 @@
   function bindStageExtras(scr) {
     setTimeout(() => { wxBind(scr); placeDog($('#stage', scr) || $('#stage')); }, 0);
     const stage = $('#stage', scr), hold = $('#mHold', scr); if (!stage || !hold) return;
-    $$('.horse-hit, .rider, .dog-wrap, .city-badge, .yurt-hit, .yurt-in, .pl-hit, #walker, .gov-in, .pl-spark', stage).forEach(x => x.remove());
-    if (ui.loc === 'city' || false && ui.loc === 'datsan') {
+    $$('.horse-hit, .rider, .dog-wrap, .city-badge, .forest-hint, .yurt-hit, .yurt-in, .pl-hit, #walker, .gov-in, .pl-spark', stage).forEach(x => x.remove());
+    if (ui.loc === 'city' || ui.loc === 'forest' || false && ui.loc === 'datsan') {
       const h = rideHorseOf(ui.rideHorse);
       if (h) {
-        const sc = $('.scene', stage); if (sc) sc.innerHTML = placeScene(ui.loc);
+        const sc = $('.scene', stage); if (sc) sc.innerHTML = ui.loc === 'forest' ? forestSceneHtml() : placeScene(ui.loc);
         hold.classList.add('away');
-        stage.insertAdjacentHTML('beforeend', riderHtml(h) + (false && ui.loc === 'datsan' ? DATSAN_BADGE : CITY_BADGE));
+        const badge = ui.loc === 'forest' ? FOREST_BADGE : (false && ui.loc === 'datsan' ? DATSAN_BADGE : CITY_BADGE);
+        stage.insertAdjacentHTML('beforeend', riderHtml(h) + badge + (ui.loc === 'forest' ? forestHintHtml() : ''));
         const r = $('#rider', stage); r.classList.add('idle', 'empty'); r.style.transition = 'none'; r.style.transform = placeRiderTf(stage.getBoundingClientRect().width); ui.placeBusy = false;
         requestAnimationFrame(() => placeSetup(scr, h, false));
         r.onclick = () => rideHome(scr, h);
@@ -1827,7 +1828,10 @@
   const WEEK_MS = 7 * 24 * 31000 * 1000;
   const OFFERS = [{ k: 'sweets', n: 'Сладости', i: '🍬' }, { k: 'butter', n: 'Масло', i: '🧈' }, { k: 'milk', n: 'Молоко', i: '🥛' }, { k: 'tea', n: 'Чай', i: '🍵' }];
   /* В дацане конь стоит у ступеней (в центре, чуть дальше), не заслоняя стол и столб */
-  function placeRiderTf(w) { return false && ui.loc === 'datsan' ? 'translateX(' + (w * -.01) + 'px) translateY(-6px) scale(.72)' : 'translateX(' + (w * .26) + 'px)'; }
+  function placeRiderTf(w) {
+    if (ui.loc === 'forest') return 'translateX(' + (w * -.28) + 'px) translateY(6px)';
+    return false && ui.loc === 'datsan' ? 'translateX(' + (w * -.01) + 'px) translateY(-6px) scale(.72)' : 'translateX(' + (w * .26) + 'px)';
+  }
   function placeScene(loc) { return loc === 'datsan' ? window.BG_DATSAN.scene(st()) : window.BG_ART.city(); }
   function datsanState() {
     const s = st();
@@ -1885,10 +1889,11 @@
     wkSet(w, hs.x, hs.y, 1);
     if (fresh) w.classList.add('hop-off');
     const svg = $('.scene .city-svg', stage);
-    if (window.BG_PLACES) window.BG_PLACES.pigeons(svg, () => WX.mode, false && ui.loc === 'datsan'
+    if (ui.loc !== 'forest' && window.BG_PLACES) window.BG_PLACES.pigeons(svg, () => WX.mode, false && ui.loc === 'datsan'
       ? { n: 6, area: { x0: 150, x1: 250, y0: 252, y1: 292 } }
       : { n: 10, area: { x0: 30, x1: 370, y0: 244, y1: 292 } });
     if (ui.loc === 'city') placeHit(stage, '.ct-door', '🚪 Войти', () => enterGov(scr), 4);
+    else if (ui.loc === 'forest') { if (!forestGot()) placeHit(stage, '.fr-target', 'Срубить', () => chopForest(scr), 8); }
     else {
       placeHit(stage, '.ds-table', '🙏 Подношение', () => offerModal(scr), 6);
       placeHit(stage, '.ds-pole', '🎏 Хии морин', () => hangKhii(scr), 0);
@@ -1995,8 +2000,9 @@
   async function rideCity(scr, i, g) {
     if (ui.ritual || ui.riding || ui.skating || ui.sheltered) return;
     const hs = stageHorses() || [], h = hs[i] || hs[0]; if (!h) return;
+    const toForest = Math.random() < 0.5;
     const stage = $('#stage', scr), hold = $('#mHold', scr);
-    if (Math.random() < 0.5) { goForest(); return; } ui.riding = true; ui.rideHorse = h.id; sfx('pop'); haptic('light');
+    ui.riding = true; ui.rideHorse = h.id; sfx('pop'); haptic('light');
     const sr = stage.getBoundingClientRect(), gr = g.getBoundingClientRect();
     hold.classList.add('away');                              /* Бато идёт к коню */
     const dw = $('.dog-wrap', stage); if (dw) dw.classList.add('away');
@@ -2014,29 +2020,55 @@
     r.style.transform = `translateX(${sr.width / 2 + rw}px) scale(1)`;   /* вправо, за край экрана */
     await wait12(1550);
     stage.classList.add('fade'); await wait12(280);
-    ui.loc = window.__BG_DEST || (Math.random() < .5 ? 'datsan' : 'city'); ui.inGov = false; ui.placeBusy = false;
-    const sc = $('.scene', stage); if (sc) sc.innerHTML = placeScene(ui.loc);
+    ui.loc = toForest ? 'forest' : (window.__BG_DEST || (Math.random() < .5 ? 'datsan' : 'city')); ui.inGov = false; ui.placeBusy = false;
+    const sc = $('.scene', stage); if (sc) sc.innerHTML = ui.loc === 'forest' ? forestSceneHtml() : placeScene(ui.loc);
     if (dw) dw.remove();
     stage.classList.remove('fade');
     r.style.transition = 'none'; r.style.transform = `translateX(${-(sr.width / 2 + rw)}px)`; void r.offsetWidth;
     r.style.transition = 'transform 1.4s cubic-bezier(.2,.7,.3,1)'; r.style.transform = placeRiderTf(sr.width);
     await wait12(1450);
     r.classList.remove('gallop'); r.classList.add('idle');
-    stage.insertAdjacentHTML('beforeend', false && ui.loc === 'datsan' ? DATSAN_BADGE : CITY_BADGE);
+    stage.insertAdjacentHTML('beforeend', ui.loc === 'forest' ? FOREST_BADGE + forestHintHtml() : (false && ui.loc === 'datsan' ? DATSAN_BADGE : CITY_BADGE));
     placeSetup(scr, h, true);
     ui.riding = false;
-    toast(false && ui.loc === 'datsan' ? '🛕 Бато прискакал в Иволгинский дацан! Сделайте подношение или поднимите Хии морин' : '🏛️ Бато в Улан-Удэ! Нажмите на дверь Дома Правительства, чтобы войти');
+    toast(ui.loc === 'forest' ? forestHintText() : (false && ui.loc === 'datsan' ? '🛕 Бато прискакал в Иволгинский дацан! Сделайте подношение или поднимите Хии морин' : '🏛️ Бато в Улан-Удэ! Нажмите на дверь Дома Правительства, чтобы войти'));
+  }
+  async function chopForest(scr) {
+    if (ui.placeBusy || ui.riding) return;
+    const s = st();
+    if (!(s.equip && s.equip.hand === 'axe')) { toast('Нужен топор. Купи его в магазине, раздел «В руку», за 50 бууз и возьми в руку'); haptic('error'); return; }
+    if (forestGot()) { toast('Ёлка уже срублена'); return; }
+    const stage = $('#stage', scr), w = $('#walker', stage), tree = $('.fr-target', stage);
+    if (!w || !tree) return;
+    ui.placeBusy = true; hitsOff(stage, true);
+    const p = stagePt(stage, 200, 268);
+    await wkWalk(w, p.x, p.y, Math.max(.62, Math.min(1, p.k || 1)), 95);
+    w.classList.add('chop'); tree.classList.add('shake'); sfx('pop');
+    await wait12(700);
+    tree.classList.remove('shake'); tree.classList.add('fall');
+    await wait12(560);
+    if (s.owned.indexOf('ny_tree') < 0) s.owned.push('ny_tree');
+    S.save();
+    tree.classList.add('down');
+    w.classList.remove('chop');
+    const hint = $('.forest-hint', stage); if (hint) hint.textContent = forestHintText();
+    $$('.pl-hit', stage).forEach(x => x.remove());
+    toast('Ты срубил пушистую новогоднюю ёлку. Она в разделе «Новогоднее»');
+    sfx('coin'); haptic('success');
+    const hs = horseSpot(stage); await wkWalk(w, hs.x, hs.y, 1, 110);
+    ui.placeBusy = false;
   }
   async function rideHome(scr, h) {
     if (ui.riding || ui.placeBusy || ui.inGov) return;
     const stage = $('#stage', scr), r = $('#rider', stage); if (!r) return;
-    if (Math.random() < 0.5) { goForest(); return; } ui.riding = true; sfx('pop'); haptic('light');
+    ui.riding = true; sfx('pop'); haptic('light');
     $$('.pl-hit, .pl-spark', stage).forEach(x => x.remove());
     const wk = $('#walker', stage);
     if (wk) { const hp = horseSpot(stage); await wkWalk(wk, hp.x, hp.y, 1, 120); wk.remove(); r.classList.remove('empty', 'idle'); r.classList.add('mount'); await wait12(480); r.classList.remove('mount'); }
     r.classList.remove('empty');
     const sr = stage.getBoundingClientRect(), rw = r.offsetWidth;
     const badge = $('.city-badge', stage); if (badge) badge.remove();
+    $$('.forest-hint', stage).forEach(x => x.remove());
     r.classList.remove('idle'); r.classList.add('gallop', 'back-dir');      /* разворот налево */
     r.style.transition = 'transform 1.4s cubic-bezier(.45,0,.75,1)';
     r.style.transform = `translateX(${-(sr.width / 2 + rw)}px)`;
@@ -2247,53 +2279,16 @@
   }
 
   
-  /* Forest quest */
-  function goForest() {
-    ui.loc = 'forest';
-    const scr = $('#screen');
-    const chopped = st().owned.indexOf('ny_tree') >= 0;
-    scr.innerHTML = `<div class="view forest-view">
-      <div class="forest-scene" id="forestScene">
-        <div class="fs-sky"></div>
-        <div class="fs-snow" id="fsSnow"></div>
-        <div class="fs-tree side" style="left:18px;top:28px;font-size:44px">🌲</div>
-        <div class="fs-tree side" style="right:22px;top:36px;font-size:50px">🌲</div>
-        <div class="fs-tree target" id="targetTree">${chopped ? '🪵' : '🌲'}</div>
-        <div class="fs-chopper" id="chopper"><span class="fs-body">🧒</span><span class="fs-axe" id="fsAxe">🪓</span></div>
-        <div class="fs-horse">🐴</div>
-        <div class="fs-ground"></div>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:12px;justify-content:center">
-        <button class="btn blue" id="chopBtn">${chopped ? 'Ёлка уже срублена' : '🪓 Срубить ёлку'}</button>
-        <button class="btn ghost dark" id="backHome">🏠 Вернуться к юрте</button>
-      </div>
-    </div>`;
-    $('#chopBtn').onclick = chopTree;
-    $('#backHome').onclick = () => { ui.loc = 'home'; go('shop'); };
+  /* Forest is a real location on the shop stage, same frame as Ulan-Ude. */
+  const FOREST_BADGE = '<div class="city-badge">🌲 Зимний еловый лес</div>';
+  function forestGot() { return st().owned.indexOf('ny_tree') >= 0; }
+  function forestHintText() {
+    return forestGot()
+      ? 'Ёлка срублена и добавлена в раздел «Новогоднее»! Нажмите на коня, чтобы вернуться к юрте'
+      : 'Бато в еловом лесу! Нажмите на ёлку, чтобы срубить её топором';
   }
-  function chopTree() {
-    const s = st();
-    const hasAxe = s.equip && s.equip.hand === 'axe';
-    if (!hasAxe) { toast('🪓 Нужен топор! Купи его в магазине в разделе «В руку» за 50 бууз и возьми в руку'); return; }
-    if (s.owned.indexOf('ny_tree') >= 0) { toast('🎄 Ёлка уже срублена!'); return; }
-    const btn = $('#chopBtn'), scene = $('#forestScene'), tree = $('#targetTree'), axe = $('#fsAxe'), snow = $('#fsSnow');
-    if (btn) btn.disabled = true;
-    if (scene) scene.classList.add('chopping');
-    if (axe) axe.classList.add('swing');
-    if (tree) tree.classList.add('shake');
-    sfx('pop');
-    setTimeout(() => { if (tree) { tree.classList.remove('shake'); tree.classList.add('fall'); } if (snow) snow.classList.add('burst'); }, 700);
-    setTimeout(() => {
-      if (s.owned.indexOf('ny_tree') < 0) s.owned.push('ny_tree');
-      S.save();
-      if (tree) tree.textContent = '🪵';
-      if (axe) axe.classList.remove('swing');
-      if (scene) scene.classList.remove('chopping');
-      toast('🎄 Ты срубил пушистую новогоднюю ёлку! Она добавлена в раздел «Новогоднее»');
-      sfx('coin');
-      if (btn) { btn.disabled = false; btn.textContent = 'Ёлка уже срублена'; }
-    }, 1400);
-  }
+  function forestHintHtml() { return `<div class="forest-hint">${forestHintText()}</div>`; }
+  function forestSceneHtml() { return window.BG_ART.forest(forestGot()); }
 function horseModal(id) {
     const s = st(), hs = horseState(), h = D.horses.find(x => x.id === id);
     if (!h) return;
