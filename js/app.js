@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.26';
+  const APP_VERSION = 'BETA 1.11.27';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -399,9 +399,12 @@
     const unit = D.lessonIndex[gi].unit, lesson = D.lessonIndex[gi].lesson;
     const rec = st().lessons[lesson.id];
     const done = !!(rec && rec.done);
-    const prev = gi > 0 ? D.lessonIndex[gi - 1].lesson : null;
-    const open = gi === 0 || !!((st().lessons[prev.id] || {}).done);
-    return { done, open, premiumLocked: !!(unit.superOnly || unit.premium) && !S.isPremium(), times: rec ? rec.times : 0 };
+    const lessons = st().lessons || {};
+    let open = true, blockedAt = -1;
+    for (let i = 0; i < gi; i++) {
+      if (!((lessons[D.lessonIndex[i].lesson.id] || {}).done)) { open = false; blockedAt = i; break; }
+    }
+    return { done, open, blockedAt, premiumLocked: !!(unit.superOnly || unit.premium) && !S.isPremium(), times: rec ? rec.times : 0 };
   }
   function currentGi() {
     for (let i = 0; i < D.lessonIndex.length; i++) { const x = lessonState(i); if (!x.done && x.open) return i; }
@@ -431,10 +434,10 @@
         const x = lessonState(gi);
         const isCur = gi === cur;
         let cls = '', style = '', icon = '★';
-        if (x.open && x.premiumLocked) { cls = 'premium-lock'; icon = '👑'; }
+        if (!x.open) { cls = 'locked'; icon = '🔒'; }
+        else if (x.premiumLocked) { cls = 'premium-lock'; icon = '👑'; }
         else if (x.done) { cls = 'done'; icon = '✔'; }
-        else if (x.open) { style = `background:${u.color};box-shadow:0 7px 0 ${u.shade}`; icon = '★'; }
-        else { cls = 'locked'; icon = '🔒'; }
+        else { style = `background:${u.color};box-shadow:0 7px 0 ${u.shade}`; icon = '★'; }
         html += `<div class="node-wrap" style="transform:translateX(${offsets[gi % offsets.length]}px)">
           ${isCur && !x.premiumLocked ? '<div class="start-bubble">Старт</div><div class="node-current-ring"></div>' : ''}
           <button class="node ${cls}" data-gi="${gi}" style="${style}" aria-label="${esc(l.title)}">${icon}${x.done ? `<span class="crown">×${x.times}</span>` : ''}</button>
@@ -462,8 +465,13 @@
   function openLessonStart(gi) {
     const x = lessonState(gi);
     const unit = D.lessonIndex[gi].unit, lesson = D.lessonIndex[gi].lesson;
+    if (!x.open) {
+      const prev = x.blockedAt >= 0 ? D.lessonIndex[x.blockedAt] : null;
+      toast(prev && prev.unit !== unit ? '🔒 Сначала пройдите предыдущий модуль' : '🔒 Сначала пройдите предыдущий урок');
+      haptic('error');
+      return;
+    }
     if (x.premiumLocked) { openPaywall(); return; }
-    if (!x.open) { toast('🔒 Сначала пройдите предыдущий урок'); haptic('error'); return; }
     const words = lesson.words.map(w => `<span style="display:inline-block;border:2px solid var(--line);border-radius:10px;padding:4px 9px;margin:3px;font-weight:800">${D.words[w].emoji} ${esc(D.words[w].bu)}</span>`).join('');
     const m = openModal(`<div class="big-emo">${unit.icon}</div><h2>${esc(lesson.title)}</h2>
       <p>${esc(unit.title)} · урок ${unit.lessons.indexOf(lesson) + 1} из ${unit.lessons.length}</p>
