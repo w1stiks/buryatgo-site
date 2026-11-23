@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.18';
+  const APP_VERSION = 'BETA 1.11.19';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -3249,56 +3249,54 @@ function horseModal(id) {
       </g>
     </svg>`;
   }
-  function nyDeer(x, y, s, lead) {
-    const A = window.BG_ART;
+  function nyDeer(x, y, s, lead, cls) {
     const coat = { coat: '#8B5A2B', dark: '#6B3E1E', mane: '#F6E7D4', blaze: true };
-    const horns = `<g transform="translate(${x} ${y}) scale(${-s} ${s})">
-      <ellipse cx="2" cy="-34" rx="18" ry="7" fill="#F3E0C8" opacity=".7"/>
-      <path d="M-32 -84 C-42 -102 -34 -118 -26 -120 M-38 -104 L-48 -112 M-38 -104 L-30 -114" stroke="#5C3A21" stroke-width="3.2" fill="none" stroke-linecap="round"/>
-      <path d="M-24 -82 C-14 -102 -8 -116 -2 -120 M-12 -104 L-2 -112 M-12 -104 L-18 -116" stroke="#5C3A21" stroke-width="3.2" fill="none" stroke-linecap="round"/>
-      ${lead ? '<circle cx="-50" cy="-56" r="3.6" fill="#FF2A2A"><animate attributeName="opacity" values="1;.35;1" dur=".5s" repeatCount="indefinite"/></circle>' : ''}
-      <circle cx="-6" cy="-48" r="2.8" fill="#FFD43B"/>
-    </g>`;
-    return A.horse(x, y, s, coat, lead ? 0 : -0.35, true, false) + horns;
+    const body = window.BG_ART.horse(0, 0, 1, coat, lead ? 0 : -0.2, true, false);
+    return `<g transform="translate(${x} ${y}) scale(${s})"><g class="ny-deer ${cls}">
+      ${body}
+      <g transform="scale(-1 1)">
+        <path d="M-34 -86 C-44 -104 -36 -118 -28 -120 M-40 -102 L-50 -110 M-40 -102 L-32 -112" stroke="#5C3A21" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+        <path d="M-24 -84 C-14 -104 -6 -118 0 -120 M-12 -102 L-2 -110 M-12 -102 L-18 -114" stroke="#5C3A21" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+        <ellipse cx="0" cy="-32" rx="16" ry="6" fill="#F3E0C8" opacity=".75"/>
+        ${lead ? '<circle cx="-50" cy="-56" r="3.8" fill="#FF2A2A"/>' : ''}
+        <circle cx="-12" cy="-46" r="3" fill="#FFD43B"/>
+      </g>
+    </g></g>`;
   }
   function santaSvg() {
-    return `<svg viewBox="0 0 520 210" width="520" height="210" aria-hidden="true">
-      ${nyDeer(70, 168, 0.62, true)}
-      ${nyDeer(168, 172, 0.58, false)}
-      ${nyDeer(258, 168, 0.6, false)}
-      <path d="M150 92 C210 78 300 86 360 108" stroke="#C9A227" stroke-width="2.4" fill="none"/>
-      <path d="M250 100 C310 90 350 98 368 112" stroke="#A67C2D" stroke-width="2" fill="none"/>
-      <circle cx="190" cy="96" r="3" fill="#FFD43B"/><circle cx="270" cy="102" r="3" fill="#FFD43B"/>
-      <g transform="translate(348 118)">
-        <path d="M6 46 Q4 58 16 60 H118 Q132 60 128 46" stroke="#E0B03A" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-        <path d="M22 44 V60 M108 42 V58" stroke="#C9A227" stroke-width="2.6"/>
-        <path d="M0 40 C18 8 120 12 138 32 L142 52 C70 66 4 56 0 40Z" fill="#D32222" stroke="#F2B705" stroke-width="2"/>
-        <path d="M10 36 H128" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".9"/>
-        <path d="M12 28 H124" stroke="#F2B705" stroke-width="2"/>
-        <g transform="translate(58 -6) scale(.34)">
-          <ellipse cx="100" cy="230" rx="40" ry="6" fill="rgba(0,0,0,.12)"/>
-          <path d="M62 150 H138 Q146 150 144 168 L136 210 H64 L56 168 Q54 150 62 150Z" fill="#E03131"/>
-          <path d="M60 164 H140" stroke="#fff" stroke-width="8"/>
-          <path d="M64 198 H136" stroke="#fff" stroke-width="8"/>
-          <circle cx="88" cy="180" r="4" fill="#FFD43B"/><circle cx="112" cy="180" r="4" fill="#FFD43B"/>
-          <circle cx="100" cy="78" r="46" fill="#D9A273"/>
-          <path d="M73 70 Q82 66 91 70 M109 70 Q118 66 127 70" stroke="#241A13" stroke-width="3" fill="none" stroke-linecap="round"/>
-          <ellipse cx="82" cy="86" rx="5.5" ry="6.5" fill="#1E1E24"/><ellipse cx="118" cy="86" rx="5.5" ry="6.5" fill="#1E1E24"/>
-          <circle cx="84" cy="83.5" r="2" fill="#fff"/><circle cx="120" cy="83.5" r="2" fill="#fff"/>
-          <ellipse cx="70" cy="100" rx="8" ry="5" fill="#FF8A8A" opacity=".55"/><ellipse cx="130" cy="100" rx="8" ry="5" fill="#FF8A8A" opacity=".55"/>
-          <path d="M92 108 Q100 116 108 108" stroke="#8F2D2D" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-          <path d="M58 104 Q72 150 100 156 Q128 150 142 104 Q120 128 100 130 Q80 128 58 104Z" fill="#F7F4EF"/>
-          <path d="M78 112 Q100 122 122 112 Q108 118 100 118 Q90 118 78 112Z" fill="#F7F4EF"/>
-          <path d="M64 46 Q100 8 136 46 Q118 28 100 30 Q82 28 64 46Z" fill="#E03131"/>
-          <path d="M62 48 H138" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
-          <circle cx="100" cy="18" r="8" fill="#fff"/>
-        </g>
-        <g>
-          <ellipse cx="118" cy="34" rx="16" ry="12" fill="#8E2424"/>
-          <path d="M106 28 Q118 18 130 28" fill="#F2B705"/>
-          <rect x="110" y="30" width="14" height="10" rx="2" fill="#C92A2A" stroke="#FFD43B"/>
+    return `<svg viewBox="0 0 430 130" width="430" height="130" aria-hidden="true">
+      <g transform="translate(4 46)">
+        <path d="M18 58 Q8 72 28 74 H132" stroke="#E0B03A" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+        <path d="M118 62 Q146 70 158 52" stroke="#E0B03A" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+        <path d="M36 58 V72 M124 60 V72" stroke="#C9A227" stroke-width="2.4"/>
+        <path d="M8 52 L8 16 Q8 6 20 6 H46 L46 42" fill="#B71C1C" stroke="#F2B705" stroke-width="2"/>
+        <path d="M20 50 C40 24 100 22 150 34 Q164 40 162 54 C100 66 24 62 20 50Z" fill="#D32222" stroke="#F2B705" stroke-width="2"/>
+        <path d="M128 38 Q158 24 166 50" stroke="#F2B705" stroke-width="3" fill="none"/>
+        <path d="M24 46 H148" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>
+        <ellipse cx="30" cy="34" rx="13" ry="10" fill="#8E2424"/>
+        <path d="M20 30 Q30 20 40 30" fill="#F2B705"/>
+        <g transform="translate(78 4) scale(.36)">
+          <path d="M70 118 H130 Q136 118 134 132 L128 156 H72 L66 132 Q64 118 70 118Z" fill="#E03131"/>
+          <path d="M66 128 H134" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="100" cy="78" r="42" fill="#D9A273"/>
+          <path d="M76 70 Q84 66 92 70 M108 70 Q116 66 124 70" stroke="#241A13" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <ellipse cx="86" cy="84" rx="5" ry="6" fill="#1E1E24"/><ellipse cx="114" cy="84" rx="5" ry="6" fill="#1E1E24"/>
+          <circle cx="88" cy="82" r="1.8" fill="#fff"/><circle cx="116" cy="82" r="1.8" fill="#fff"/>
+          <ellipse cx="74" cy="96" rx="7" ry="4.5" fill="#FF8A8A" opacity=".55"/><ellipse cx="126" cy="96" rx="7" ry="4.5" fill="#FF8A8A" opacity=".55"/>
+          <path d="M94 98 Q100 104 106 98" stroke="#8F2D2D" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+          <path d="M62 96 Q78 132 100 140 Q122 132 138 96 Q124 118 100 122 Q76 118 62 96Z" fill="#F7F4EF"/>
+          <path d="M78 104 Q100 114 122 104 Q108 110 100 110 Q90 110 78 104Z" fill="#F7F4EF"/>
+          <path d="M68 58 Q100 18 132 58 Q116 42 100 44 Q84 42 68 58Z" fill="#E03131"/>
+          <path d="M64 58 H136" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="128" cy="28" r="8" fill="#fff"/>
         </g>
       </g>
+      <path d="M86 62 L162 78 L198 92" stroke="#F2B705" stroke-width="2.2" fill="none"/>
+      <path d="M162 78 L246 94" stroke="#E0B03A" stroke-width="2" fill="none"/>
+      <path d="M162 78 L294 96" stroke="#C9A227" stroke-width="1.8" fill="none"/>
+      ${nyDeer(214, 118, 0.46, false, 'd3')}
+      ${nyDeer(262, 116, 0.48, false, 'd2')}
+      ${nyDeer(310, 118, 0.5, true, 'd1')}
     </svg>`;
   }
   function mountNyGift(stage) {
@@ -3490,11 +3488,13 @@ function horseModal(id) {
     setTimeout(() => sfx('popper'), 180);
     nyConfetti();
     if (st().settings.sfxCorrect !== false && A.playJingle) A.playJingle();
+    if (modalOpen()) closeModal();
+    if (ui.view !== 'shop' || ui.loc !== 'home') { ui.loc = 'home'; ui.riding = false; go('shop'); }
     const stage = $('#stage');
     const layer = document.createElement('div');
-    layer.className = 'ny-night' + (stage ? ' in-stage' : '');
-    layer.innerHTML = `<div class="ny-banner">✨ Началась Новогодняя ночь! Лови подарок от Санты! ✨</div><div class="ny-santa">${santaSvg()}</div>`;
-    (stage || document.body).appendChild(layer);
+    layer.className = 'ny-night in-stage';
+    layer.innerHTML = `<div class="ny-banner">✨ Новогодняя ночь! Лови подарок! ✨</div><div class="ny-santa">${santaSvg()}</div>`;
+    if (stage) stage.appendChild(layer);
     let thrown = false;
     setTimeout(() => {
       if (thrown || nySeen() === ev.id && st().nyGift) return;

@@ -151,13 +151,13 @@ window.BG_ART = (function () {
     const sock = h.sock ? `<rect x="-16.5" y="-12" width="7.5" height="8" fill="#FFF7EC"/><rect x="18.5" y="-12" width="7" height="8" fill="#FFF7EC"/>` : '';
     return `<g class="horse" transform="translate(${x} ${y}) scale(${flip ? -s : s} ${s})">
       <ellipse cx="0" cy="0" rx="36" ry="4.5" fill="rgba(0,0,0,.16)"/>
-      <path d="M12 -30L17 -4H11.5L7 -28Z" fill="${d}"/><path d="M-22 -30L-24 -4H-18.5L-16 -28Z" fill="${d}"/>
+      <path class="hr-hind" d="M12 -30L17 -4H11.5L7 -28Z" fill="${d}"/><path class="hr-hind" d="M-22 -30L-24 -4H-18.5L-16 -28Z" fill="${d}"/>
       <rect x="10.5" y="-5" width="7.5" height="5" rx="1.5" fill="${hoof}"/><rect x="-25" y="-5" width="7.5" height="5" rx="1.5" fill="${hoof}"/>
       <path class="hr-tail" style="animation-delay:${delay || 0}s" d="M29 -46Q45 -44 42 -24Q40 -12 47 -3Q33 -6 32 -22Q31 -34 26 -40Z" fill="${m}"/>
       <path d="M-25 -47Q-10 -55 16 -53Q33 -51 33 -37Q32 -24 20 -24L-17 -24Q-30 -26 -30 -37Q-30 -43 -25 -47Z" fill="${c}" stroke="${line}" stroke-width="1"/>
       <path d="M-26 -30Q0 -22 30 -30Q28 -24 20 -24L-17 -24Q-24 -25 -26 -30Z" fill="rgba(0,0,0,.08)"/>
-      <path d="M22 -32Q28 -18 26 -4H19.5Q20 -16 13 -27Z" fill="${c}" stroke="${line}" stroke-width="1"/>
-      <path d="M-17 -30L-16 -4H-9.5L-8.5 -28Z" fill="${c}" stroke="${line}" stroke-width="1"/>
+      <path class="hr-fore" d="M22 -32Q28 -18 26 -4H19.5Q20 -16 13 -27Z" fill="${c}" stroke="${line}" stroke-width="1"/>
+      <path class="hr-fore" d="M-17 -30L-16 -4H-9.5L-8.5 -28Z" fill="${c}" stroke="${line}" stroke-width="1"/>
       ${sock}
       <rect x="19" y="-5" width="7.5" height="5" rx="1.5" fill="${hoof}"/><rect x="-17" y="-5" width="7.5" height="5" rx="1.5" fill="${hoof}"/>
       ${HORSE_COAT}
