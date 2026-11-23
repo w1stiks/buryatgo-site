@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.9';
+  const APP_VERSION = 'BETA 1.11.10';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -2120,7 +2120,7 @@
   function itemModal(id) {
     const s = st(), it = D.itemsById[id];
     if (!it) return;
-    const owned = s.owned.indexOf(id) >= 0, eq = s.equip[it.slot] === id;
+    const owned = s.owned.indexOf(id) >= 0, nyOn = it.slot === 'ny' && !!(s.nyInstalled && s.nyInstalled[id]), eq = it.slot === 'ny' ? nyOn : s.equip[it.slot] === id;
     let preview;
     if (it.slot === 'bonus' || it.offer) preview = `<div class="bonus-icon" style="font-size:84px">${it.icon || '🧊'}</div>`;
     else { const tryOn = Object.assign({}, s.equip); tryOn[it.slot] = it.food ? 'buuza_plate' : id; preview = it.dog ? '<div class="dog-try">' + window.BG_ART.dogSvg('dog-svg', null, Object.assign(dogWearOf(), { [it.slot]: id })) + '</div>' : M.svg(tryOn, { mood: 'happy', cls: 'wave' }); }
@@ -2137,14 +2137,15 @@
       else btn = `<button class="btn gold" data-act="buy">Купить за <img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}</button>`;
     } else if (eq) {
       btn = it.slot === 'outfit' && id === 'tshirt_green' ? '<button class="btn" disabled>Базовая одежда</button>' : '<button class="btn ghost dark" data-act="unequip">Снять</button>';
-    } else btn = '<button class="btn blue" data-act="equip">Надеть</button>';
+    } else btn = `<button class="btn blue" data-act="equip">${it.slot === 'ny' ? 'Поставить' : 'Надеть'}</button>`;
     if (it.cup && owned && isCupEmpty(id)) btn = `<button class="btn gold" data-act="refill">🔄 Наполнить за ${BZI} ${D.cupRefill}</button>` + btn;
-    const m = openModal(`<div class="mascot-stage v4" style="height:190px;margin:0 0 14px">${stageScene(true)}${STAGE_SKY}<div class="mascot-hold">${preview}</div></div>
+    const m = openModal(`<div class="mascot-stage v4 wx-snow iced" style="height:190px;margin:0 0 14px">${stageScene(true)}${STAGE_SKY}<div class="mascot-hold">${preview}</div></div>
       <h2>${esc(it.name)}</h2><p>${esc(it.desc || (it.slot === 'outfit' ? 'Одежда для Бато' : 'Аксессуар для Бато'))}</p>
       ${it.revive ? `<p style="margin-top:-6px">${s.lostStreak && s.lostStreak.n ? '💔 Потухшая серия: ' + s.lostStreak.n + ' ' + plural(s.lostStreak.n, ['день', 'дня', 'дней']) : '🔥 Сейчас серия: ' + s.streak}</p>` : it.consumable ? `<p style="margin-top:-6px">У вас: ${s.freezes} из 2</p>` : ''}
       ${it.cup && owned ? `<p style="margin-top:-6px">${isCupEmpty(id) ? '🫗 Пиала пустая — наполните, чтобы снова совершить обряд' : '✨ Пиала полная — наденьте и нажмите на Бато'}</p>` : ''}
       ${it.offer ? `<p style="margin-top:-6px">👜 У вас: ${(s.offerInv || {})[it.offer] || 0} шт. · отнесите в Иволгинский дацан</p>` : ''}
       <div class="stack">${btn}<button class="btn ghost dark" data-act="close">Закрыть</button></div>`);
+    m.classList.add('item-modal');
     $$('[data-act]', m).forEach(b => {
       b.onclick = () => {
         const act = b.dataset.act;
@@ -2176,7 +2177,7 @@
     else if (it.food) { s.buuz = Math.min(99, (s.buuz || 0) + it.food); s.equip.hand = 'buuza_plate'; }
     else if (it.offer) { s.offerInv = s.offerInv || {}; s.offerInv[it.offer] = Math.min(99, (s.offerInv[it.offer] || 0) + (it.qty || 1)); }
     else if (it.consumable) { s.freezes = Math.min(2, s.freezes + 1); }
-    else { if (s.owned.indexOf(it.id) < 0) s.owned.push(it.id); s.equip[it.slot] = it.id; if (it.cup) cupsState()[it.id] = true; if (it.plate) s.buuz = Math.min(99, (s.buuz || 0) + it.plate); }
+    else { if (s.owned.indexOf(it.id) < 0) s.owned.push(it.id); if (it.slot !== 'ny') s.equip[it.slot] = it.id; if (it.cup) cupsState()[it.id] = true; if (it.plate) s.buuz = Math.min(99, (s.buuz || 0) + it.plate); }
     S.save();
     closeModal();
     sfx('coin'); haptic('success'); confetti();

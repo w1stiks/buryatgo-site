@@ -2612,3 +2612,20 @@ body[data-view="shop"] .seg button[data-slot="ny"] {
   70% { transform: rotate(10deg); }
   100% { transform: rotate(0); }
 }
+.ny-garland .bulb { animation: nyBlink 1.1s ease-in-out infinite; }
+.ny-garland .bulb:nth-child(3) { animation-delay: .2s; }
+.ny-garland .bulb:nth-child(4) { animation-delay: .4s; }
+.ny-garland .bulb:nth-child(5) { animation-delay: .15s; }
+.ny-garland .bulb:nth-child(6) { animation-delay: .55s; }
+@keyframes nyBlink { 50% { opacity: .35; } }
+.modal.item-modal .btn.ghost.dark {
+  background: #193F85;
+  color: #fff;
+  border: 2px solid #D6E4FF;
+  box-shadow: 0 4px 0 #0B1E42;
+}
+.modal.item-modal .btn.ghost.dark[data-act="close"] {
+  background: #0B1E42;
+  color: #fff;
+  border-color: #D6E4FF;
+}
