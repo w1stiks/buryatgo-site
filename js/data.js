@@ -448,11 +448,12 @@ window.BG_DATA = (function () {
     { id: 'hete', slot: 'hand', name: 'Хэтэ (нож-огниво)', price: 350, color: '#C0C0C0', style: 'knife', desc: 'Серебряный нож-огниво на пояс' },
     /* New Year items */
     { id: 'ny_garland', slot: 'ny', name: 'Гирлянда для юрты', price: 500, icon: '💡', desc: 'Светящаяся гирлянда на крышу юрты' },
-    { id: 'ny_tree', slot: 'ny', name: 'Новогодняя ёлка', price: 800, icon: '🎄', desc: 'Ёлка рядом с юртой' },
+    { id: 'ny_tree', slot: 'ny', name: 'Уличная новогодняя ёлка', price: 800, icon: '🎄', desc: 'Ёлка во дворе рядом с юртой' },
     { id: 'ny_garland2', slot: 'ny', name: 'Гирлянда персонажа', price: 300, icon: '✨', desc: 'Праздничный декор' },
     { id: 'ny_sheep', slot: 'ny', name: 'Костюм овец', price: 400, icon: '🐑', desc: 'Колпаки Санты на овец' },
     { id: 'ny_horse', slot: 'ny', name: 'Костюм лошади', price: 450, icon: '🐴', desc: 'Попона с бубенцами' },
-    { id: 'ny_dog', slot: 'ny', name: 'Костюм собаки', price: 350, icon: '🐕', desc: 'Свитерок с оленями' }
+    { id: 'ny_dog', slot: 'ny', name: 'Костюм собаки', price: 350, icon: '🐕', desc: 'Свитерок с оленями' },
+    { id: 'ny_tree_indoor', slot: 'ny', name: 'Домашняя ёлка в юрту', price: 700, icon: '🎄', desc: 'Ёлка внутри юрты у очага' }
   ];
 
   const slots = [

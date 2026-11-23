@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.3';
+  const APP_VERSION = 'BETA 1.11.4';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -108,7 +108,8 @@
     const s = st();
     const ny = {
       garland: s.equip && s.equip.ny_garland,
-      tree: s.equip && s.equip.ny_tree
+      tree: s.equip && s.equip.ny_tree,
+      treeIndoor: s.equip && s.equip.ny_tree_indoor
     };
     return `<div class="scene" aria-hidden="true">${window.BG_ART.scene({ compact: !!compact, horses: stageHorses(), sheep: petsState().sheep, kennel: !!(s.dog && s.dog.house), ny })}</div>`;
   };
@@ -909,7 +910,8 @@
     ny_garland2: `<svg viewBox="0 0 64 64" width="64" height="64"><path d="M6 32 Q20 20 32 32 Q44 44 58 32" stroke="#FFD43B" stroke-width="3" fill="none"/><circle cx="14" cy="26" r="5" fill="#FF4B4B"/><circle cx="28" cy="38" r="5" fill="#FFD43B"/><circle cx="42" cy="26" r="5" fill="#1CB0F6"/><circle cx="56" cy="34" r="5" fill="#58CC02"/><circle cx="14" cy="26" r="7" fill="#FF4B4B" opacity=".3"/><circle cx="28" cy="38" r="7" fill="#FFD43B" opacity=".3"/></svg>`,
     ny_sheep: `<svg viewBox="0 0 64 64" width="64" height="64"><ellipse cx="32" cy="40" rx="16" ry="12" fill="#f5f5f5"/><circle cx="32" cy="28" r="8" fill="#f5f5f5"/><circle cx="28" cy="26" r="2" fill="#333"/><circle cx="36" cy="26" r="2" fill="#333"/><polygon points="32,14 28,22 36,22" fill="#FF4B4B"/><circle cx="32" cy="12" r="3" fill="#fff"/><path d="M20 42 Q16 50 20 52" stroke="#FF4B4B" stroke-width="3" fill="none"/><path d="M44 42 Q48 50 44 52" stroke="#FF4B4B" stroke-width="3" fill="none"/></svg>`,
     ny_horse: `<svg viewBox="0 0 64 64" width="64" height="64"><ellipse cx="32" cy="36" rx="18" ry="10" fill="#8B4513"/><circle cx="48" cy="28" r="7" fill="#8B4513"/><rect x="28" y="32" width="20" height="8" fill="#C92A2A"/><path d="M28 32 L32 28 L36 32" fill="#FFD43B"/><circle cx="46" cy="26" r="2" fill="#333"/><path d="M50 22 L52 16 L48 18" stroke="#FFD43B" stroke-width="2" fill="none"/><circle cx="52" cy="15" r="2" fill="#FFD43B"/></svg>`,
-    ny_dog: `<svg viewBox="0 0 64 64" width="64" height="64"><ellipse cx="32" cy="40" rx="14" ry="10" fill="#D4A574"/><circle cx="32" cy="26" r="9" fill="#D4A574"/><ellipse cx="24" cy="20" rx="4" ry="6" fill="#D4A574"/><ellipse cx="40" cy="20" rx="4" ry="6" fill="#D4A574"/><circle cx="28" cy="24" r="2" fill="#333"/><circle cx="36" cy="24" r="2" fill="#333"/><ellipse cx="32" cy="30" rx="3" ry="2" fill="#333"/><polygon points="32,10 28,20 36,20" fill="#FF4B4B"/><circle cx="32" cy="8" r="3" fill="#fff"/><rect x="22" y="36" width="20" height="10" rx="3" fill="#C92A2A"/><path d="M26 40 L32 44 L38 40" stroke="#fff" stroke-width="1" fill="none"/></svg>`
+    ny_dog: `<svg viewBox="0 0 64 64" width="64" height="64"><ellipse cx="32" cy="40" rx="14" ry="10" fill="#D4A574"/><circle cx="32" cy="26" r="9" fill="#D4A574"/><ellipse cx="24" cy="20" rx="4" ry="6" fill="#D4A574"/><ellipse cx="40" cy="20" rx="4" ry="6" fill="#D4A574"/><circle cx="28" cy="24" r="2" fill="#333"/><circle cx="36" cy="24" r="2" fill="#333"/><ellipse cx="32" cy="30" rx="3" ry="2" fill="#333"/><polygon points="32,10 28,20 36,20" fill="#FF4B4B"/><circle cx="32" cy="8" r="3" fill="#fff"/><rect x="22" y="36" width="20" height="10" rx="3" fill="#C92A2A"/><path d="M26 40 L32 44 L38 40" stroke="#fff" stroke-width="1" fill="none"/></svg>`,
+    ny_tree_indoor: `<svg viewBox="0 0 64 64" width="64" height="64"><polygon points="32,6 46,24 40,24 50,40 14,40 24,24 18,24" fill="#2F8F5B"/><rect x="28" y="40" width="8" height="8" fill="#8B4513"/><rect x="24" y="48" width="16" height="6" rx="2" fill="#C92A2A"/><polygon points="32,2 34,8 30,8" fill="#FFD43B"/><circle cx="24" cy="30" r="2" fill="#FFD43B"/><circle cx="40" cy="34" r="2" fill="#FFD43B"/><circle cx="32" cy="36" r="2" fill="#FF4B4B"/><rect x="26" y="52" width="4" height="6" fill="#1CB0F6"/><rect x="34" y="52" width="4" height="6" fill="#FF4B4B"/></svg>`
   };
   function itemPreview(it) {
     if (NY_ICONS[it.id]) return NY_ICONS[it.id];
@@ -922,10 +924,10 @@
     const s = st();
     const owned = s.owned.indexOf(it.id) >= 0, eq = s.equip[it.slot] === it.id;
     let tag = '';
-    if (eq) tag = '<span class="tag">Надето</span>';
+    if (eq) tag = `<span class="tag">${it.slot === 'ny' ? 'Установлено' : 'Надето'}</span>`;
     else if (owned && !it.consumable) tag = '<span class="tag" style="background:var(--blue)">Есть</span>';
     else if (it.premiumOnly) tag = '<span class="tag super">SUPER</span>';
-    const price = it.consumable ? `<img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}` : owned ? (eq ? '✔ Надето' : 'Надеть') : `<img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}`;
+    const price = it.consumable ? `<img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}` : owned ? (eq ? (it.slot === 'ny' ? '✔ Установлено' : '✔ Надето') : (it.slot === 'ny' ? 'Поставить' : 'Надеть')) : `<img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}`;
     return `<button class="item-card ${eq ? 'equipped' : ''}" data-id="${it.id}">${tag}<div class="pv">${itemPreview(it)}</div><div class="nm">${esc(it.name)}</div><div class="price">${price}</div></button>`;
   }
   function renderShop(scr) {
@@ -950,10 +952,10 @@
       })() : items.map(it => {
         const owned = s.owned.indexOf(it.id) >= 0, eq = s.equip[it.slot] === it.id;
         let tag = '';
-        if (eq) tag = '<span class="tag">Надето</span>';
+        if (eq) tag = `<span class="tag">${it.slot === 'ny' ? 'Установлено' : 'Надето'}</span>`;
         else if (owned && !it.consumable) tag = '<span class="tag" style="background:var(--blue)">Есть</span>';
         else if (it.premiumOnly) tag = '<span class="tag super">SUPER</span>';
-        const price = it.consumable ? `<img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}` : owned ? (eq ? '✔ Надето' : 'Надеть') : `<img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}`;
+        const price = it.consumable ? `<img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}` : owned ? (eq ? (it.slot === 'ny' ? '✔ Установлено' : '✔ Надето') : (it.slot === 'ny' ? 'Поставить' : 'Надеть')) : `<img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}`;
         const refill = !!(it.cup && owned && isCupEmpty(it.id));
         if (refill) tag = '<span class="tag" style="background:#868E96">Пустая</span>';
         return `<button class="item-card ${eq ? 'equipped' : ''} ${refill ? 'refill' : ''}" data-id="${it.id}" ${refill ? 'data-refill="1"' : ''}>${tag}<div class="pv">${itemPreview(it)}</div><div class="nm">${esc(it.name)}${it.id === 'buuza_plate' && owned ? ' · 🥟' + (s.buuz || 0) : ''}${it.offer ? ' · ' + ((s.offerInv || {})[it.offer] || 0) + ' шт.' : ''}</div><div class="price">${refill ? `🔄 Наполнить ${BZI} ${D.cupRefill}` : price}</div></button>`;
