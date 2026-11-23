@@ -2542,3 +2542,45 @@ body[data-view="shop"] .seg button[data-slot="ny"] {
   30% { opacity: 1; }
   100% { opacity: 0; transform: translateY(40px); }
 }
+
+.forest-view { padding: 4px 0 18px; }
+.forest-card {
+  position: relative;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #c5dff6;
+  box-shadow: 0 10px 28px rgba(0,0,0,.22);
+}
+.forest-svg { display: block; width: 100%; height: auto; }
+.forest-tag {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  background: rgba(16, 42, 92, .88);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 6px 10px;
+  border-radius: 12px;
+}
+.forest-actions { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
+#targetTree .crown, #targetTree .stump { transform-box: fill-box; transform-origin: 50% 100%; }
+#targetTree.shake .crown { animation: treeShake .15s linear 4; }
+#targetTree.fall .crown { animation: treeFall .55s ease-in forwards; }
+#targetTree.down .crown { opacity: 0; }
+#targetTree.down .stump { opacity: 1; }
+#fsAxe { transform-box: fill-box; transform-origin: 30% 85%; }
+.forest-card.chopping #fsAxe.swing { animation: axeSwing .22s ease-in-out 3; }
+.flake { animation: flakeFall 6s linear infinite; }
+@keyframes flakeFall {
+  0% { transform: translateY(-12px); opacity: .15; }
+  15% { opacity: .95; }
+  100% { transform: translateY(110px); opacity: 0; }
+}
+#fsSnow.burst { animation: snowPop .8s ease-out forwards; }
+@keyframes snowPop {
+  0% { opacity: 0; }
+  25% { opacity: 1; }
+  100% { opacity: 0; }
+}

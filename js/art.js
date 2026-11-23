@@ -424,5 +424,71 @@ window.BG_ART = (function () {
     </svg>`;
   }
 
-  return { yurt, yurtSvg, serge, sheep, sun, range, scene, steppe, meander, horse, horseSvg, sheepSvg, dogSvg, kennel, city, leninHead };
+  function spruce(x, y, sc, cls) {
+    return `<g class="spruce ${cls || ''}" transform="translate(${x} ${y}) scale(${sc})">
+      <ellipse cx="0" cy="8" rx="28" ry="5" fill="rgba(255,255,255,.8)"/>
+      <rect x="-3.5" y="-4" width="7" height="16" rx="2" fill="#6B4423"/>
+      <polygon points="0,-92 32,-36 -32,-36" fill="#165A32"/>
+      <polygon points="0,-68 40,-14 -40,-14" fill="#1F7A42"/>
+      <polygon points="0,-42 48,12 -48,12" fill="#2C9456"/>
+      <polygon points="-16,-36 2,-52 10,-30" fill="#F4FAFF"/>
+      <polygon points="8,-16 24,-2 2,4" fill="#FFFFFF" opacity=".85"/>
+      <polygon points="-14,4 10,10 -24,12" fill="#FFFFFF" opacity=".7"/>
+    </g>`;
+  }
+  function forest(chopped) {
+    const k = 'fr' + (++uid);
+    const flakes = [[30, 20], [70, 48], [120, 16], [180, 40], [230, 12], [280, 36], [330, 18], [370, 50], [90, 70], [200, 64], [310, 72]]
+      .map((p, i) => `<circle class="flake" cx="${p[0]}" cy="${p[1]}" r="${i % 3 ? 1.6 : 2.4}" fill="#fff" style="animation-delay:${(i * .35).toFixed(2)}s"/>`).join('');
+    return `<svg class="scene-svg forest-svg" viewBox="0 0 400 260" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="${k}s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6FA8EC"/><stop offset=".55" stop-color="#C5DFF8"/><stop offset="1" stop-color="#EAF4FF"/></linearGradient>
+        <linearGradient id="${k}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7FBFF"/><stop offset="1" stop-color="#D5E4F5"/></linearGradient>
+      </defs>
+      <rect width="400" height="260" fill="url(#${k}s)"/>
+      ${sun(330, 42, .72)}
+      ${range([[-10, 150], [24, 118], [70, 140], [120, 92], [170, 136], [220, 100], [270, 142], [320, 108], [370, 138], [420, 120]], 200, '#A9BCE6', '#94A9D8', '#F4F8FF')}
+      ${range([[-10, 176], [40, 142], [96, 168], [150, 124], [210, 170], [270, 138], [330, 172], [390, 146]], 210, '#7F97CF', '#6C84BE', '#E7F0FB')}
+      <path d="M0 188Q80 172 160 184T320 178T400 186V260H0Z" fill="url(#${k}g)"/>
+      <path d="M0 214Q120 200 220 212T400 206V260H0Z" fill="#E7F0FA"/>
+      ${spruce(48, 196, .72)}
+      ${spruce(108, 188, .86)}
+      ${spruce(292, 190, .78)}
+      ${spruce(352, 198, .64)}
+      <g id="targetTree" class="spruce target-spruce" transform="translate(214 200) scale(1.05)">
+        <ellipse class="stump-snow" cx="0" cy="8" rx="30" ry="5" fill="rgba(255,255,255,.85)"/>
+        <g class="crown">
+          <rect x="-4" y="-6" width="8" height="18" rx="2" fill="#6B4423"/>
+          <polygon points="0,-100 36,-40 -36,-40" fill="#14522C"/>
+          <polygon points="0,-74 46,-16 -46,-16" fill="#1C7340"/>
+          <polygon points="0,-46 54,14 -54,14" fill="#278A50"/>
+          <polygon points="-18,-40 4,-58 12,-32" fill="#F7FBFF"/>
+          <polygon points="10,-18 28,-2 4,6" fill="#fff" opacity=".9"/>
+          <polygon points="-16,6 12,14 -28,14" fill="#fff" opacity=".75"/>
+          <polygon points="0,-108 6,-96 -6,-96" fill="#E03131"/>
+          <circle cx="-16" cy="-28" r="3.2" fill="#FF4B4B"/><circle cx="14" cy="-10" r="3.2" fill="#FFD43B"/><circle cx="-6" cy="2" r="3" fill="#1CB0F6"/>
+        </g>
+        <g class="stump" opacity="0"><rect x="-10" y="-2" width="20" height="10" rx="2" fill="#8A5A34"/><ellipse cx="0" cy="-2" rx="10" ry="3.2" fill="#C48A52"/></g>
+      </g>
+      ${horse(78, 214, .42, { coat: '#8A4519', dark: '#5C2E10', mane: '#2A1408' }, 0, false)}
+      <g id="chopper" transform="translate(150 168)">
+        <ellipse cx="16" cy="42" rx="16" ry="3" fill="rgba(0,0,0,.12)"/>
+        <rect x="10" y="18" width="12" height="22" rx="5" fill="#F4F1EA"/>
+        <rect x="8" y="16" width="16" height="10" rx="3" fill="#1F5DB8"/>
+        <circle cx="16" cy="8" r="7" fill="#F3C7A2"/>
+        <path d="M9 6Q16 -2 23 6Q18 2 16 4Q14 2 9 6Z" fill="#2A2118"/>
+        <g id="fsAxe" class="fs-axe">
+          <rect x="22" y="6" width="4" height="28" rx="1.5" fill="#8A5A34" transform="rotate(-28 24 20)"/>
+          <path d="M30 2L44 8L36 16L26 8Z" fill="#D5D8DE" stroke="#8E97A6" stroke-width="1" transform="rotate(-18 34 8)"/>
+        </g>
+      </g>
+      <g class="fs-flakes">${flakes}</g>
+      <g id="fsSnow" class="chop-snow" opacity="0">
+        <circle cx="200" cy="120" r="3" fill="#fff"/><circle cx="220" cy="100" r="2.4" fill="#fff"/><circle cx="186" cy="96" r="2" fill="#fff"/>
+        <circle cx="236" cy="128" r="2.2" fill="#fff"/><circle cx="170" cy="130" r="2.6" fill="#fff"/>
+      </g>
+    </svg>`;
+  }
+
+  return { yurt, yurtSvg, serge, sheep, sun, range, scene, steppe, meander, horse, horseSvg, sheepSvg, dogSvg, kennel, city, leninHead, forest };
 })();
