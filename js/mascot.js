@@ -369,8 +369,8 @@ window.BG_MASCOT = (function () {
     return `<svg overflow="visible" class="mascot-svg ${held ? 'holding' : ''} ${opts.cls || ''}" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" aria-label="Бато">
       <ellipse cx="100" cy="230" rx="54" ry="7" fill="rgba(0,0,0,.12)"/>
       <g class="m-body">
-        <rect x="79" y="176" width="17" height="44" rx="8" fill="${shirt ? '#F6F3EC' : pants}"/>
-        <rect x="104" y="176" width="17" height="44" rx="8" fill="${shirt ? '#F6F3EC' : pants}"/>
+        <rect x="79" y="176" width="17" height="44" rx="8" fill="${pants}"/>
+        <rect x="104" y="176" width="17" height="44" rx="8" fill="${pants}"/>
         <path d="M100 182V200" stroke="rgba(0,0,0,.15)" stroke-width="1.4"/>
         ${socks}
         ${boots}
