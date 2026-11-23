@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.20';
+  const APP_VERSION = 'BETA 1.11.21';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -2169,7 +2169,7 @@
     else if (it.id === 'ny_horse') preview = window.BG_ART.horseSvg(null, 'horse-svg big', true);
     else if (it.id === 'ny_dog') preview = '<div class="dog-try">' + window.BG_ART.dogSvg('dog-svg', null, { ny: true }) + '</div>';
     else if (it.slot === 'bonus' || it.offer) preview = `<div class="bonus-icon" style="font-size:84px">${it.icon || '🧊'}</div>`;
-    else { const tryOn = Object.assign({}, s.equip); tryOn[it.slot] = it.food ? 'buuza_plate' : id; preview = it.dog ? '<div class="dog-try">' + window.BG_ART.dogSvg('dog-svg', null, Object.assign(dogWearOf(), { [it.slot]: id })) + '</div>' : M.svg(tryOn, { mood: 'happy', cls: 'wave' }); }
+    else { const tryOn = Object.assign({}, s.equip); tryOn[it.slot] = it.food ? 'buuza_plate' : id; if (it.style === 'pants' || it.style === 'vest') tryOn.degel = null; preview = it.dog ? '<div class="dog-try">' + window.BG_ART.dogSvg('dog-svg', null, Object.assign(dogWearOf(), { [it.slot]: id })) + '</div>' : M.svg(tryOn, { mood: 'happy', cls: 'wave' }); }
     let btn = '';
     if (it.revive) {
       btn = s.lostStreak && s.lostStreak.n > 0

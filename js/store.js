@@ -35,7 +35,7 @@ window.BG_STORE = (function () {
       words: {},
       stats: { answers: 0, correct: 0, perfect: 0, lessons: 0, purchases: 0 },
       owned: ['tshirt_green'],
-      equip: { hat: null, outfit: 'tshirt_green', feet: null, hand: null, acc: null },
+      equip: { hat: null, outfit: 'tshirt_green', feet: null, hand: null, acc: null, pants: null, vest: null, degel: null },
       playerId: 'p-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8),
       premium: null,
       horses: { owned: [], main: null, freeUsed: false },
@@ -77,6 +77,13 @@ window.BG_STORE = (function () {
     if (st.settings.voice !== 'male') st.settings.voice = 'female';
     if ([0.6, 0.85, 1.05].indexOf(st.settings.ttsRate) < 0) st.settings.ttsRate = 0.85;
     if (!('feet' in st.equip)) st.equip.feet = null;
+    if (!('pants' in st.equip)) st.equip.pants = null;
+    if (!('vest' in st.equip)) st.equip.vest = null;
+    if (!('degel' in st.equip)) st.equip.degel = null;
+    const worn = window.BG_DATA && BG_DATA.itemsById ? BG_DATA.itemsById[st.equip.outfit] : null;
+    if (worn && worn.style === 'pants') { st.equip.pants = worn.id; st.equip.outfit = 'tshirt_green'; }
+    else if (worn && worn.style === 'vest') { st.equip.vest = worn.id; st.equip.outfit = 'tshirt_green'; }
+    else if (worn && worn.style === 'degel') { st.equip.degel = worn.id; st.equip.outfit = 'tshirt_green'; }
     if (!st.bots || typeof st.bots !== 'object' || Array.isArray(st.bots)) st.bots = {};
     if (typeof st.buuz !== 'number') st.buuz = 0;
     if (!st.offerInv || typeof st.offerInv !== 'object' || Array.isArray(st.offerInv)) st.offerInv = {};

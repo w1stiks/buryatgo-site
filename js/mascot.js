@@ -321,13 +321,15 @@ window.BG_MASCOT = (function () {
    */
   function svg(equip, opts) {
     equip = equip || {}; opts = opts || {};
-    const out = item(equip.outfit) || item('tshirt_green');
+    const degel = item(equip.degel);
+    const vest = item(equip.vest);
+    const pantsIt = item(equip.pants);
+    const base = item(equip.outfit) || item('tshirt_green');
     const hat = item(equip.hat), hand = item(equip.hand), acc = item(equip.acc), feet = item(equip.feet), belt = item(equip.belt);
-    const shirt = out.style === 'pants';
-    const drawOut = shirt ? Object.assign({}, out, { color: '#F6F3EC', style: 'tee' }) : out;
-    const sleeve = out.style === 'vest' ? (out.shirt || '#FBF4E6') : shirt ? '#F6F3EC' : out.color;
-    const cuffC = out.style === 'degel' ? (out.trim || '#FFD43B') : (out.dark || 'rgba(0,0,0,.16)');
-    const robe = out.style === 'degel';
+    const robe = !!(degel && degel.style === 'degel');
+    const drawTop = robe ? degel : (vest && vest.style === 'vest' ? vest : base);
+    const sleeve = robe ? degel.color : (vest ? (vest.shirt || '#F6F3EC') : drawTop.color);
+    const cuffC = robe ? (degel.trim || '#FFD43B') : (drawTop.dark || 'rgba(0,0,0,.16)');
     const cupEmpty = !!(hand && (hand.cup || hand.id === 'buuza_plate') && !opts.full && typeof api.cupEmpty === 'function' && api.cupEmpty(hand.id));
     const held = handSvg(hand, cupEmpty);
     const mood = opts.mood || 'normal';
@@ -336,8 +338,8 @@ window.BG_MASCOT = (function () {
       : mood === 'sad'
         ? `<path d="M90 109Q100 101 110 109" stroke="#5A2A2A" stroke-width="3.5" fill="none" stroke-linecap="round"/>`
         : `<path d="M89 102Q100 112 111 102" stroke="#5A2A2A" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
-    const pants = (out.style === 'pants' ? out.color : out.pants) || '#34405E';
-    const sc = out.socks, scd = '#D9A436';
+    const pants = pantsIt ? pantsIt.color : ((base && base.pants) || '#34405E');
+    const sc = robe ? null : (base.socks || (vest && vest.socks) || null), scd = '#D9A436';
     const SOCK = '#FBF7EE', SOCK_L = '#6E604C', SOCK_C = '#2F5FB3', SOCK_P = '#CFE0F7';
     const socks = sc && !robe ? `<rect x="79.5" y="198" width="16" height="22" rx="6" fill="${SOCK}" stroke="${SOCK_L}" stroke-width="1.3"/><rect x="104.5" y="198" width="16" height="22" rx="6" fill="${SOCK}" stroke="${SOCK_L}" stroke-width="1.3"/>
         <path d="M81 210h13M106 210h13" stroke="#E03131" stroke-width="1.2"/><path d="M81 213h13M106 213h13" stroke="${SOCK_C}" stroke-width="1"/>
@@ -373,8 +375,8 @@ window.BG_MASCOT = (function () {
         ${socks}
         ${boots}
         <rect x="91" y="106" width="18" height="16" rx="5" fill="${SKIN_D}"/>
-        ${bodySvg(drawOut)}
-        ${shirt ? pantsDetailSvg(out) : ''}
+        ${!robe && pantsIt ? pantsDetailSvg(pantsIt) : ''}
+        ${bodySvg(drawTop)}
         ${beltSvg(belt, robe)}
         ${medalSvg(acc)}
         <g class="m-arm-l">${armL}</g>
@@ -408,8 +410,11 @@ window.BG_MASCOT = (function () {
     const it = item(itemId);
     if (!it) return '';
     if (it.slot === 'bonus') return `<div class="bonus-icon">🧊</div>`;
-    const eq = { hat: null, outfit: 'tshirt_green', feet: null, hand: null, acc: null, belt: null };
-    eq[it.slot] = it.id;
+    const eq = { hat: null, outfit: 'tshirt_green', feet: null, hand: null, acc: null, belt: null, pants: null, vest: null, degel: null };
+    if (it.style === 'pants') eq.pants = it.id;
+    else if (it.style === 'vest') eq.vest = it.id;
+    else if (it.style === 'degel') eq.degel = it.id;
+    else eq[it.slot] = it.id;
     return svg(eq, { cls: 'mini', full: true });
   }
 
