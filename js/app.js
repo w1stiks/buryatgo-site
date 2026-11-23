@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.10';
+  const APP_VERSION = 'BETA 1.11.11';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -110,7 +110,10 @@
     const ny = {
       garland: !!s.nyInstalled.ny_garland,
       tree: !!s.nyInstalled.ny_tree,
-      treeIndoor: !!s.nyInstalled.ny_tree_indoor
+      treeIndoor: !!s.nyInstalled.ny_tree_indoor,
+      sheep: !!s.nyInstalled.ny_sheep,
+      horse: !!s.nyInstalled.ny_horse,
+      dog: !!s.nyInstalled.ny_dog
     };
     return `<div class="scene" aria-hidden="true">${window.BG_ART.scene({ compact: !!compact, horses: stageHorses(), sheep: petsState().sheep, kennel: !!(s.dog && s.dog.house), ny })}</div>`;
   };
@@ -918,6 +921,9 @@
     ny_tree_indoor: `<svg viewBox="0 0 64 64" width="64" height="64"><polygon points="32,6 46,24 40,24 50,40 14,40 24,24 18,24" fill="#2F8F5B"/><rect x="28" y="40" width="8" height="8" fill="#8B4513"/><rect x="24" y="48" width="16" height="6" rx="2" fill="#C92A2A"/><polygon points="32,2 34,8 30,8" fill="#FFD43B"/><circle cx="24" cy="30" r="2" fill="#FFD43B"/><circle cx="40" cy="34" r="2" fill="#FFD43B"/><circle cx="32" cy="36" r="2" fill="#FF4B4B"/><rect x="26" y="52" width="4" height="6" fill="#1CB0F6"/><rect x="34" y="52" width="4" height="6" fill="#FF4B4B"/></svg>`
   };
   function itemPreview(it) {
+    if (it.id === 'ny_sheep') return window.BG_ART.sheepSvg('', true);
+    if (it.id === 'ny_horse') return window.BG_ART.horseSvg(null, 'horse-svg', true);
+    if (it.id === 'ny_dog') return window.BG_ART.dogSvg('dog-svg', null, { ny: true });
     if (HAND_ICONS[it.id]) return HAND_ICONS[it.id];
     if (NY_ICONS[it.id]) return NY_ICONS[it.id];
     if (it.dog) return window.BG_ART.dogSvg('dog-svg', null, { [it.slot]: it.id });
@@ -928,11 +934,14 @@
   function renderItem(it) {
     const s = st();
     const owned = s.owned.indexOf(it.id) >= 0, eq = it.slot === 'ny' ? !!(s.nyInstalled && s.nyInstalled[it.id]) : s.equip[it.slot] === it.id;
+    const wear = it.id === 'ny_sheep' || it.id === 'ny_horse' || it.id === 'ny_dog';
     let tag = '';
-    if (eq) tag = `<span class="tag">${it.slot === 'ny' ? 'Установлено' : 'Надето'}</span>`;
+    if (eq) tag = `<span class="tag">${it.slot === 'ny' ? (wear ? 'Надето' : 'Установлено') : 'Надето'}</span>`;
     else if (owned && !it.consumable) tag = '<span class="tag" style="background:var(--blue)">Есть</span>';
     else if (it.premiumOnly) tag = '<span class="tag super">SUPER</span>';
-    const price = it.consumable ? `<img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}` : owned ? (eq ? (it.slot === 'ny' ? '✔ Установлено' : '✔ Надето') : (it.slot === 'ny' ? 'Поставить' : 'Надеть')) : `<img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}`;
+    const onLabel = it.slot === 'ny' ? (wear ? '✔ Надето' : '✔ Установлено') : '✔ Надето';
+    const offLabel = it.slot === 'ny' ? (wear ? 'Надеть' : 'Поставить') : 'Надеть';
+    const price = it.consumable ? `<img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}` : owned ? (eq ? onLabel : offLabel) : `<img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}`;
     return `<button class="item-card ${eq ? 'equipped' : ''}" data-id="${it.id}">${tag}<div class="pv">${itemPreview(it)}</div><div class="nm">${esc(it.name)}</div><div class="price">${price}</div></button>`;
   }
   function renderShop(scr) {
@@ -1621,7 +1630,7 @@
   }
 
   /* Одежда собаки и зимняя попона коней */
-  function dogWearOf() { const e = st().equip || {}; return { dhat: e.dhat, dacc: e.dacc, dcoat: e.dcoat }; }
+  function dogWearOf() { const e = st().equip || {}; return { dhat: e.dhat, dacc: e.dacc, dcoat: e.dcoat, ny: !!(st().nyInstalled && st().nyInstalled.ny_dog) }; }
   function coatCard() {
     const on = !!st().horseCoat;
     return `<div class="pets-h">❄️ Зимняя попона для коней</div><button class="item-card pet-card ${on ? 'equipped' : ''}" data-coat="1">${on ? '<span class="tag" style="background:var(--blue)">Куплено</span>' : ''}<div class="pv">${window.BG_ART.horseSvg(D.horses[0], 'horse-svg coat-on')}</div><div class="nm">Зимняя попона</div><div class="price">${on ? '❄️ В снегопад' : BZI + ' ' + D.horseCoatPrice}</div></button>`;
@@ -2121,8 +2130,12 @@
     const s = st(), it = D.itemsById[id];
     if (!it) return;
     const owned = s.owned.indexOf(id) >= 0, nyOn = it.slot === 'ny' && !!(s.nyInstalled && s.nyInstalled[id]), eq = it.slot === 'ny' ? nyOn : s.equip[it.slot] === id;
+    const nyWear = it.id === 'ny_sheep' || it.id === 'ny_horse' || it.id === 'ny_dog';
     let preview;
-    if (it.slot === 'bonus' || it.offer) preview = `<div class="bonus-icon" style="font-size:84px">${it.icon || '🧊'}</div>`;
+    if (it.id === 'ny_sheep') preview = window.BG_ART.sheepSvg('sheep-pv', true);
+    else if (it.id === 'ny_horse') preview = window.BG_ART.horseSvg(null, 'horse-svg big', true);
+    else if (it.id === 'ny_dog') preview = '<div class="dog-try">' + window.BG_ART.dogSvg('dog-svg', null, { ny: true }) + '</div>';
+    else if (it.slot === 'bonus' || it.offer) preview = `<div class="bonus-icon" style="font-size:84px">${it.icon || '🧊'}</div>`;
     else { const tryOn = Object.assign({}, s.equip); tryOn[it.slot] = it.food ? 'buuza_plate' : id; preview = it.dog ? '<div class="dog-try">' + window.BG_ART.dogSvg('dog-svg', null, Object.assign(dogWearOf(), { [it.slot]: id })) + '</div>' : M.svg(tryOn, { mood: 'happy', cls: 'wave' }); }
     let btn = '';
     if (it.revive) {
@@ -2137,7 +2150,7 @@
       else btn = `<button class="btn gold" data-act="buy">Купить за <img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}</button>`;
     } else if (eq) {
       btn = it.slot === 'outfit' && id === 'tshirt_green' ? '<button class="btn" disabled>Базовая одежда</button>' : '<button class="btn ghost dark" data-act="unequip">Снять</button>';
-    } else btn = `<button class="btn blue" data-act="equip">${it.slot === 'ny' ? 'Поставить' : 'Надеть'}</button>`;
+    } else btn = `<button class="btn blue" data-act="equip">${it.slot === 'ny' ? (nyWear ? 'Надеть' : 'Поставить') : 'Надеть'}</button>`;
     if (it.cup && owned && isCupEmpty(id)) btn = `<button class="btn gold" data-act="refill">🔄 Наполнить за ${BZI} ${D.cupRefill}</button>` + btn;
     const m = openModal(`<div class="mascot-stage v4 wx-snow iced" style="height:190px;margin:0 0 14px">${stageScene(true)}${STAGE_SKY}<div class="mascot-hold">${preview}</div></div>
       <h2>${esc(it.name)}</h2><p>${esc(it.desc || (it.slot === 'outfit' ? 'Одежда для Бато' : 'Аксессуар для Бато'))}</p>

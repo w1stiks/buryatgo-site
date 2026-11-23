@@ -72,7 +72,8 @@ window.BG_ART = (function () {
   }
 
   /* Пасущаяся овца, смотрит влево, начало координат — центр туловища */
-  function sheep(x, y, s, flip, delay) {
+  function sheep(x, y, s, flip, delay, fest) {
+    const hat = fest ? `<path d="M-20 0 L-13.5 -12 L-7 0Z" fill="#E03131"/><circle cx="-13.5" cy="-13" r="2.3" fill="#fff"/><path d="M-18.5 0.4H-8.5" stroke="#fff" stroke-width="1.4"/><path d="M-8 3 Q-2 8 3 2.5" stroke="#E03131" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M-6 4.2 Q-1 8 2 3.2" stroke="#fff" stroke-width="1.1" fill="none"/>` : '';
     return `<g transform="translate(${x} ${y}) scale(${flip ? -s : s} ${s})"><g class="sheep" style="animation-delay:${delay}s">
       <ellipse cx="0" cy="14.5" rx="15" ry="2.6" fill="rgba(0,0,0,.13)"/>
       ${[-8, -3.5, 4, 8.5].map(lx => `<rect x="${lx}" y="4" width="2.6" height="10.5" rx="1.2" fill="#3B3B44"/>`).join('')}
@@ -85,7 +86,7 @@ window.BG_ART = (function () {
         <g class="sh-ear" style="animation-delay:${delay * .7}s"><ellipse cx="-11.5" cy="1.2" rx="3.4" ry="1.5" transform="rotate(-20 -11.5 1.2)" fill="#2E2E36"/></g>
         <circle cx="-12.5" cy="2" r="3" fill="#FBFBF7" stroke="#D9D6CC" stroke-width=".6"/>
         <circle cx="-16.4" cy="6.4" r=".9" fill="#fff"/>
-      </g></g></g>`;
+      </g>${hat}</g></g>`;
   }
 
   /* Солнце нового стиля: мягкое сияние, лучи-лепестки, мерцание */
@@ -142,7 +143,7 @@ window.BG_ART = (function () {
   /* Полная сцена магазина 400×300 (Бато в центре). opts.compact — для модального окна. */
   /* Конь (вид сбоку, смотрит влево). Начало координат — земля под серединой корпуса.
      h = {coat, dark, mane, blaze, sock} */
-  function horse(x, y, s, h, delay, flip) {
+  function horse(x, y, s, h, delay, flip, fest) {
     h = h || {};
     const c = h.coat || '#B4622D', d = h.dark || '#8A4519', m = h.mane || '#3E1E0C';
     const hoof = '#3A2A20', line = 'rgba(30,20,10,.25)';
@@ -160,6 +161,7 @@ window.BG_ART = (function () {
       ${sock}
       <rect x="19" y="-5" width="7.5" height="5" rx="1.5" fill="${hoof}"/><rect x="-17" y="-5" width="7.5" height="5" rx="1.5" fill="${hoof}"/>
       ${HORSE_COAT}
+      ${fest ? `<g class="ny-horse"><path d="M-24 -46Q-8 -56 16 -54Q30 -51 30 -40L28 -28Q4 -23 -22 -28Q-29 -36 -24 -46Z" fill="#E03131"/><path d="M-22 -44Q0 -50 22 -44" stroke="#FFD700" stroke-width="1.8" fill="none"/><path d="M-22 -30Q4 -25 28 -30" stroke="#FFD700" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="-14" cy="-36" r="2.3" fill="#FFD700"/><circle cx="6" cy="-36" r="2.3" fill="#FFD700"/><circle cx="20" cy="-34" r="2" fill="#FFD700"/><path d="M-34 -76 L-26 -96 L-18 -76Z" fill="#E03131"/><circle cx="-26" cy="-98" r="3" fill="#fff"/><path d="M-32 -76H-20" stroke="#fff" stroke-width="1.4"/></g>` : ''}
       <path d="M-9 -55Q3 -57 15 -55L17 -36Q3 -32 -10 -36Z" fill="#1E6BC6" stroke="#F2B705" stroke-width="1.6"/>
       <path d="M-6 -46H13" stroke="#F2B705" stroke-width="1.2" stroke-dasharray="3 2"/>
       <path d="M-6 -56Q4 -63 15 -56Q10 -51 4 -51Q-2 -51 -6 -56Z" fill="#7A4A21"/>
@@ -178,14 +180,14 @@ window.BG_ART = (function () {
       </g>
     </g>`;
   }
-  function horseSvg(h, cls) {
-    return `<svg class="${cls || 'horse-svg'}" viewBox="-60 -96 114 104" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${horse(0, 0, 1, h, 0)}</svg>`;
+  function horseSvg(h, cls, fest) {
+    return `<svg class="${cls || 'horse-svg'}" viewBox="-62 -108 124 118" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${horse(0, 0, 1, h, 0, false, !!fest)}</svg>`;
   }
   /* Позиции коней у правой коновязи (от дальних к ближним) */
   /* Кони привязаны к сэргэ рядом с юртой (сэргэ в точке 132,252), стоят перед юртой и смотрят вправо, к столбу */
   const HORSE_POS = { 1: [[66, 299, .55]], 2: [[40, 298, .5], [82, 299, .54]], 3: [[26, 297, .48], [58, 298, .5], [90, 299, .52]] };
   const SERGE_RING = [109, 217];
-  function herd(list) {
+  function herd(list, fest) {
     if (!list || !list.length) return '';
     list = list.slice(0, 3);
     const pos = HORSE_POS[list.length];
@@ -194,13 +196,13 @@ window.BG_ART = (function () {
       const [x, y, s] = pos[i];
       const mx = x + 47 * s, my = y - 56 * s;
       out += `<path d="M${SERGE_RING[0]} ${SERGE_RING[1]}Q${(SERGE_RING[0] + mx) / 2} ${Math.max(SERGE_RING[1], my) + 8} ${mx} ${my}" stroke="#8B5A2B" stroke-width="1.6" fill="none"/>`;
-      out += horse(x, y, s, h, -i * 1.3, true);
+      out += horse(x, y, s, h, -i * 1.3, true, !!fest);
     });
     return out;
   }
 
-  function sheepSvg(cls) {
-    return `<svg class="sheep-pv ${cls || ''}" viewBox="-22 -14 42 32" aria-hidden="true">${sheep(0, 0, 1, 0, 0)}</svg>`;
+  function sheepSvg(cls, fest) {
+    return `<svg class="sheep-pv ${cls || ''}" viewBox="-28 -22 54 44" aria-hidden="true">${sheep(0, 0, 1, 0, 0, !!fest)}</svg>`;
   }
 
   function scene(opts) {
@@ -236,13 +238,14 @@ window.BG_ART = (function () {
         <circle cx="333" cy="244" r="2.6" fill="#8E9AAF"/><circle cx="364" cy="270" r="3.2" fill="#8E9AAF"/><circle cx="367" cy="271" r="2" fill="#A7B2C4"/>
         <g class="stream-ice"><path d="M342 175Q335 192 344 206Q351 219 342 231" fill="none" stroke="#DDF1FF" stroke-width="6" stroke-linecap="round"/><path d="M342 230Q326 248 352 262Q382 276 378 304" fill="none" stroke="#C6E5FB" stroke-width="14" stroke-linecap="round"/><path d="M342 230Q326 248 352 262Q382 276 378 304" fill="none" stroke="#F4FBFF" stroke-width="6" stroke-linecap="round" opacity=".9"/><path d="M336 246L344 242M356 262L364 266M370 282L374 291" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></g>
       </g>
-      <g transform="translate(10 184) scale(.66)">${yurt()}${opts.ny && opts.ny.garland ? `<g class="ny-garland"><path d="M18 48 Q70 24 122 48" stroke="#5C3A1E" stroke-width="1.4" fill="none"/><path d="M18 48 Q70 24 122 48" stroke="#FFE066" stroke-width="2.4" fill="none"/><circle class="bulb" cx="28" cy="42" r="3.4" fill="#FF4B4B"/><circle class="bulb" cx="46" cy="33" r="3.4" fill="#FFD43B"/><circle class="bulb" cx="64" cy="28" r="3.4" fill="#1CB0F6"/><circle class="bulb" cx="82" cy="30" r="3.4" fill="#58CC02"/><circle class="bulb" cx="100" cy="38" r="3.4" fill="#F06595"/><circle class="bulb" cx="116" cy="46" r="3.4" fill="#FFD43B"/><circle cx="28" cy="42" r="6" fill="#FF4B4B" opacity=".35"/><circle cx="64" cy="28" r="6" fill="#1CB0F6" opacity=".3"/><circle cx="100" cy="38" r="6" fill="#F06595" opacity=".3"/></g>` : ''}</g>
-      ${opts.ny && opts.ny.tree ? `<g class="ny-tree" transform="translate(72 294)"><ellipse cx="0" cy="0" rx="34" ry="6" fill="rgba(255,255,255,.9)"/><rect x="-5" y="-18" width="10" height="20" rx="2" fill="#6B4423"/><polygon points="0,-138 48,-66 -48,-66" fill="#134E2C"/><polygon points="0,-100 58,-30 -58,-30" fill="#1B6B3A"/><polygon points="0,-60 66,6 -66,6" fill="#24824A"/><polygon points="0,-150 8,-132 -8,-132" fill="#E03131"/><polygon points="0,-158 6,-144 -6,-144" fill="#FFD43B"/><path d="M-32 -74 Q0 -50 34 -82" stroke="#FFE066" stroke-width="1.8" fill="none"/><circle cx="-24" cy="-82" r="5" fill="#FF4B4B"/><circle cx="-6" cy="-104" r="5" fill="#FFD43B"/><circle cx="18" cy="-74" r="5" fill="#1CB0F6"/><circle cx="8" cy="-40" r="5" fill="#58CC02"/><circle cx="-16" cy="-28" r="4.5" fill="#F06595"/><circle cx="26" cy="-16" r="4.5" fill="#FFD43B"/><circle cx="-24" cy="-82" r="8" fill="#FF4B4B" opacity=".28"/><circle cx="18" cy="-74" r="8" fill="#1CB0F6" opacity=".28"/></g>` : ''}
+      <g transform="translate(10 184) scale(.66)">${yurt()}</g>
+      ${opts.ny && opts.ny.garland ? `<g class="ny-garland"><path d="M20 216 Q56 190 94 216" stroke="#1A2639" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M38 230 Q70 218 98 238" stroke="#1A2639" stroke-width="2" fill="none" stroke-linecap="round"/><g class="bulb" style="color:#FF2A2A"><circle cx="28" cy="208" r="7" fill="#FF2A2A" opacity=".35"/><circle cx="28" cy="208" r="4" fill="#FF2A2A"/></g><g class="bulb" style="color:#FFD700"><circle cx="44" cy="198" r="7" fill="#FFD700" opacity=".35"/><circle cx="44" cy="198" r="4" fill="#FFD700"/></g><g class="bulb" style="color:#00A8FF"><circle cx="62" cy="192" r="7" fill="#00A8FF" opacity=".35"/><circle cx="62" cy="192" r="4" fill="#00A8FF"/></g><g class="bulb" style="color:#00E676"><circle cx="80" cy="202" r="7" fill="#00E676" opacity=".35"/><circle cx="80" cy="202" r="4" fill="#00E676"/></g><g class="bulb" style="color:#FF2A2A"><circle cx="48" cy="224" r="6.5" fill="#FF2A2A" opacity=".35"/><circle cx="48" cy="224" r="3.6" fill="#FF2A2A"/></g><g class="bulb" style="color:#FFD700"><circle cx="66" cy="220" r="6.5" fill="#FFD700" opacity=".35"/><circle cx="66" cy="220" r="3.6" fill="#FFD700"/></g><g class="bulb" style="color:#00A8FF"><circle cx="84" cy="226" r="6.5" fill="#00A8FF" opacity=".35"/><circle cx="84" cy="226" r="3.6" fill="#00A8FF"/></g><g class="bulb" style="color:#00E676"><circle cx="96" cy="236" r="6.5" fill="#00E676" opacity=".35"/><circle cx="96" cy="236" r="3.6" fill="#00E676"/></g></g>` : ''}
+      ${opts.ny && opts.ny.tree ? `<g class="ny-tree" transform="translate(156 268) scale(.4)"><ellipse cx="0" cy="0" rx="34" ry="6" fill="rgba(255,255,255,.9)"/><rect x="-5" y="-18" width="10" height="20" rx="2" fill="#6B4423"/><polygon points="0,-138 48,-66 -48,-66" fill="#134E2C"/><polygon points="0,-100 58,-30 -58,-30" fill="#1B6B3A"/><polygon points="0,-60 66,6 -66,6" fill="#24824A"/><polygon points="0,-150 8,-132 -8,-132" fill="#E03131"/><polygon points="0,-158 6,-144 -6,-144" fill="#FFD43B"/><path d="M-32 -74 Q0 -50 34 -82" stroke="#FFE066" stroke-width="1.8" fill="none"/><circle cx="-24" cy="-82" r="5" fill="#FF4B4B"/><circle cx="-6" cy="-104" r="5" fill="#FFD43B"/><circle cx="18" cy="-74" r="5" fill="#1CB0F6"/><circle cx="8" cy="-40" r="5" fill="#58CC02"/><circle cx="-16" cy="-28" r="4.5" fill="#F06595"/><circle cx="26" cy="-16" r="4.5" fill="#FFD43B"/></g>` : ''}
       <g transform="translate(108 252) scale(.82)">${serge()}</g>
       ${opts.kennel ? '<g transform="translate(136 238) scale(.38)">' + kennel() + '</g>' : ''}
       <g class="tufts">${tufts([[30, 272, 1], [96, 266, .9], [130, 286, 1.1], [176, 262, .8], [250, 288, 1], [292, 284, .9], [340, 288, 1.1], [384, 276, 1], [60, 292, 1.2], [214, 292, 1], [6, 258, .8, '#5A9E36']])}</g>
-      ${herd(opts.horses)}
-      ${shown.map(p => sheep(p[0], p[1], p[2], p[3], p[4])).join('')}
+      ${herd(opts.horses, opts.ny && opts.ny.horse)}
+      ${shown.map(p => sheep(p[0], p[1], p[2], p[3], p[4], opts.ny && opts.ny.sheep)).join('')}
     </svg>`;
   }
 
@@ -290,8 +293,11 @@ window.BG_ART = (function () {
   function dogWear(w) {
     w = w || {};
     const g = id => (id && DOG_WEAR[id]) || '';
-    const hat = g(w.dhat);
-    return { hat, acc: g(w.dacc), coat: g(w.dcoat), backHat: hat ? `<g transform="translate(-25 -2)">${hat}</g>` : '' };
+    const nyHat = '<path d="M66 14 L80 -2 L94 14 Q80 8 66 14Z" fill="#E03131"/><circle cx="80" cy="-3" r="3.4" fill="#fff"/><path d="M68 14 Q80 8 92 14" stroke="#fff" stroke-width="2" fill="none"/>';
+    const nyCoat = '<path d="M28 42Q34 33 52 33Q70 34 75 44L74 56Q52 62 30 56Q25 50 28 42Z" fill="#E03131"/><path d="M36 46h2.2l1.1 2.2 1.1-2.2H43l-1.8 1.4.7 2.2-1.8-1.3-1.8 1.3.7-2.2z" fill="#fff"/><path d="M52 50h2l1 2 1-2h2l-1.6 1.2.6 2-1.6-1.1-1.6 1.1.6-2z" fill="#fff"/><circle cx="44" cy="54" r="1.4" fill="#fff"/><circle cx="62" cy="44" r="1.3" fill="#fff"/>';
+    const hat = w.ny ? nyHat : g(w.dhat);
+    const coat = w.ny ? nyCoat : g(w.dcoat);
+    return { hat, acc: g(w.dacc), coat, backHat: hat ? `<g transform="translate(-25 -2)">${hat}</g>` : '' };
   }
   /* v1.13: зимняя попона коня (видна только во время снега или в превью) */
   const HORSE_COAT = '<g class="h-coat"><path d="M-25 -47Q-9 -57 17 -55Q32 -52 32 -40L30 -28Q4 -23 -23 -28Q-30 -37 -25 -47Z" fill="#C92A2A"/><path d="M-24 -29Q4 -24 30 -29" stroke="#F8F0E3" stroke-width="3.4" fill="none" stroke-linecap="round"/><path d="M-17 -50L-15 -29M25 -52L27 -30" stroke="#F2B705" stroke-width="1.6"/><path d="M-20 -38H26" stroke="#F2B705" stroke-width="1" stroke-dasharray="3 2"/></g>';

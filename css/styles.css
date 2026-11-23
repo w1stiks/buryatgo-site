@@ -2612,12 +2612,14 @@ body[data-view="shop"] .seg button[data-slot="ny"] {
   70% { transform: rotate(10deg); }
   100% { transform: rotate(0); }
 }
-.ny-garland .bulb { animation: nyBlink 1.1s ease-in-out infinite; }
-.ny-garland .bulb:nth-child(3) { animation-delay: .2s; }
-.ny-garland .bulb:nth-child(4) { animation-delay: .4s; }
-.ny-garland .bulb:nth-child(5) { animation-delay: .15s; }
-.ny-garland .bulb:nth-child(6) { animation-delay: .55s; }
-@keyframes nyBlink { 50% { opacity: .35; } }
+.ny-garland .bulb { animation: nyBlink 1.1s ease-in-out infinite; filter: drop-shadow(0 0 4px currentColor); }
+.ny-garland .bulb:nth-child(3) { animation-delay: .15s; }
+.ny-garland .bulb:nth-child(4) { animation-delay: .35s; }
+.ny-garland .bulb:nth-child(5) { animation-delay: .55s; }
+.ny-garland .bulb:nth-child(6) { animation-delay: .2s; }
+.ny-garland .bulb:nth-child(7) { animation-delay: .7s; }
+.ny-garland .bulb:nth-child(8) { animation-delay: .45s; }
+@keyframes nyBlink { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
 .modal.item-modal .btn.ghost.dark {
   background: #193F85;
   color: #fff;
