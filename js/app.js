@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.6';
+  const APP_VERSION = 'BETA 1.11.7';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -2251,16 +2251,20 @@
   function goForest() {
     ui.loc = 'forest';
     const scr = $('#screen');
+    const chopped = st().owned.indexOf('ny_tree') >= 0;
     scr.innerHTML = `<div class="view forest-view">
-      <div class="forest-scene" style="background:linear-gradient(180deg,#6FA8EC 0%,#B9D6FA 40%,#E6F1FF 100%);border-radius:16px;padding:20px;position:relative;min-height:200px">
-        <div style="position:absolute;top:20px;left:30px;font-size:48px">🌲</div>
-        <div style="position:absolute;top:40px;left:80px;font-size:56px">🌲</div>
-        <div style="position:absolute;top:30px;right:60px;font-size:52px">🌲</div>
-        <div style="position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-size:40px">🐴</div>
-        <div style="position:absolute;bottom:10px;left:0;right:0;height:30px;background:#fff;opacity:.4;border-radius:0 0 16px 16px"></div>
+      <div class="forest-scene" id="forestScene">
+        <div class="fs-sky"></div>
+        <div class="fs-snow" id="fsSnow"></div>
+        <div class="fs-tree side" style="left:18px;top:28px;font-size:44px">🌲</div>
+        <div class="fs-tree side" style="right:22px;top:36px;font-size:50px">🌲</div>
+        <div class="fs-tree target" id="targetTree">${chopped ? '🪵' : '🌲'}</div>
+        <div class="fs-chopper" id="chopper"><span class="fs-body">🧒</span><span class="fs-axe" id="fsAxe">🪓</span></div>
+        <div class="fs-horse">🐴</div>
+        <div class="fs-ground"></div>
       </div>
       <div style="display:flex;gap:10px;margin-top:12px;justify-content:center">
-        <button class="btn blue" id="chopBtn">🪓 Срубить ёлку</button>
+        <button class="btn blue" id="chopBtn">${chopped ? 'Ёлка уже срублена' : '🪓 Срубить ёлку'}</button>
         <button class="btn ghost dark" id="backHome">🏠 Вернуться к юрте</button>
       </div>
     </div>`;
@@ -2272,10 +2276,23 @@
     const hasAxe = s.equip && s.equip.hand === 'axe';
     if (!hasAxe) { toast('🪓 Нужен топор! Купи его в магазине в разделе «В руку» за 50 бууз и возьми в руку'); return; }
     if (s.owned.indexOf('ny_tree') >= 0) { toast('🎄 Ёлка уже срублена!'); return; }
-    s.owned.push('ny_tree');
-    S.save();
-    toast('🎄 Ты срубил пушистую новогоднюю ёлку! Она добавлена в раздел «Новогоднее»');
+    const btn = $('#chopBtn'), scene = $('#forestScene'), tree = $('#targetTree'), axe = $('#fsAxe'), snow = $('#fsSnow');
+    if (btn) btn.disabled = true;
+    if (scene) scene.classList.add('chopping');
+    if (axe) axe.classList.add('swing');
+    if (tree) tree.classList.add('shake');
     sfx('pop');
+    setTimeout(() => { if (tree) { tree.classList.remove('shake'); tree.classList.add('fall'); } if (snow) snow.classList.add('burst'); }, 700);
+    setTimeout(() => {
+      if (s.owned.indexOf('ny_tree') < 0) s.owned.push('ny_tree');
+      S.save();
+      if (tree) tree.textContent = '🪵';
+      if (axe) axe.classList.remove('swing');
+      if (scene) scene.classList.remove('chopping');
+      toast('🎄 Ты срубил пушистую новогоднюю ёлку! Она добавлена в раздел «Новогоднее»');
+      sfx('coin');
+      if (btn) { btn.disabled = false; btn.textContent = 'Ёлка уже срублена'; }
+    }, 1400);
   }
 function horseModal(id) {
     const s = st(), hs = horseState(), h = D.horses.find(x => x.id === id);

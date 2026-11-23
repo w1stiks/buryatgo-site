@@ -2463,3 +2463,82 @@ body[data-view="shop"] .seg button[data-slot="ny"] {
 body[data-view="shop"] .seg button[data-slot="ny"] {
   color: #FFFFFF !important;
 }
+
+/* Forest chop animation */
+.forest-scene {
+  position: relative;
+  min-height: 240px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #6FA8EC 0%, #B9D6FA 42%, #E8F3FF 100%);
+}
+.fs-tree.side { position: absolute; }
+.fs-tree.target {
+  position: absolute;
+  left: 58%;
+  top: 18px;
+  font-size: 72px;
+  transform-origin: 50% 90%;
+  z-index: 2;
+}
+.fs-tree.target.shake { animation: treeShake .18s linear 4; }
+.fs-tree.target.fall { animation: treeFall .55s ease-in forwards; }
+.fs-chopper {
+  position: absolute;
+  left: 28%;
+  bottom: 36px;
+  font-size: 42px;
+  z-index: 3;
+}
+.fs-axe {
+  display: inline-block;
+  transform-origin: 20% 80%;
+  margin-left: -8px;
+}
+.forest-scene.chopping .fs-axe.swing { animation: axeSwing .22s ease-in-out 3; }
+.fs-horse { position: absolute; left: 8%; bottom: 28px; font-size: 36px; }
+.fs-ground {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 34px;
+  background: linear-gradient(#fff, #d6e6f8);
+  opacity: .7;
+}
+.fs-snow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+.fs-snow.burst::before,
+.fs-snow.burst::after {
+  content: "❄ ❄ ❄ ❄ ❄";
+  position: absolute;
+  left: 40%;
+  top: 30%;
+  color: #fff;
+  font-size: 18px;
+  letter-spacing: 6px;
+  animation: snowFall .7s ease-out forwards;
+}
+.fs-snow.burst::after { left: 55%; top: 18%; animation-delay: .1s; }
+@keyframes axeSwing {
+  0% { transform: rotate(-20deg); }
+  40% { transform: rotate(-110deg) translateY(-6px); }
+  70% { transform: rotate(18deg); }
+  100% { transform: rotate(-20deg); }
+}
+@keyframes treeShake {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-6deg); }
+  75% { transform: rotate(6deg); }
+}
+@keyframes treeFall {
+  0% { transform: rotate(0); opacity: 1; }
+  100% { transform: rotate(78deg) translateY(18px); opacity: .35; }
+}
+@keyframes snowFall {
+  0% { opacity: 0; transform: translateY(-8px); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(40px); }
+}
