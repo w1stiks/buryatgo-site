@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.24';
+  const APP_VERSION = 'BETA 1.11.25';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -102,6 +102,20 @@
     if (hs.lucky && ids.indexOf(hs.lucky) < 0 && ids.length < 3) ids.unshift(hs.lucky);
     return ids.map(id => D.horses.find(h => h.id === id)).filter(Boolean);
   };
+  const ownsHorse = () => stageHorses().length > 0;
+  const doneUnitCount = () => D.units.filter(u => u.lessons.every(l => ((st().lessons || {})[l.id] || {}).done)).length;
+  function grantModuleHorse() {
+    if (doneUnitCount() < 3) return null;
+    const hs = horseState();
+    if (hs.lucky) return null;
+    const pick = D.horses[Math.floor(Math.random() * D.horses.length)];
+    hs.lucky = pick.id;
+    const s = st();
+    if (!s.modRewards) s.modRewards = {};
+    s.modRewards.horse3 = pick.id;
+    S.save();
+    return pick;
+  }
   /* v1.8.3: дошёл ли игрок до n-го модуля (все уроки предыдущих модулей пройдены) */
   const reachedUnit = (n) => D.units.slice(0, Math.max(0, n - 1)).every(u => u.lessons.every(l => ((st().lessons || {})[l.id] || {}).done));
   const stageScene = (compact) => {
@@ -800,13 +814,15 @@
     s.lessons[L.lesson.id] = rec;
     L.lesson.words.forEach(w => { s.words[w] = (s.words[w] || 0) + 1; });
     // Module completion rewards
-    const doneUnits = D.units.filter(u => u.lessons.every(l => (s.lessons[l.id] || {}).done)).length;
+    const doneUnits = doneUnitCount();
     if (!s.modRewards) s.modRewards = {};
     if (doneUnits >= 3 && !s.modRewards.free3) {
       s.modRewards.free3 = true;
       s.buzzy += 25000; s.buzzyEarned += 25000;
       setTimeout(() => { toast('🎉 3 модуля пройдены! +25 000 Бууз'); confetti(); }, 2000);
     }
+    const horseGift = grantModuleHorse();
+    if (horseGift) setTimeout(() => { toast('🐎 За 3 модуля вам достался конь: ' + horseGift.name + '!'); confetti(); }, 2800);
     if (doneUnits >= 15 && !s.modRewards.all15) {
       s.modRewards.all15 = true;
       s.buzzy += 50000; s.buzzyEarned += 50000;
@@ -2180,10 +2196,13 @@
         : `<button class="btn gold" data-act="buy">Купить за <img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}</button>`;
     } else if (!owned) {
       if (it.id === 'ny_dog' && !dogState()) btn = '<button class="btn" disabled>Сначала заведите собаку в разделе «Питомцы»</button>';
+      else if (it.id === 'ny_horse' && !ownsHorse()) btn = '<button class="btn" disabled>Сначала заведите коня в разделе «Питомцы»</button>';
       else if (it.premiumOnly && !S.isPremium()) btn = '<button class="btn purple" data-act="super">👑 Доступно в Super</button>';
       else btn = `<button class="btn gold" data-act="buy">Купить за <img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}</button>`;
     } else if (eq) {
       btn = it.slot === 'outfit' && id === 'tshirt_green' ? '<button class="btn" disabled>Базовая одежда</button>' : '<button class="btn ghost dark" data-act="unequip">Снять</button>';
+    } else if (it.id === 'ny_horse' && !ownsHorse()) {
+      btn = '<button class="btn" disabled>Сначала заведите коня в разделе «Питомцы»</button>';
     } else btn = `<button class="btn blue" data-act="equip">${it.slot === 'ny' ? (nyWear ? 'Надеть' : 'Поставить') : 'Надеть'}</button>`;
     if (it.cup && owned && isCupEmpty(id)) btn = `<button class="btn gold" data-act="refill">🔄 Наполнить за ${BZI} ${D.cupRefill}</button>` + btn;
     const m = openModal(`<div class="mascot-stage v4 wx-snow iced" style="height:190px;margin:0 0 14px">${stageScene(true)}${STAGE_SKY}<div class="mascot-hold">${preview}</div></div>
@@ -2201,6 +2220,7 @@
         else if (act === 'buy') buyItem(it);
         else if (act === 'refill') { if (refillCup(it)) { closeModal(); refreshShop(true); } }
         else if (act === 'equip') {
+          if (it.id === 'ny_horse' && !ownsHorse()) { toast('Сначала заведите коня в разделе «Питомцы»'); return; }
           if (it.id === 'ny_dog') {
             if (!dogState()) { toast('Сначала заведите собаку в разделе «Питомцы»'); return; }
             s.equip.dhat = null; s.equip.dacc = null; s.equip.dcoat = null;
@@ -2218,6 +2238,7 @@
   function buyItem(it) {
     const s = st();
     if ((it.dog || it.id === 'ny_dog') && !dogState()) { toast('Сначала заведите собаку в разделе «Питомцы»'); return; }
+    if (it.id === 'ny_horse' && !ownsHorse()) { toast('Сначала заведите коня в разделе «Питомцы»'); return; }
     if (it.revive && !(s.lostStreak && s.lostStreak.n > 0)) { toast('🔥 Огонёк и так горит'); return; }
     if (it.food && s.owned.indexOf('buuza_plate') < 0) { toast('🍽️ Сначала купите «Тарелку бууз»'); haptic('error'); return; }
     if (it.food && (s.buuz || 0) >= 99) { toast('🥟 Тарелка полна (99)'); return; }
@@ -2261,7 +2282,7 @@
   function petsGridBase() {
     const n = petsState().sheep, max = D.sheepMax, prem = S.isPremium();
     const sheepCard = `<button class="item-card pet-card ${n ? 'equipped' : ''}" data-pet="sheep">${n ? `<span class="tag" style="background:var(--blue)">${n} из ${max}</span>` : ''}<div class="pv">${window.BG_ART.sheepSvg()}</div><div class="nm">Хонин — овца</div><div class="price">${n >= max ? '✔ Полное стадо' : `${BZI} ${D.sheepPrice}`}</div></button>`;
-    return `<div class="pets-h">🐑 Овцы · ${n} из ${max}</div>${sheepCard}<div class="pets-h">🐎 Кони · ${prem ? horseState().owned.length + ' из 3' : (horseState().lucky ? 'случайный конь у сэргэ' : '1 случайный с ' + D.luckyHorseUnit + '-го модуля, остальные в Super')}</div>${prem ? '' : luckyCard()}${horseGrid()}`;
+    return `<div class="pets-h">🐑 Овцы · ${n} из ${max}</div>${sheepCard}<div class="pets-h">🐎 Кони · ${prem ? horseState().owned.length + ' из 3' : (horseState().lucky ? 'случайный конь у сэргэ' : 'случайный конь — награда за 3 модуля')}</div>${prem ? '' : luckyCard()}${horseGrid()}`;
   }
 
   function sheepModal() {
@@ -2292,23 +2313,22 @@
     });
   }
 
-  /* v1.8.3: случайный конь для игроков без Super — один раз, после выхода на 5-й модуль */
+  /* Случайный конь — награда за 3 пройденных модуля, не покупка */
   function luckyCard() {
-    const hs = horseState(), ok = reachedUnit(D.luckyHorseUnit), got = hs.lucky && D.horses.find(h => h.id === hs.lucky);
-    const tag = got ? '<span class="tag">Ваш</span>' : ok ? '<span class="tag" style="background:var(--green)">Открыто</span>' : '<span class="tag" style="background:#868E96">🔒</span>';
+    const hs = horseState(), ok = doneUnitCount() >= 3, got = hs.lucky && D.horses.find(h => h.id === hs.lucky);
+    const tag = got ? '<span class="tag">Ваш</span>' : ok ? '<span class="tag" style="background:var(--green)">Награда</span>' : '<span class="tag" style="background:#868E96">🔒</span>';
     const pv = got ? window.BG_ART.horseSvg(got) : '<div class="lucky-q">🎲</div>';
-    const price = got ? '✔ У сэргэ' : ok ? `${BZI} ${D.luckyHorsePrice}` : `🔒 Модуль ${D.luckyHorseUnit}`;
+    const price = got ? '✔ У сэргэ' : ok ? 'Забрать' : '🔒 3 модуля';
     return `<button class="item-card pet-card lucky-card ${got ? 'equipped' : ''}" data-lucky="1">${tag}<div class="pv">${pv}</div><div class="nm">${got ? esc(got.name) : 'Случайный конь'}</div><div class="price">${price}</div></button>`;
   }
   function luckyModal() {
-    const s = st(), hs = horseState(), ok = reachedUnit(D.luckyHorseUnit), got = hs.lucky && D.horses.find(h => h.id === hs.lucky);
-    const unit = D.units[D.luckyHorseUnit - 1];
+    const s = st(), hs = horseState(), ok = doneUnitCount() >= 3, got = hs.lucky && D.horses.find(h => h.id === hs.lucky);
     let body, btn = '';
-    if (got) body = `<div class="horse-pv">${window.BG_ART.horseSvg(got, 'horse-svg big')}</div><h2>${esc(got.name)} — ${esc(got.ru)}</h2><p>${esc(got.desc)}</p><p class="muted">Это ваш случайный конь — он пасётся у сэргэ. Выбирать породу и держать до 3 коней можно в Super.</p>`;
+    if (got) body = `<div class="horse-pv">${window.BG_ART.horseSvg(got, 'horse-svg big')}</div><h2>${esc(got.name)} — ${esc(got.ru)}</h2><p>${esc(got.desc)}</p><p class="muted">Это ваш случайный конь за 3 модуля — он пасётся у сэргэ. Выбирать породу и держать до 3 коней можно в Super.</p>`;
     else {
-      body = `<div class="horse-pv lucky-pv"><div class="lucky-q big">🎲</div></div><h2>Случайный конь</h2><p>Один конь на удачу: порода выпадет случайно из ${D.horses.length}.</p>` +
-        (ok ? '' : `<p class="muted">🔒 Откроется, когда вы дойдёте до ${D.luckyHorseUnit}-го модуля${unit ? ' «' + esc(unit.title) + '»' : ''}.</p>`);
-      btn = ok ? `<button class="btn gold" data-act="roll">🎲 Купить за ${BZI} ${D.luckyHorsePrice}</button>` : `<button class="btn" disabled>🔒 Нужен ${D.luckyHorseUnit}-й модуль</button>`;
+      body = `<div class="horse-pv lucky-pv"><div class="lucky-q big">🎲</div></div><h2>Случайный конь</h2><p>Порода выпадет сама, когда будут пройдены первые 3 модуля. Платить за него не нужно.</p>` +
+        (ok ? '' : '<p class="muted">🔒 Сейчас пройдено модулей: ' + doneUnitCount() + ' из 3.</p>');
+      btn = ok ? '<button class="btn gold" data-act="roll">🎲 Забрать коня</button>' : '<button class="btn" disabled>🔒 Нужны 3 модуля</button>';
     }
     const m = openModal(`${body}<div class="stack">${btn}<button class="btn ghost dark" data-act="close">Закрыть</button></div>`);
     let rolling = false;
@@ -2316,10 +2336,9 @@
       b.onclick = () => {
         if (rolling) return;
         if (b.dataset.act === 'close') return closeModal();
-        if (hs.lucky || !reachedUnit(D.luckyHorseUnit)) return;
-        if (s.buzzy < D.luckyHorsePrice) { haptic('error'); sfx('wrong'); toast(`Не хватает ${D.luckyHorsePrice - s.buzzy} ${BZI}. Пройдите урок!`); return; }
-        const pick = D.horses[Math.floor(Math.random() * D.horses.length)];
-        s.buzzy -= D.luckyHorsePrice; s.stats.purchases = (s.stats.purchases || 0) + 1; hs.lucky = pick.id; S.save();
+        if (hs.lucky || doneUnitCount() < 3) return;
+        const pick = grantModuleHorse();
+        if (!pick) return;
         rolling = true; b.disabled = true; b.textContent = 'Крутим…';
         const pv = m.querySelector('.lucky-pv'); let i = 0;
         const t = setInterval(() => { if (pv) pv.innerHTML = window.BG_ART.horseSvg(D.horses[i++ % D.horses.length], 'horse-svg big'); }, 110);
@@ -3547,6 +3566,7 @@ function horseModal(id) {
     processWeek();
     if (st().hero === 'narana') { st().hero = 'bato'; S.save(); }
     if (st().admin && !devRemembered()) { st().admin = false; S.save(); }
+    const horseGift = grantModuleHorse();
     const sr = S.checkStreak();
     applyReminder();
 
@@ -3561,6 +3581,7 @@ function horseModal(id) {
     setTimeout(() => {
       const sp = $('#splash');
       if (sp) { sp.classList.add('hide'); setTimeout(() => sp.remove(), 1000); }
+      if (horseGift) toast('🐎 За 3 пройденных модуля вам достался конь: ' + horseGift.name + '!');
       if (!st().onboarded) return;
       if (sr === 'frozen') {
         const m = openModal(`<div class="big-emo">🧊</div><h2>Серия спасена!</h2><p>Вы пропустили день, но заморозка сохранила вашу серию: ${st().streak} ${plural(st().streak, ['день', 'дня', 'дней'])} 🔥</p><button class="btn blue" data-ok>Ура!</button>`,
