@@ -2643,8 +2643,8 @@ body[data-view="shop"] .seg button[data-slot="ny"] {
 .ny-night.out { opacity: 0; transition: opacity .4s ease; }
 .ny-banner { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); max-width: 92vw; padding: 10px 16px; border-radius: 16px; background: #102A5C; color: #fff; border: 1px solid rgba(255,255,255,.25); font-weight: 800; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
 .ny-night.in-stage { position: absolute !important; inset: 0; width: 100%; height: 100%; z-index: 6; overflow: hidden; border-radius: inherit; pointer-events: none; }
-.ny-santa { position: absolute; top: 18px; left: -48%; height: 86px; width: auto; animation: nyFly 6.6s linear forwards; filter: drop-shadow(0 3px 2px rgba(0,0,0,.2)); }
-.ny-santa svg { height: 86px; width: auto; display: block; }
+.ny-santa { position: absolute; top: 6px; left: -46%; height: 108px; width: auto; animation: nyFly 6.6s linear forwards; filter: drop-shadow(0 3px 2px rgba(0,0,0,.2)); }
+.ny-santa svg { height: 108px; width: auto; display: block; }
 .ny-night.in-stage .ny-banner { top: 6px; font-size: 11px; max-width: 78%; padding: 5px 8px; }
 @keyframes nyFly { to { left: 104%; } }
 .ny-deer { transform-box: fill-box; transform-origin: 50% 80%; animation: nyGallop .38s ease-in-out infinite; }

@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.23';
+  const APP_VERSION = 'BETA 1.11.24';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -3237,53 +3237,52 @@ function horseModal(id) {
     </g></g>`;
   }
   function santaSvg() {
-    return `<svg viewBox="0 0 430 130" width="430" height="130" aria-hidden="true">
-      <g transform="translate(2 22)">
-        <ellipse cx="86" cy="100" rx="62" ry="5" fill="rgba(90,62,54,.16)"/>
-        <path d="M14 102 Q6 102 6 94 Q6 88 16 88 H148 Q162 88 162 96 Q162 102 152 102" stroke="#F5C451" stroke-width="5.5" fill="none" stroke-linecap="round"/>
-        <path d="M38 88 L46 74 M128 88 L118 74" stroke="#F5C451" stroke-width="4.2" stroke-linecap="round"/>
-        <path d="M16 72 C12 52 14 34 30 28 H52 C64 40 92 44 128 36 C148 30 164 40 162 56 C160 74 146 82 124 82 H42 C26 82 18 78 16 72Z" fill="#F25C5C"/>
-        <path d="M118 40 C138 42 156 50 158 64" stroke="#E14B4B" stroke-width="5" fill="none" opacity=".45" stroke-linecap="round"/>
-        <path d="M22 46 C18 24 24 8 44 6 C62 4 70 18 66 36 C64 46 34 50 22 46Z" fill="#E14B4B" stroke="#5A3E36" stroke-width="1.4"/>
-        <ellipse cx="44" cy="12" rx="13" ry="4.2" fill="#F5C451" stroke="#5A3E36" stroke-width="1"/>
-        <path d="M40 8 Q44 1 48 8" fill="#F25C5C" stroke="#5A3E36" stroke-width="1"/>
-        <rect x="58" y="30" width="15" height="13" rx="2" fill="#3B8E52" stroke="#5A3E36" stroke-width="1"/>
-        <path d="M65.5 30 V43 M58 36.5 H73" stroke="#F5C451" stroke-width="1.8"/>
-        <path d="M62 30 Q65.5 24 69 30" fill="#F5C451" stroke="#5A3E36" stroke-width=".8"/>
-        <rect x="72" y="24" width="18" height="18" rx="2.2" fill="#3B8E52" stroke="#5A3E36" stroke-width="1"/>
-        <path d="M81 24 V42 M72 33 H90" stroke="#F5C451" stroke-width="2"/>
-        <path d="M76 24 Q81 16 86 24" fill="#F5C451" stroke="#5A3E36" stroke-width=".8"/>
-        <rect x="88" y="32" width="13" height="12" rx="2" fill="#3B8E52" stroke="#5A3E36" stroke-width="1"/>
-        <path d="M94.5 32 V44 M88 38 H101" stroke="#F5C451" stroke-width="1.6"/>
-        <path d="M91 32 Q94.5 27 98 32" fill="#F5C451"/>
-        <g stroke="#5A3E36" stroke-width="1.5" stroke-linejoin="round">
-          <path d="M104 58 Q102 40 116 38 Q132 40 130 58 Z" fill="#F25C5C"/>
-          <path d="M106 52 H128" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
-          <path d="M108 46 H126" stroke="#8B5A3C" stroke-width="3.2" stroke-linecap="round"/>
-          <rect x="113" y="43.2" width="7" height="6" rx="1.2" fill="#F5C451"/>
-          <circle cx="116" cy="24" r="12" fill="#F6D2B0"/>
-          <path d="M108 22 Q111 20 114 22" fill="none" stroke-linecap="round"/>
-          <path d="M120 22 Q123 20 126 22" fill="none" stroke-linecap="round"/>
-          <circle cx="117" cy="26" r="2.1" fill="#F4A4B0"/>
-          <ellipse cx="109" cy="27" rx="2.4" ry="1.5" fill="#F7B2BE"/>
-          <ellipse cx="124" cy="27" rx="2.4" ry="1.5" fill="#F7B2BE"/>
-          <path d="M104 28 Q112 46 128 28 Q122 40 116 41 Q110 40 104 28Z" fill="#fff"/>
-          <path d="M106 16 Q116 2 128 18 Q122 12 116 13 Q110 12 106 16Z" fill="#F25C5C"/>
-          <path d="M104 17 H130" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>
-          <circle cx="128" cy="6" r="3.6" fill="#fff"/>
-          <path d="M104 48 Q92 56 90 64" stroke="#F25C5C" stroke-width="4.2" fill="none" stroke-linecap="round"/>
-          <path d="M128 48 Q140 56 146 62" stroke="#F25C5C" stroke-width="4.2" fill="none" stroke-linecap="round"/>
-          <circle cx="90" cy="65" r="3.3" fill="#8B5A3C"/><circle cx="146" cy="63" r="3.3" fill="#8B5A3C"/>
+    return `<svg viewBox="0 0 460 150" width="460" height="150" aria-hidden="true">
+      <g transform="translate(0 8)">
+        <ellipse cx="96" cy="128" rx="70" ry="6" fill="rgba(90,62,54,.16)"/>
+        <path d="M18 132 Q6 132 6 120 Q6 112 20 112 H168 Q186 112 186 122 Q186 132 172 132" stroke="#F5C451" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <path d="M46 112 L56 92 M150 112 L138 92" stroke="#F5C451" stroke-width="5" stroke-linecap="round"/>
+        <path d="M18 96 C12 70 14 46 36 36 H70 C86 52 120 58 168 46 C192 38 214 52 210 74 C206 98 184 108 154 108 H52 C30 108 20 102 18 96Z" fill="#F25C5C"/>
+        <path d="M24 58 C16 28 28 8 54 6 C78 4 90 22 84 48 C80 62 40 66 24 58Z" fill="#E45454" stroke="#5A3E36" stroke-width="1.6"/>
+        <ellipse cx="54" cy="16" rx="16" ry="5" fill="#F5C451" stroke="#5A3E36" stroke-width="1.3"/>
+        <path d="M48 12 Q54 2 60 12" fill="#F25C5C" stroke="#5A3E36" stroke-width="1.2"/>
+        <rect x="78" y="40" width="18" height="16" rx="2" fill="#3B8E52" stroke="#5A3E36" stroke-width="1.2"/>
+        <path d="M87 40 V56 M78 48 H96" stroke="#F5C451" stroke-width="2"/>
+        <path d="M82 40 Q87 32 92 40" fill="#F5C451" stroke="#5A3E36" stroke-width=".8"/>
+        <rect x="96" y="32" width="22" height="22" rx="2.4" fill="#3B8E52" stroke="#5A3E36" stroke-width="1.2"/>
+        <path d="M107 32 V54 M96 43 H118" stroke="#F5C451" stroke-width="2.2"/>
+        <path d="M101 32 Q107 22 113 32" fill="#F5C451" stroke="#5A3E36" stroke-width=".9"/>
+        <path d="M28 46 C70 64 108 70 150 60 C176 52 196 46 208 58" stroke="#F5C451" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <g stroke="#5A3E36" stroke-linejoin="round" stroke-linecap="round">
+          <path d="M124 78 Q120 52 148 48 Q176 52 172 78 Z" fill="#F25C5C" stroke-width="2"/>
+          <path d="M128 70 H168" stroke="#fff" stroke-width="6"/>
+          <path d="M132 62 H164" stroke="#8B5A3C" stroke-width="4.5"/>
+          <rect x="142" y="57.5" width="12" height="10" rx="2" fill="#F5C451" stroke-width="1.3"/>
+          <circle cx="148" cy="34" r="20" fill="#F8D7C0" stroke-width="2"/>
+          <path d="M136 32 Q142 26 148 32" fill="none" stroke-width="2.2"/>
+          <path d="M152 32 Q158 26 164 32" fill="none" stroke-width="2.2"/>
+          <circle cx="150" cy="38" r="3.2" fill="#F4A4B8" stroke="none"/>
+          <ellipse cx="134" cy="40" rx="4" ry="2.4" fill="#F7B2C0" stroke="none"/>
+          <ellipse cx="164" cy="40" rx="4" ry="2.4" fill="#F7B2C0" stroke="none"/>
+          <path d="M126 36 Q122 50 130 66 Q148 80 166 66 Q176 50 170 36 Q160 52 148 54 Q136 52 126 36Z" fill="#fff" stroke-width="2"/>
+          <ellipse cx="140" cy="48" rx="8" ry="5" fill="#fff" stroke="none"/>
+          <ellipse cx="156" cy="48" rx="8" ry="5" fill="#fff" stroke="none"/>
+          <path d="M126 24 Q136 2 168 16 Q178 22 172 30 Q154 16 130 30Z" fill="#F25C5C" stroke-width="2"/>
+          <path d="M124 28 Q148 16 176 30" stroke="#fff" stroke-width="6" fill="none"/>
+          <circle cx="170" cy="12" r="6" fill="#fff" stroke-width="1.8"/>
+          <path d="M128 64 Q112 70 102 76" stroke="#F25C5C" stroke-width="6" fill="none"/>
+          <path d="M168 64 Q186 70 196 76" stroke="#F25C5C" stroke-width="6" fill="none"/>
+          <circle cx="100" cy="78" r="5.5" fill="#8B5A3C" stroke-width="1.6"/>
+          <circle cx="198" cy="76" r="5.5" fill="#8B5A3C" stroke-width="1.6"/>
         </g>
-        <path d="M100 50 H136 C144 60 142 74 132 80 H102 C94 72 96 58 100 50Z" fill="#F25C5C"/>
-        <path d="M24 36 C48 46 78 48 108 42 C128 38 148 34 160 46" stroke="#F5C451" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M118 86 H190 C198 98 196 112 176 116 H112 C104 108 108 94 118 86Z" fill="#F25C5C"/>
       </g>
-      <path d="M92 87 L150 84 L198 94" stroke="#F5C451" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-      <path d="M148 85 L246 94" stroke="#F5C451" stroke-width="2" fill="none"/>
-      <path d="M148 85 L294 96" stroke="#E0B03A" stroke-width="1.7" fill="none"/>
-      ${nyDeer(214, 118, 0.46, false, 'd3')}
-      ${nyDeer(262, 116, 0.48, false, 'd2')}
-      ${nyDeer(310, 118, 0.5, true, 'd1')}
+      <path d="M102 96 L156 92 L214 108" stroke="#F5C451" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <path d="M198 94 L270 108" stroke="#F5C451" stroke-width="2.1" fill="none"/>
+      <path d="M198 94 L320 112" stroke="#E0B03A" stroke-width="1.8" fill="none"/>
+      ${nyDeer(236, 136, 0.42, false, 'd3')}
+      ${nyDeer(286, 134, 0.44, false, 'd2')}
+      ${nyDeer(336, 136, 0.46, true, 'd1')}
     </svg>`;
   }
   function mountNyGift(stage) {
