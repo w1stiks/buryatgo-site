@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.14';
+  const APP_VERSION = 'BETA 1.11.15';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -189,6 +189,9 @@
     'урта зам': 'p53_urta_zam',
     'шэнэ гүүр': 'p54_shene_guur',
     'тэргэнэй буудал': 'p55_tergenay_buudal',
+    'нуурай эрье': 'p47_nuuray_ere',
+    'эхэ баясхалан': 'p49_ehe_bayashalan',
+    'тэргэнай буудал': 'p55_tergenay_buudal',
     'амар мэндэ': 'p56_amar_mende',
     'сайн байна': 'p57_sayn_bayna',
     'баярлаа': 'p58_bayarlaa',
@@ -257,11 +260,36 @@
     });
     return t;
   }
+  function tokenAudio(key) {
+    if (!key) return null;
+    if (PHRASE_AUDIO[key] && PHRASE_AUDIO[key] !== 'p09_sagaan_hara') return audioFor(PHRASE_AUDIO[key]);
+    if (WORD_BY_TEXT[key]) return audioFor(WORD_BY_TEXT[key]);
+    const id = Object.keys(WORD_BY_TEXT).find(k => k.split(' ')[0] === key);
+    return id ? audioFor(WORD_BY_TEXT[id]) : null;
+  }
   function speak(text, slow, audio, onEnded) {
     if (!st().settings.tts) { if (typeof onEnded === 'function') setTimeout(onEnded, 0); return; }
     const cfg = st().settings;
     const base = cfg.ttsRate === 0.85 ? 0.92 : (cfg.ttsRate || 0.92);
-    if (!audio) audio = audioFor(WORD_BY_TEXT[normWord(text)]);
+    const key = normWord(text);
+    if (!audio) {
+      if (PHRASE_AUDIO[key] && PHRASE_AUDIO[key] !== 'p09_sagaan_hara') audio = audioFor(PHRASE_AUDIO[key]);
+      else audio = tokenAudio(key);
+    }
+    if (!audio && key && key.split(' ').length > 1) {
+      const parts = key.split(' ').filter(p => p !== 'p09_sagaan_hara');
+      let i = 0;
+      const next = () => {
+        if (i >= parts.length) { if (typeof onEnded === 'function') onEnded(); return; }
+        const file = tokenAudio(parts[i++]);
+        if (!file) { next(); return; }
+        A.speak(text, base * (slow ? 0.75 : 1), file, cfg.voice || '', next);
+      };
+      next();
+      return;
+    }
+    const buryat = /[һөүҺӨҮ]/.test(String(text || '')) || !!WORD_BY_TEXT[key] || !!PHRASE_AUDIO[key];
+    if (!audio && buryat) { if (typeof onEnded === 'function') setTimeout(onEnded, 0); return; }
     A.speak(pronounce(text), base * (slow ? 0.75 : 1), audio, cfg.voice || '', onEnded);
   }
 
@@ -3043,15 +3071,13 @@ function horseModal(id) {
     const step = ui.onbStep;
     let body = '';
     if (step === 0) {
-      st().hero = ui.onbHero || 'bato';
-      const heroBtn = (id, title, sub) => `<button type="button" class="btn ghost dark goal-opt ${ui.onbHero === id ? 'on' : ''}" data-hero="${id}" style="${ui.onbHero === id ? 'border-color:#F2B705;color:#fff;background:#193F85' : ''}"><span>${title}</span><span>${sub}</span></button>`;
-      body = `<div class="om jump">${M.svg({ hat: ui.onbHero === 'narana' ? null : 'malgai_blue', outfit: 'degel_blue', hand: null, acc: null }, { mood: 'happy', cls: 'wave' })}</div>
+      st().hero = 'bato';
+      body = `<div class="om jump">${M.svg({ hat: 'malgai_blue', outfit: 'degel_blue', hand: null, acc: null }, { mood: 'happy', cls: 'wave' })}</div>
         <h1>Амар мэндэ!</h1><p>Чтобы получить новогодние подарки, нужен свой аккаунт. Гостевой вход отключён.</p>
         <form class="cloud-form" id="onbForm" autocomplete="on">
           <input class="cloud-in" id="onbLogin" name="username" placeholder="Логин (латиница, 3–20)" maxlength="20" autocapitalize="none" autocomplete="username" value="${esc(ui.onbLogin || '')}">
           <input class="cloud-in" id="onbMail" name="email" type="email" placeholder="Почта" maxlength="80" autocomplete="email" value="${esc(ui.onbMail || '')}">
           <input class="cloud-in" id="onbPass" name="password" type="password" placeholder="Пароль (от 6 символов)" maxlength="64" autocomplete="new-password">
-          <div class="stack" style="margin-top:8px">${heroBtn('bato', 'Бато', 'мальчик')}${heroBtn('narana', 'Нарана', 'девочка')}</div>
           <p class="cloud-err" id="onbErr"></p>
         </form>
         <div class="grow"></div>
@@ -3083,7 +3109,6 @@ function horseModal(id) {
     }
     $$('[data-g]', scr).forEach(b => { b.onclick = () => { ui.onbGoal = parseInt(b.dataset.g, 10); renderOnboarding(scr); }; });
     $$('[data-age]', scr).forEach(b => { b.onclick = () => { ui.onbAge = b.dataset.age; if (b.dataset.age === 'kids') kidsVoice('Привет! Будем учиться вместе!'); renderOnboarding(scr); }; });
-    $$('[data-hero]', scr).forEach(b => { b.onclick = () => { ui.onbLogin = ($('#onbLogin') && $('#onbLogin').value) || ''; ui.onbMail = ($('#onbMail') && $('#onbMail').value) || ''; ui.onbHero = b.dataset.hero; const s = st(); s.hero = ui.onbHero; renderOnboarding(scr); }; });
     const loginBtn = $('#onbLoginBtn', scr);
     if (loginBtn) loginBtn.onclick = () => cloudModal('in');
     $('#onbNext', scr).onclick = onbNext;
@@ -3097,9 +3122,8 @@ function horseModal(id) {
     if (!/^[a-z0-9_.-]{3,20}$/i.test(login)) { err('Логин: латиница, цифры, от 3 до 20 символов'); haptic('error'); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) { err('Введите почту'); haptic('error'); return; }
     if (pass.length < 6) { err('Пароль — минимум 6 символов'); haptic('error'); return; }
-    if (ui.onbHero !== 'bato' && ui.onbHero !== 'narana') { err('Выберите Бато или Нарану'); return; }
     const C = window.BG_CLOUD, s = st();
-    s.email = mail; s.hero = ui.onbHero; s.name = login.slice(0, 10);
+    s.email = mail; s.hero = 'bato'; s.name = login.slice(0, 10);
     ui.onbName = s.name;
     const btn = $('#onbNext');
     if (btn) { btn.disabled = true; btn.textContent = '⏳ Создаём аккаунт…'; }
@@ -3348,6 +3372,7 @@ function horseModal(id) {
     });
 
     processWeek();
+    if (st().hero === 'narana') { st().hero = 'bato'; S.save(); }
     const sr = S.checkStreak();
     applyReminder();
 

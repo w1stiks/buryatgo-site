@@ -133,15 +133,23 @@ window.BG_AUDIO = (function () {
         let done = false;
         const next = () => { if (done) return; done = true; missingAudio[f] = true; tryAt(i + 1); };
         try {
-          if (recorded) { recorded.onerror = null; recorded.onended = null; recorded.pause(); }
+          if (recorded) { recorded.onerror = null; recorded.onended = null; try { recorded.pause(); } catch (e2) {} }
           const el = new Audio(f);
           recorded = el;
           el.preload = 'auto';
           el.playbackRate = rate < 0.7 ? 0.75 : 1;
-          el.onerror = next;
+          el.onerror = () => {
+            if (token !== playToken) return;
+            if (el.error && el.error.code === 1) return;
+            next();
+          };
           el.onended = () => { if (token === playToken) fireEnd(); };
           const pr = el.play();
-          if (pr && pr.catch) pr.catch(err => { if (err && err.name === 'NotAllowedError') { done = true; return; } next(); });
+          if (pr && pr.catch) pr.catch(err => {
+            if (done || token !== playToken) return;
+            if (err && (err.name === 'NotAllowedError' || err.name === 'AbortError')) { done = true; return; }
+            next();
+          });
         } catch (e) { next(); }
       };
       tryAt(0);
