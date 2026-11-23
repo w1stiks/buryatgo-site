@@ -2688,3 +2688,32 @@ body[data-view="shop"] .seg button[data-slot="ny"] {
 @keyframes nyBow { to { transform: translateY(-16px) scale(1.35); opacity: 0; } }
 @keyframes nyGlow { from { opacity: 0; } to { opacity: .9; } }
 @keyframes nySnowPop { to { transform: translate(var(--dx), var(--dy)); opacity: 0; } }
+
+/* BETA 1.11.28 — панель разработчика */
+body[data-view=developer] #app,
+body[data-view=developer] .screen { background: #0B1E42 !important; background-image: none !important; color: #fff; }
+body[data-view=developer] h1.title,
+body[data-view=developer] h2.sub,
+body[data-view=developer] .back-head { color: #fff !important; background: transparent; }
+body[data-view=developer] .icon-btn { background: #193F85; color: #fff; }
+body[data-view=developer] .set-group,
+body[data-view=developer] .dev-dock { background: #102A5C !important; color: #fff; border: 1px solid rgba(255,255,255,.15) !important; border-radius: 16px; }
+body[data-view=developer] .set-row,
+body[data-view=developer] .lb,
+body[data-view=developer] .dev-player b { color: #fff !important; }
+body[data-view=developer] .muted,
+body[data-view=developer] .dock-note,
+body[data-view=developer] .disclaimer,
+body[data-view=developer] .set-row small,
+body[data-view=developer] .dev-player small { color: #B8D4FF !important; }
+.dev-hero { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 8px 0 14px; }
+.dev-hero > div { background: #102A5C; border: 1px solid rgba(255,255,255,.15); border-radius: 16px; padding: 12px 10px; text-align: center; }
+.dev-hero .k { color: #B8D4FF; font-size: 12px; font-weight: 800; }
+.dev-hero .big { color: #fff; font-size: 26px; font-weight: 900; line-height: 1.15; }
+.dev-lbl { color: #fff; font-weight: 800; font-size: 13px; white-space: nowrap; }
+body[data-view=developer] input,
+body[data-view=developer] select,
+body[data-view=developer] input[type="datetime-local"] {
+  background: #0B1E42 !important; color: #fff !important; border: 1px solid rgba(255,255,255,.22) !important; color-scheme: dark;
+}
+body[data-view=developer] .dev-player { background: transparent; color: #fff; }

@@ -309,18 +309,21 @@ window.BG_CLOUD = (function () {
     const on = !!((f.nyOn && f.nyOn.booleanValue) || (f.on && f.on.booleanValue));
     const id = (f.nyId && f.nyId.stringValue) || (f.id && f.id.stringValue) || '';
     const at = parseInt(((f.nyAt || f.at || {}).integerValue) || '0', 10) || 0;
+    const startAt = parseInt(((f.startAt || {}).integerValue) || '0', 10) || at;
     if (!id) return null;
-    return { on, id, at };
+    return { on, id, at, startAt };
   }
-  async function publishNy(on) {
+  async function publishNy(on, startAt) {
     if (!configured()) throw fail('NOT_CONFIGURED');
     if (!sess) throw fail('NO_SESSION');
     const t = await token();
     const id = on ? ('ny' + Date.now().toString(36)) : (sess.nyId || 'ny0');
     const at = Date.now();
+    const when = on ? Math.max(0, parseInt(startAt, 10) || at) : 0;
     const headers = { Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' };
     const evFields = {
       on: { booleanValue: !!on }, id: { stringValue: id }, at: { integerValue: String(at) },
+      startAt: { integerValue: String(when) },
       nyOn: { booleanValue: !!on }, nyId: { stringValue: id }, nyAt: { integerValue: String(at) }
     };
     const evMask = Object.keys(evFields).map(f => 'updateMask.fieldPaths=' + f).join('&');
@@ -330,7 +333,7 @@ window.BG_CLOUD = (function () {
     const pr = await request(presUrl(sess.uid) + '?' + prMask, { method: 'PATCH', headers, body: JSON.stringify({ fields: prFields }) });
     if (!ev.r.ok && !pr.r.ok) throw fail(errCode(ev.j) || errCode(pr.j));
     sess.nyId = id; writeSess(sess);
-    return { on: !!on, id, at, shared: ev.r.ok };
+    return { on: !!on, id, at, startAt: when, shared: ev.r.ok };
   }
   async function readNy() {
     if (!configured() || !sess) return null;

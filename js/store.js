@@ -52,7 +52,7 @@ window.BG_STORE = (function () {
       settings: {
         sfxClick: true, sfxCorrect: true, sfxWrong: true,
         music: false, musicVol: 0.35,
-        tts: true, ttsRate: 0.85, voice: 'female',
+        tts: true, ttsRate: 0.85, voice: 'male',
         haptics: true,
         notif: false, notifTime: '19:00',
         dailyGoal: 20
@@ -73,8 +73,8 @@ window.BG_STORE = (function () {
     const tryParse = key => { try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : null; } catch (e) { return null; } };
     const saved = tryParse(KEY) || tryParse(BACKUP_KEY);
     const st = saved ? merge(defaults(), saved) : defaults();
-    /* Миграции: возврат прежней озвучки, голос по умолчанию — женский (Irina) */
-    if (st.settings.voice !== 'male') st.settings.voice = 'female';
+    /* Голос только мужской */
+    st.settings.voice = 'male';
     if ([0.6, 0.85, 1.05].indexOf(st.settings.ttsRate) < 0) st.settings.ttsRate = 0.85;
     if (!('feet' in st.equip)) st.equip.feet = null;
     if (!('pants' in st.equip)) st.equip.pants = null;

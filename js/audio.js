@@ -96,10 +96,7 @@ window.BG_AUDIO = (function () {
   const FEMALE = /irina|ирина|milena|милена|svetlana|светлана|dariya|дария|anna|анна|female|женск/i;
   const MALE = /pavel|павел|yuri|юрий|dmitr|дмитр|maxim|максим|\bmale|мужск/i;
   let nativeGender = null;
-  function gender(g) {
-    if (g !== 'male' && g !== 'female') { try { g = window.BG_STORE.state.settings.voice; } catch (e) { g = 'female'; } }
-    return g === 'male' ? 'male' : 'female';
-  }
+  function gender() { return 'male'; }
   function pickVoice(g) {
     const ru = speechSynthesis.getVoices().filter(x => /ru/i.test(x.lang));
     if (!ru.length) return { v: null, pitch: g === 'male' ? 0.75 : 1 };
@@ -114,7 +111,7 @@ window.BG_AUDIO = (function () {
     try { if (window.AndroidBridge && window.AndroidBridge.setVoiceGender) { window.AndroidBridge.setVoiceGender(g); nativeGender = g; } } catch (e) {}
   }
   function listVoices() {
-    return Promise.resolve([{ id: 'female', label: 'Женский голос' }, { id: 'male', label: 'Мужской голос' }]);
+    return Promise.resolve([{ id: 'male', label: 'Мужской голос' }]);
   }
 
     const AUDIO_FILES = new Set(["aba", "aha", "amar", "amtatai", "ayaga", "b_ama", "b_aral", "b_bagsha", "b_bayaskhalan", "b_beshehe", "b_boroo", "b_buudal", "b_debter", "b_dolgin", "b_duratai", "b_edihe", "b_erhim", "b_erie", "b_gar", "b_gol", "b_gunig", "b_guur", "b_habar", "b_halhin", "b_haluun", "b_hamar", "b_hoto", "b_huiten", "b_hul", "b_huragsha", "b_hurguuli", "b_namar", "b_nom", "b_nuur", "b_nyuden", "b_sahan", "b_shehen", "b_tergen", "b_tolgoi", "b_toskhon", "b_ubel", "b_uhaatai", "b_uhen", "b_unshaha", "b_untaha", "b_uuha", "b_yabaha", "b_zagahan", "b_zam", "b_zorigtoi", "b_zun", "bayarlaa", "bayartai", "bi", "buhe", "buuza", "dalai", "degel", "durbeljen", "durben", "duu", "duun", "egeshe", "ezhy", "geer", "ger", "gurban", "gutal", "hadag", "hain", "hara", "hara_m", "hileemen", "hohe", "honin", "hoyor", "hubsahan", "hugshen", "jel", "k_hello", "k_listen_repeat", "k_listen_tap", "k_molodec", "k_otlichno", "k_oy", "k_sound_then_pic", "k_umnica", "k_ura", "k_zdorovo", "mahan", "malgai", "modon", "morin", "naadan", "naran", "negen", "nere", "nogoon", "nohoi", "p01_amar_mende_seseg", "p02_bayartay_bato", "p03_sayn_bayna_gut", "p04_hayn_bayarlaa", "p05_minii_nere_bato", "p06_tiime_bi_seseg", "p07_hohe_tengeri", "p08_ulaan_shara_nogoon", "p09_sagaan_hara", "p10_minii_ezhy", "p11_minii_aba", "p12_minii_ger_bule", "p13_bi_say_uunab", "p14_buuza_amtatay", "p15_baygal_dalay", "p16_minii_morin", "p17_hayn_nohoy", "p18_minii_honin", "p19_minii_degel", "p20_shene_malgay", "p21_minii_ger", "p22_minii_tolgoy", "p23_hoyor_nyuden", "p24_hoyor_gar", "p25_uta_uhen", "p26_huyten_ubel", "p27_haluun_zun", "p28_sahan_orozho_bayna", "p29_boroo_orozho_bayna", "p30_bi_yabanab", "p31_bato_untana", "p32_bi_nom_unshanab", "p33_minii_bagsha", "p34_bi_hurguulida_yabanab", "p35_shene_nom", "p36_minii_debter", "p37_sagaan_haraar", "p38_hayn_duun", "p39_hayn_naadan", "p40_negen_hoyor_gurban", "p41_taban_buuza", "p42_negen_uder", "p43_gurban_zhel", "p44_baygal_nuur", "p45_olhon_aral", "p46_tomo_zagahan", "p47_nuuray_ere", "p48_bi_sayd_duratay", "p49_ehe_bayashalan", "p50_uhaatay_hubuun", "p51_zorigtoy_bato", "p52_hoto_ruu_yabanab", "p53_urta_zam", "p54_shene_guur", "p55_tergenay_buudal", "p56_amar_mende", "p57_sayn_bayna", "p58_bayarlaa", "p59_hayn", "p60_bayartay", "sagaalgan", "sagaan", "sai", "sain", "sain_gut", "shara", "shi", "shiree", "shono", "sun", "surharban", "taban", "temeen", "tiime", "tontoloo", "ubgen", "udur", "ugy", "uhan", "uher", "ulaan", "uula", "yokhor"]);

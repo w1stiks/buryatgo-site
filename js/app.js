@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.27';
+  const APP_VERSION = 'BETA 1.11.28';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -2732,7 +2732,7 @@ function horseModal(id) {
         ${row('🔉 Громкость музыки', '', `<input type="range" id="musVol" min="0" max="1" step="0.05" value="${cfg.musicVol}" style="width:130px">`)}
         ${row('🗣️ Озвучка слов', 'Синтез речи устройства', sw('tts', cfg.tts))}
         <div class="set-row" style="flex-wrap:wrap"><div class="lb">🐢 Скорость речи</div>${pills('rate', [[0.6, 'Медленно'], [0.85, 'Нормально'], [1.05, 'Быстро']], cfg.ttsRate)}</div>
-        ${row('🎙️ Голос', 'По умолчанию — мужской голос', '<select id="voiceSel" class="voice-sel"><option value="male" selected>Мужской голос</option><option value="female">Женский голос</option></select>')}
+        ${row('🎙️ Голос', 'Только мужской голос', '<span class="tag-ok">Мужской</span>')}
         ${row('🔊 Проверить озвучку', '«Амар мэндэ!»', '<button class="btn small blue" id="ttsTest">Слушать</button>')}
         ${row('👋 Проверить прощание', '«Баяртай!» звучит как «Баяртэ»', '<button class="btn small blue" id="ttsBye">Слушать</button>')}
         ${row('📳 Вибрация', 'Тактильный отклик', sw('haptics', cfg.haptics))}
@@ -2778,9 +2778,6 @@ function horseModal(id) {
     $$('[data-goal]', scr).forEach(b => { b.onclick = () => { cfg.dailyGoal = parseInt(b.dataset.goal, 10); S.save(); $$('[data-goal]', scr).forEach(x => x.classList.toggle('on', x === b)); toast('🎯 Цель: ' + cfg.dailyGoal + ' XP в день'); }; });
     $('#ttsTest').onclick = () => { if (!cfg.tts) { toast('Включите озвучку слов'); return; } speak('Амар мэндэ!'); };
     $('#ttsBye').onclick = () => { if (!cfg.tts) { toast('Включите озвучку слов'); return; } speak('Баяртай!'); };
-    const vs = $('#voiceSel');
-    vs.value = cfg.voice === 'female' ? 'female' : 'male';
-    vs.onchange = () => { cfg.voice = vs.value; S.save(); A.setVoice(cfg.voice); speak('Амар мэндэ!'); };
     const nt = $('#notifTime');
     nt.onchange = () => { if (!nt.value) return; cfg.notifTime = nt.value; S.save(); if (cfg.notif) { applyReminder(); toast('⏰ Напоминание в ' + nt.value); } };
     $('#notifTest').onclick = testNotification;
@@ -2833,20 +2830,15 @@ function horseModal(id) {
   function devToolsHtml() {
     const s = st();
     const cur = currentGi(), curUnit = cur >= 0 ? D.units.indexOf(D.lessonIndex[cur].unit) + 1 : D.units.length;
-    const groups = devWordGroups();
-    let n = 0;
-    const words = groups.map(g => `<div class="dv-gh">${esc(g.t)}</div>` + g.ids.map(id => { n++; const w = D.words[id];
-      return `<div class="dv-w"><span class="dv-n">${n}</span><span class="dv-t"><b>${esc(w.bu)}</b><small>${esc(w.ru)} · ${esc(id)}</small></span>
-        <button class="dv-play" data-say="${esc(id)}" aria-label="Слушать ${esc(w.bu)}">▶</button><button class="dv-play slow" data-say="${esc(id)}" data-slow="1" aria-label="Медленно">🐢</button></div>`; }).join('')).join('');
-    return `<h2 class="sub">Лига</h2>
+    return `<h2 class="sub">Уроки</h2>
+      <div class="set-group dev-pad">
+        <div class="dev-row"><select id="devModule" class="dev-sel">${D.units.map((u, i) => `<option value="${i + 1}" ${i + 1 === curUnit ? 'selected' : ''}>${i + 1}. ${esc(u.title)}</option>`).join('')}</select><button class="btn small blue" id="devModBtn">Открыть досюда</button></div>
+        <div class="muted dock-note">Все уроки до выбранного модуля станут пройденными. Сам модуль и всё после него начнутся заново.</div>
+        <button class="btn small red" id="devClearLessons" style="margin-top:8px">Сбросить все уроки</button>
+      </div>
+      <h2 class="sub">Лига</h2>
       <div class="set-group dev-pad"><div class="dev-row"><select id="devLeague" class="dev-sel">${D.leagues.map((l, i) => `<option value="${i}" ${i === s.league ? 'selected' : ''}>${esc(l.name)} лига</option>`).join('')}</select></div>
-        <div class="muted dock-note">Лига меняется сразу после выбора.</div></div>
-      <h2 class="sub">Активный модуль</h2>
-      <div class="set-group dev-pad"><div class="dev-row"><select id="devModule" class="dev-sel">${D.units.map((u, i) => `<option value="${i + 1}" ${i + 1 === curUnit ? 'selected' : ''}>${i + 1}. ${esc(u.title)}${u.superOnly || u.premium ? ' 👑' : ''}</option>`).join('')}</select><button class="btn small blue" id="devModBtn">Установить</button></div>
-        <div class="muted dock-note">Уроки всех модулей до выбранного станут пройденными, с выбранного — начнутся заново.</div></div>
-      <h2 class="sub">Озвучка · ${n} слов</h2>
-      <div class="set-group dev-voice">${words}</div>
-      <p class="disclaimer">▶ — играет ваша запись из папки audio, если она есть, иначе синтезатор речи. 🐢 — медленно.</p>`;
+        <div class="muted dock-note">Лига меняется сразу после выбора.</div></div>`;
   }
   function bindDevTools(scr) {
     const s = st();
@@ -2854,12 +2846,8 @@ function horseModal(id) {
     if (lg) lg.onchange = () => { s.league = Math.max(0, Math.min(D.leagues.length - 1, +lg.value)); s.pendingLeagueResult = null; S.save(); sfx('coin'); toast('🏆 ' + esc(D.leagues[s.league].name) + ' лига'); };
     const mb = $('#devModBtn', scr);
     if (mb) mb.onclick = () => devSetModule(+$('#devModule', scr).value);
-    $$('[data-say]', scr).forEach(b => { b.onclick = () => {
-      const w = D.words[b.dataset.say]; if (!w) return;
-      if (!st().settings.tts) { toast('Включите озвучку в настройках'); return; }
-      $$('.dv-play.on', scr).forEach(x => x.classList.remove('on')); b.classList.add('on'); setTimeout(() => b.classList.remove('on'), 900);
-      speak(w.bu, !!b.dataset.slow, audioOf(w));
-    }; });
+    const clr = $('#devClearLessons', scr);
+    if (clr) clr.onclick = () => { s.lessons = {}; S.save(); toast('📘 Все уроки сброшены'); };
   }
 
   function renderDeveloper(scr) {
@@ -2868,30 +2856,41 @@ function horseModal(id) {
     const s = st();
     const head = `<div class="back-head"><button class="icon-btn" id="devBack" aria-label="Назад">←</button><h1 class="title" style="margin:0">Для разработчика</h1></div>`;
     const prem = S.isPremium();
-    scr.innerHTML = `<div class="view pad">${head}
-      <div class="dev-balance"><span class="big"><img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false></span><div><div class="big" id="devBz">${fmt(s.buzzy)}</div><div class="muted" style="font-size:12px;font-weight:800">Буузы на устройстве</div></div></div>
+    scr.innerHTML = `<div class="view pad dev-page">${head}
+      <div class="dev-hero">
+        <div><div class="k">Буузы</div><div class="big" id="devBz">${fmt(s.buzzy)}</div></div>
+        <div><div class="k">Опыт</div><div class="big">${fmt(s.xp || 0)}</div></div>
+        <div><div class="k">Серия</div><div class="big">${s.streak || 0}</div></div>
+      </div>
       <h2 class="sub">Буузы</h2>
       <div class="set-group dev-pad">
-        <div class="dev-grid">${[-100, -10, 10, 100, 500, 1000].map(v => `<button class="btn small ${v < 0 ? 'red' : 'blue'}" data-dz="${v}">${v > 0 ? '+' : '−'}${Math.abs(v)}</button>`).join('')}</div>
+        <div class="dev-grid">${[-1000, -100, 100, 1000, 5000, 25000].map(v => `<button class="btn small ${v < 0 ? 'red' : 'blue'}" data-dz="${v}">${v > 0 ? '+' : '−'}${Math.abs(v)}</button>`).join('')}</div>
         <div class="dev-row"><input type="number" id="devAmt" inputmode="numeric" min="1" step="1" placeholder="Сумма"><button class="btn small" id="devAdd">Начислить</button><button class="btn small red" id="devSub">Списать</button></div>
+        <div class="dev-row"><input type="number" id="devSet" inputmode="numeric" min="0" step="1" value="${s.buzzy}"><button class="btn small blue" id="devSetBtn">Точный баланс</button></div>
+      </div>
+      <h2 class="sub">Серия и заморозки</h2>
+      <div class="set-group dev-pad">
+        <div class="dev-row"><span class="dev-lbl">🔥 Серия</span><input type="number" id="devStreak" min="0" step="1" value="${s.streak || 0}"><button class="btn small blue" id="devStreakSet">Ок</button></div>
+        <div class="dev-row"><span class="dev-lbl">🧊 Заморозки</span><input type="number" id="devFreeze" min="0" max="2" step="1" value="${s.freezes || 0}"><button class="btn small blue" id="devFreezeSet">Ок</button></div>
       </div>
       <h2 class="sub">Подписка</h2>
       <div class="set-group">
         <div class="set-row"><div class="lb">👑 BuryatGo Super<small>${prem ? 'Активна ' + premUntil(s.premium) : 'Выключена'}</small></div><button class="switch ${prem ? 'on' : ''}" id="devPrem" role="switch" aria-checked="${prem}"></button></div>
       </div>
-      <h2 class="sub">Ивенты</h2>
+      <h2 class="sub">Новогодняя ночь</h2>
       <div class="set-group dev-pad">
-        <button class="btn gold" id="nyStart">🎄 Запустить ивент: Новогодняя ночь</button>
-        <button class="btn ghost dark" id="nyStop" style="margin-top:8px">Остановить и сбросить ивент</button>
-        <div class="muted dock-note">Запуск уходит в общую базу. Каждый аккаунт получает подарок один раз за этот запуск. Если сервер пишет, что Firebase закрыл базу — один раз вставьте правила.</div>
-        <button class="btn ghost dark" id="nyRules" type="button" style="margin-top:8px">Скопировать правила Firestore</button>
+        <div class="muted dock-note" id="nyStatus">Проверяем статус ивента…</div>
+        <button class="btn gold" id="nyStart">🎄 Запустить сейчас</button>
+        <div class="dev-row" style="margin-top:8px"><input type="datetime-local" id="nyWhen"><button class="btn small blue" id="nyPlan">Поставить таймер</button></div>
+        <button class="btn ghost dark" id="nyStop" style="margin-top:8px">Остановить и сбросить</button>
+        <div class="muted dock-note">Запускать и ставить время может только администратор. Игроки увидят ивент в назначенный момент, каждый аккаунт — один раз.</div>
       </div>
       ${devXpHtml()}
       ${wxDevHtml()}
       ${devToolsHtml()}
-      <p class="disclaimer">Изменения сохраняются только на этом устройстве. При включении Super здесь бонус +500 не начисляется.</p>
+      <p class="disclaimer">Панель только для администратора. Игроки её не видят и не могут запустить ивент.</p>
       <button class="btn ghost dark" id="devOut">Закрыть панель</button>
-      <div id="devDock" class="dev-dock is-loading" aria-busy="true"><div class="dock-title">⚙️ Расширенная панель управления</div><div class="dev-skel"></div><div class="dev-skel"></div><div class="dev-skel short"></div></div></div>`;
+      <div id="devDock" class="dev-dock is-loading" aria-busy="true"><div class="dock-title">Игроки</div><div class="dev-skel"></div></div></div>`;
     const change = (d) => {
       d = Math.trunc(d); if (!d) return;
       const before = s.buzzy;
@@ -2913,14 +2912,18 @@ function horseModal(id) {
       render();
     };
     $('#devBack').onclick = devClose;
-    $('#nyStart').onclick = () => nyAdmin(true);
-    $('#nyStop').onclick = () => nyAdmin(false);
-    $('#nyRules').onclick = () => {
-      const rules = "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /users/{uid} {\n      allow read, write: if request.auth != null && request.auth.uid == uid;\n    }\n    match /presence/{uid} {\n      allow read: if request.auth != null;\n      allow create, update: if request.auth != null && request.auth.uid == uid;\n    }\n    match /events/{id} {\n      allow read: if request.auth != null;\n      allow write: if request.auth != null;\n    }\n  }\n}\n";
-      const done = () => toast('Правила скопированы. Firebase → Firestore → Правила → вставить → Опубликовать');
-      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(rules).then(done).catch(() => { window.prompt('Скопируйте правила', rules); });
-      else window.prompt('Скопируйте правила', rules);
+    $('#devStreakSet').onclick = () => { s.streak = Math.max(0, parseInt($('#devStreak').value, 10) || 0); s.bestStreak = Math.max(s.bestStreak || 0, s.streak); S.save(); renderTop(); toast('🔥 Серия: ' + s.streak); };
+    $('#devFreezeSet').onclick = () => { s.freezes = Math.max(0, Math.min(2, parseInt($('#devFreeze').value, 10) || 0)); S.save(); toast('🧊 Заморозки: ' + s.freezes); };
+    $('#devSetBtn').onclick = () => { if (setExactBuzzy($('#devSet').value)) $('#devSet').value = st().buzzy; };
+    $('#nyStart').onclick = () => nyAdmin(true, Date.now());
+    $('#nyPlan').onclick = () => {
+      const raw = $('#nyWhen').value;
+      const when = raw ? new Date(raw).getTime() : 0;
+      if (!when || when < Date.now() - 60000) { toast('Выберите время в будущем'); return; }
+      nyAdmin(true, when);
     };
+    $('#nyStop').onclick = () => nyAdmin(false);
+    refreshNyStatus();
     bindDevTools(scr);
     wxDevBind(scr);
     devXpBind(scr);
@@ -2954,21 +2957,15 @@ function horseModal(id) {
       const list = (res.players || []).slice().sort((a, b) => (b.lastSeen || 0) - (a.lastSeen || 0));
       ui.devPlayers = list;
       dock.classList.remove('is-loading'); dock.removeAttribute('aria-busy');
-      dock.innerHTML = `<div class="dock-title">⚙️ Расширенная панель управления</div>
-        <h2 class="sub">Точный баланс Бууз</h2>
-        <div class="set-group dev-pad"><div class="dev-row"><input type="number" id="devSet" inputmode="numeric" min="0" step="1" value="${s.buzzy}"><button class="btn small blue" id="devSetBtn">Установить</button></div>
-          <div class="muted dock-note">Задаёт ровно такое количество Бууз на этом устройстве (0 — 10 000 000).</div></div>
-        <h2 class="sub">Живые игроки · ${list.filter(isLive).length} онлайн</h2>
+      dock.innerHTML = `<div class="dock-title">Игроки онлайн</div>
         <div class="dev-live"><div><b id="devLiveN">${list.filter(isLive).length}</b><small><i class="dot on"></i> онлайн</small></div><div><b>${list.filter(p => Date.now() - (p.lastSeen || 0) < 864e5).length}</b><small>за сутки</small></div><div><b id="devLiveAll">${list.length}</b><small>всего</small></div></div>
-        ${res.source === 'cloud' ? '<div class="muted dock-note">🌐 Данные из облака: все игроки с аккаунтом. Онлайн — активность за 3 минуты.</div>' : `<div class="muted dock-note">Облачный список недоступен: ${esc(liveNote(res.cloudErr))} Показаны игроки этого устройства.</div>`}
+        ${res.source === 'cloud' ? '<div class="muted dock-note">Все игроки с аккаунтом. Онлайн — активность за 3 минуты.</div>' : `<div class="muted dock-note">${esc(liveNote(res.cloudErr))}</div>`}
         <div class="set-group dev-players">${list.map(p => `<button class="dev-player" data-pid="${esc(p.id)}">
             <span class="dp-av">${M.svg(p.equip || {}, { full: true, cls: 'static' })}</span>
             <span class="dp-main"><b>${esc(p.name || 'Игрок')}${p.id === s.playerId ? ' <em>(вы)</em>' : ''}${p.premium ? ' 👑' : ''}</b>
               <small><i class="dot ${agoText(p.lastSeen) === 'онлайн' ? 'on' : ''}"></i>${agoText(p.lastSeen)} · ${fmt(p.xp || 0)} XP · 🔥 ${p.streak || 0}</small></span>
             <span class="dp-bz">${fmt(p.buzzy || 0)} <img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false></span></button>`).join('') || '<div class="set-row">Активных игроков нет</div>'}</div>
-        <p class="disclaimer">Источник: ${res.source === 'server' ? 'сервер игроков' : 'локальный реестр устройства. Для игроков с других телефонов укажите адрес сервера в BG_PLAYERS_API'}.</p>
         <button class="btn ghost dark" id="devReload">↻ Обновить список</button>`;
-      $('#devSetBtn').onclick = () => { if (setExactBuzzy($('#devSet').value)) $('#devSet').value = st().buzzy; };
       $('#devReload').onclick = () => { dock.classList.add('is-loading'); loadDevDock(); };
       $$('.dev-player', dock).forEach(b => { b.onclick = () => { const p = ui.devPlayers.find(x => x.id === b.dataset.pid); if (p) devPlayerModal(p); }; });
     });
@@ -3496,6 +3493,7 @@ function horseModal(id) {
   }
   function playNyNight(ev) {
     if (!ev || !ev.id || ui.nyPlaying) return;
+    if (ev.startAt && ev.startAt > Date.now() + 800) { scheduleNy(ev); return; }
     if (nySeen() === ev.id || st().nySeen === ev.id) {
       if (st().nyGift && ui.view === 'shop') mountNyGift($('#stage'));
       return;
@@ -3525,22 +3523,47 @@ function horseModal(id) {
       ui.nyPlaying = false;
     }, 6900);
   }
-  async function nyAdmin(on) {
+  function scheduleNy(ev) {
+    if (!ev || !ev.startAt) return;
+    if (ui.nyTimer) clearTimeout(ui.nyTimer);
+    const wait = Math.max(0, ev.startAt - Date.now());
+    ui.nyTimer = setTimeout(() => { ui.nyTimer = 0; playNyNight(ev); }, Math.min(wait, 2147483000));
+  }
+  function refreshNyStatus() {
+    const el = $('#nyStatus'); if (!el || !window.BG_CLOUD || !BG_CLOUD.readNy) return;
+    BG_CLOUD.readNy().then(ev => {
+      if (!$('#nyStatus')) return;
+      if (!ev || !ev.on) $('#nyStatus').textContent = 'Ивент выключен';
+      else if ((ev.startAt || 0) > Date.now()) $('#nyStatus').textContent = 'Запланирован на ' + new Date(ev.startAt).toLocaleString('ru-RU');
+      else $('#nyStatus').textContent = 'Идёт сейчас';
+    }).catch(() => { if ($('#nyStatus')) $('#nyStatus').textContent = 'Статус недоступен — войдите в аккаунт'; });
+  }
+  async function nyAdmin(on, startAt) {
+    if (!ui.devAuth && !isAdmin()) { toast('Ивент может запустить только администратор'); return; }
     const C = window.BG_CLOUD;
     if (!C || !C.user()) { toast('Сначала войдите в аккаунт — ивент пишется в общую базу'); return; }
     try {
-      const ev = await C.publishNy(on);
+      const ev = await C.publishNy(on, startAt);
       if (!on) {
+        if (ui.nyTimer) { clearTimeout(ui.nyTimer); ui.nyTimer = 0; }
         st().nyGift = null; st().nySeen = ''; nyMark('');
         $$('.ny-night').forEach(n => n.remove());
         $$('.ny-gift').forEach(n => n.remove());
         ui.nyPlaying = false; S.save();
-        toast('Ивент остановлен. Можно запускать снова');
+        toast('Ивент остановлен');
+        refreshNyStatus();
+        return;
+      }
+      if (ev.startAt > Date.now() + 1500) {
+        toast('🎄 Ивент поставлен на ' + new Date(ev.startAt).toLocaleString('ru-RU'));
+        scheduleNy(ev);
+        refreshNyStatus();
         return;
       }
       toast(ev.shared ? '🎄 Новогодняя ночь запущена для всех' : '🎄 Запущено через список игроков');
       nyMark(''); st().nySeen = '';
       playNyNight(ev);
+      refreshNyStatus();
     } catch (e) { toast(e.message || 'Не удалось запустить ивент'); }
   }
   async function nyPoll() {
@@ -3548,7 +3571,10 @@ function horseModal(id) {
     if (!C || !C.user || !C.user() || !st().onboarded || ui.nyPlaying) return;
     try {
       const ev = await C.readNy();
-      if (ev && ev.on) playNyNight(ev);
+      if (ev && ev.on) {
+        if ((ev.startAt || 0) > Date.now() + 800) scheduleNy(ev);
+        else playNyNight(ev);
+      }
     } catch (e) {}
   }
 
