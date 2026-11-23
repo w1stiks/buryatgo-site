@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.10.25';
+  const APP_VERSION = 'BETA 1.10.26';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -945,7 +945,7 @@
   const ageOf = () => { const a = st().age; return a === 'kids' || a === 'big' ? a : 'big'; };
   const ageInfo = id => AGES.find(a => a.id === id) || AGES[2];
   const isAdmin = () => !!st().admin || devRemembered();
-  const TAGS = { admin: ['ADMIN', 'tg-admin'], super: ['SUPER', 'tg-super'], kids: ['KIDS', 'tg-kids'], std: ['Standart', 'tg-std'], big: ['BIG', 'tg-big'] };
+  const TAGS = { admin: ['ADMIN', 'tg-admin'], super: ['SUPER', 'tg-super'], kids: ['ДЕТСКИЙ', 'tg-kids'], std: ['Стандарт', 'tg-std'], big: ['ВЗРОСЛЫЙ', 'tg-big'] };
   function tagHtml(kind, upper) {
     const t = TAGS[kind]; if (!t) return '';
     return `<span class="utag ${t[1]}">${upper ? t[0].toUpperCase() : t[0]}</span>`;
@@ -971,7 +971,7 @@
   const botTag = name => { const c = botCat(name); return `<span class="utags">${c === 'super' ? tagHtml('super') : tagHtml(c, true)}</span>`; };
 
   function ageButtons(cur) {
-    return AGES.map(a => `<button class="age-opt ${cur === a.id ? 'on' : ''}" data-age="${a.id}"><span class="ae">${a.emoji}</span><span class="at"><b>${a.label}</b><small>${a.d}</small></span>${tagHtml(a.id)}</button>`).join('');
+    return AGES.map(a => `<button class="age-opt ${cur === a.id ? 'on' : ''}" data-age="${a.id}"><span class="ae">${a.emoji}</span><span class="at"><b>${a.label}</b><small>${a.d}</small></span></button>`).join('');
   }
   function setAge(id) {
     const s = st(); s.age = id; S.save(); sfx('pop'); haptic('success');

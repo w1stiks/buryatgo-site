@@ -2393,3 +2393,38 @@ body[data-view="profile"] #profile,
 body[data-view="profile"] .profile-wrap {
   background: transparent !important;
 }
+
+
+/* Profile solid blue background */
+body[data-view="profile"] .screen,
+body[data-view="profile"] .view,
+body[data-view="profile"] #app {
+  background: #0F479E !important;
+}
+
+/* Age modal dark */
+.modal, .modal .sheet, .modal .modal-card {
+  background: #102A5C !important;
+  border: 1px solid rgba(255,255,255,.2) !important;
+  border-radius: 20px !important;
+  color: #fff !important;
+}
+.modal h2, .modal p {
+  color: #B8D4FF !important;
+}
+.modal .age-opt {
+  background: #193F85 !important;
+  border: 1px solid rgba(255,255,255,.15) !important;
+  border-radius: 14px !important;
+  color: #fff !important;
+}
+.modal .age-opt.on {
+  border: 2px solid #4FC3F7 !important;
+  background: #1a4a9a !important;
+}
+.modal .age-opt b {
+  color: #FFFFFF !important;
+}
+.modal .age-opt small {
+  color: #B8D4FF !important;
+}
