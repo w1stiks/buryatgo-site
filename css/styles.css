@@ -930,10 +930,16 @@ body[data-view=shop] .seg button img, body[data-view=shop] .seg button .ic { fle
 .wx-drops, .wx-flakes { position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s ease; }
 .mascot-stage.wx-rain .wx-drops, .mascot-stage.wx-snow .wx-flakes { opacity: 1; }
 .wx-drops .rd { position: absolute; top: -30px; width: 2px; height: 18px; border-radius: 2px; background: linear-gradient(rgba(255, 255, 255, 0), rgba(205, 228, 255, .95)); animation: bgRain .7s linear infinite paused; }
-.wx-flakes .sf { position: absolute; top: -12px; width: var(--sz, 4px); height: var(--sz, 4px); border-radius: 50%; background: #fff; box-shadow: 0 0 3px rgba(255, 255, 255, .9); animation: bgSnow 6s linear infinite paused; }
+.wx-flakes .sf { position: absolute; top: -16px; width: var(--sz, 4px); height: var(--sz, 4px); border-radius: 50%; background: #fff; opacity: var(--op, .85); box-shadow: 0 0 4px rgba(255, 255, 255, .9); animation: bgSnow 9s linear infinite paused; }
 .mascot-stage.wx-rain .wx-drops .rd, .mascot-stage.wx-snow .wx-flakes .sf { animation-play-state: running; }
+@keyframes bgSnow {
+  0% { transform: translate3d(0, -16px, 0) rotate(0deg); }
+  35% { transform: translate3d(var(--dx, 12px), 110px, 0) rotate(70deg); }
+  70% { transform: translate3d(calc(var(--dx, 12px) * -0.6), 230px, 0) rotate(-30deg); }
+  100% { transform: translate3d(var(--dx, 12px), 340px, 0) rotate(120deg); }
+}
 @keyframes bgRain { to { transform: translate(-28px, 340px); } }
-@keyframes bgSnow { to { transform: translate(var(--dx, 0), 330px); } }
+.mascot-stage.wx-rain .wx-drops .rd, .mascot-stage.wx-snow .wx-flakes .sf { animation-play-state: running; }
 
 .wx-badge { position: absolute; top: 10px; right: 10px; z-index: 8; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; justify-content: flex-end; max-width: 156px; background: rgba(255, 255, 255, .94); color: #1D3B6E; font: 800 12px/1.2 system-ui, -apple-system, sans-serif; padding: 5px 9px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, .18); pointer-events: none; }
 .wx-badge:empty { display: none; }

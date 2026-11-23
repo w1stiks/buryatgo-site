@@ -146,7 +146,7 @@ window.BG_MASCOT = (function () {
     if (!h) return null;
     const steam = (pts) => `<path d="${pts}" stroke="rgba(150,165,190,.75)" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
     switch (h.id) {
-      case 'axe': return { svg: `<g class="m-axe" transform="rotate(-15)"><rect x="-2.8" y="-56" width="5.6" height="74" rx="2" fill="#8A5A34" stroke="#5C3A1E" stroke-width="1"/><path d="M-1 -62 L20 -72 L14 -48 L-3 -44 Z" fill="#E7EBF1" stroke="#7E8794" stroke-width="1.2"/><path d="M2 -66 L15 -70" stroke="#fff" stroke-width="1.2" opacity=".85"/></g>` };
+      case 'axe': return { over: true, svg: `<g class="m-axe" transform="rotate(-15)"><rect x="-2.8" y="-56" width="5.6" height="74" rx="2" fill="#8A5A34" stroke="#5C3A1E" stroke-width="1"/><path d="M-1 -62 L20 -72 L14 -48 L-3 -44 Z" fill="#E7EBF1" stroke="#7E8794" stroke-width="1.2"/><path d="M2 -66 L15 -70" stroke="#fff" stroke-width="1.2" opacity=".85"/></g>` };
       case 'ball': return { svg: `<circle cx="17" cy="-4" r="13" fill="#FF6B6B" stroke="#D94848" stroke-width="1.2"/><path d="M4 -4 Q17 -12 30 -4" stroke="#fff" stroke-width="2.6" fill="none"/><path d="M17 -17 Q11 -4 17 9" stroke="#fff" stroke-width="2.6" fill="none"/><circle cx="12" cy="-10" r="3" fill="rgba(255,255,255,.35)"/>` };
       case 'hadak': return { over: true, svg: `<path d="M-6 -4 Q8 -10 14 2 Q20 18 14 34 Q10 46 16 58" stroke="#74C0FC" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M-4 2 Q4 16 0 30 Q-3 40 2 50" stroke="#A5D8FF" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M10 8 Q14 20 11 32" stroke="rgba(255,255,255,.6)" stroke-width="1.6" fill="none"/>` };
       case 'bow': return { svg: `<path d="M6 -62 Q38 0 6 62" stroke="#8B5A2B" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M6 -62 Q36 0 6 62" stroke="#B07A44" stroke-width="2" fill="none"/><path d="M6 -62 L6 62" stroke="#CED4DA" stroke-width="1.4"/>` };
@@ -278,7 +278,33 @@ window.BG_MASCOT = (function () {
         <path d="M80 162h40v13q-20 6-40 0z" fill="rgba(0,0,0,.12)"/>`;
     }
     return s + `<path d="M88 117Q100 129 112 117" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="3"/>
-      <text x="100" y="163" text-anchor="middle" font-size="18" font-weight="900" fill="rgba(255,255,255,.88)" font-family="sans-serif">Б</text>`;
+      <text x="100" y="163" text-anchor="middle" font-size="18" font-weight="900" fill="${o.style === 'tee' ? '#2C3E50' : 'rgba(255,255,255,.88)'}" font-family="sans-serif">Б</text>`;
+  }
+
+  function pantsDetailSvg(o) {
+    const c = o.color;
+    const belt = `<path d="M74 170 H126" stroke="#2C241C" stroke-width="5" stroke-linecap="round"/><rect x="93" y="166" width="14" height="9" rx="2" fill="#E6C36A" stroke="#8A6A22" stroke-width="1"/>`;
+    if (o.id === 'pants_sport') {
+      return `${belt}<path d="M78 174 H96 Q100 176 96 222 H80 Q74 200 78 174Z" fill="${c}"/><path d="M104 174 H122 Q126 200 120 222 H104 Q100 176 104 174Z" fill="${c}"/>
+        <path d="M79 176 V220" stroke="#F4FBFF" stroke-width="3.2" stroke-linecap="round"/><path d="M121 176 V220" stroke="#7EC8FF" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M88 178 V218 M112 178 V218" stroke="rgba(255,255,255,.22)" stroke-width="1"/>`;
+    }
+    if (o.id === 'pants_jeans') {
+      return `${belt}<path d="M78 174 H96 Q99 178 96 222 H80 Q75 202 78 174Z" fill="#2B5B84"/><path d="M104 174 H122 Q125 202 120 222 H104 Q101 178 104 174Z" fill="#2B5B84"/>
+        <path d="M82 178 V218 M92 178 V218 M108 178 V218 M118 178 V218" stroke="#D5E6F5" stroke-width=".8" stroke-dasharray="2 1.6"/>
+        <path d="M80 188 h9 v8 h-9 z M111 188 h9 v8 h-9 z" fill="none" stroke="#E7F1FA" stroke-width="1.1"/>
+        <path d="M87 174 Q86 184 79 186 M113 174 Q114 184 121 186" stroke="#F2B705" stroke-width="1.3" fill="none"/>
+        <circle cx="84" cy="196" r="1.1" fill="#E7F1FA"/><circle cx="116" cy="196" r="1.1" fill="#E7F1FA"/>`;
+    }
+    if (o.id === 'pants_umden') {
+      return `${belt}<path d="M74 174 Q64 198 72 220 H100 Q102 196 96 174Z" fill="${c}"/><path d="M104 174 Q98 196 100 220 H128 Q136 198 126 174Z" fill="${c}"/>
+        <path d="M73 210 H99 M101 210 H127" stroke="#E6C98A" stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M78 188 Q88 196 96 186 M104 186 Q114 196 124 188" stroke="#E6C98A" stroke-width="1.3" fill="none"/>
+        <path d="M80 200 h6 M114 200 h6" stroke="#F3E6C8" stroke-width="1.2"/>`;
+    }
+    return `${belt}<path d="M79 174 H96 Q99 178 96 222 H81 Q75 202 79 174Z" fill="${c}"/><path d="M104 174 H121 Q125 202 119 222 H104 Q101 178 104 174Z" fill="${c}"/>
+      <path d="M87.5 178 V218 M112.5 178 V218" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/>
+      <path d="M81 186 H94 M106 186 H119" stroke="rgba(0,0,0,.18)" stroke-width="1"/>`;
   }
 
   /* Рука: рукав с обводкой, манжета и кисть с большим пальцем */
@@ -298,7 +324,9 @@ window.BG_MASCOT = (function () {
     equip = equip || {}; opts = opts || {};
     const out = item(equip.outfit) || item('tshirt_green');
     const hat = item(equip.hat), hand = item(equip.hand), acc = item(equip.acc), feet = item(equip.feet), belt = item(equip.belt);
-    const sleeve = out.style === 'vest' ? (out.shirt || '#FBF4E6') : out.color;
+    const shirt = out.style === 'pants';
+    const drawOut = shirt ? Object.assign({}, out, { color: '#F6F3EC', style: 'tee' }) : out;
+    const sleeve = out.style === 'vest' ? (out.shirt || '#FBF4E6') : shirt ? '#F6F3EC' : out.color;
     const cuffC = out.style === 'degel' ? (out.trim || '#FFD43B') : (out.dark || 'rgba(0,0,0,.16)');
     const robe = out.style === 'degel';
     const cupEmpty = !!(hand && (hand.cup || hand.id === 'buuza_plate') && !opts.full && typeof api.cupEmpty === 'function' && api.cupEmpty(hand.id));
@@ -337,13 +365,14 @@ window.BG_MASCOT = (function () {
     return `<svg overflow="visible" class="mascot-svg ${held ? 'holding' : ''} ${opts.cls || ''}" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" aria-label="Бато">
       <ellipse cx="100" cy="230" rx="54" ry="7" fill="rgba(0,0,0,.12)"/>
       <g class="m-body">
-        <rect x="79" y="176" width="17" height="44" rx="8" fill="${pants}"/>
-        <rect x="104" y="176" width="17" height="44" rx="8" fill="${pants}"/>
+        <rect x="79" y="176" width="17" height="44" rx="8" fill="${shirt ? '#F6F3EC' : pants}"/>
+        <rect x="104" y="176" width="17" height="44" rx="8" fill="${shirt ? '#F6F3EC' : pants}"/>
         <path d="M100 182V200" stroke="rgba(0,0,0,.15)" stroke-width="1.4"/>
         ${socks}
         ${boots}
         <rect x="91" y="106" width="18" height="16" rx="5" fill="${SKIN_D}"/>
-        ${bodySvg(out)}
+        ${bodySvg(drawOut)}
+        ${shirt ? pantsDetailSvg(out) : ''}
         ${beltSvg(belt, robe)}
         ${medalSvg(acc)}
         <g class="m-arm-l">${armL}</g>

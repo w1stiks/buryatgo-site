@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.11';
+  const APP_VERSION = 'BETA 1.11.12';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -934,7 +934,7 @@
   function renderItem(it) {
     const s = st();
     const owned = s.owned.indexOf(it.id) >= 0, eq = it.slot === 'ny' ? !!(s.nyInstalled && s.nyInstalled[it.id]) : s.equip[it.slot] === it.id;
-    const wear = it.id === 'ny_sheep' || it.id === 'ny_horse' || it.id === 'ny_dog';
+    const wear = it.wear || it.id === 'ny_sheep' || it.id === 'ny_horse' || it.id === 'ny_dog' || /^Костюм/.test(it.name || '');
     let tag = '';
     if (eq) tag = `<span class="tag">${it.slot === 'ny' ? (wear ? 'Надето' : 'Установлено') : 'Надето'}</span>`;
     else if (owned && !it.consumable) tag = '<span class="tag" style="background:var(--blue)">Есть</span>';
@@ -946,6 +946,8 @@
   }
   function renderShop(scr) {
     const s = st();
+    const park = document.getElementById('app');
+    if (snowFx && park && snowFx.parentElement !== park) park.appendChild(snowFx);
     const items = D.items.filter(i => (i.cat || i.slot) === ui.shopSlot && i.slot !== 'datsan' && !(i.quest && s.owned.indexOf(i.id) < 0));
     scr.innerHTML = `<div class="view">
       <div class="mascot-stage v4" id="stage">${stageScene()}${STAGE_SKY}
@@ -965,11 +967,14 @@
         return html;
       })() : items.map(it => {
         const owned = s.owned.indexOf(it.id) >= 0, eq = it.slot === 'ny' ? !!(s.nyInstalled && s.nyInstalled[it.id]) : s.equip[it.slot] === it.id;
+        const wear = it.wear || it.id === 'ny_sheep' || it.id === 'ny_horse' || it.id === 'ny_dog';
         let tag = '';
-        if (eq) tag = `<span class="tag">${it.slot === 'ny' ? 'Установлено' : 'Надето'}</span>`;
+        if (eq) tag = `<span class="tag">${it.slot === 'ny' ? (wear ? 'Надето' : 'Установлено') : 'Надето'}</span>`;
         else if (owned && !it.consumable) tag = '<span class="tag" style="background:var(--blue)">Есть</span>';
         else if (it.premiumOnly) tag = '<span class="tag super">SUPER</span>';
-        const price = it.consumable ? `<img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}` : owned ? (eq ? (it.slot === 'ny' ? '✔ Установлено' : '✔ Надето') : (it.slot === 'ny' ? 'Поставить' : 'Надеть')) : `<img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}`;
+        const onLabel = it.slot === 'ny' ? (wear ? '✔ Надето' : '✔ Установлено') : '✔ Надето';
+        const offLabel = it.slot === 'ny' ? (wear ? 'Надеть' : 'Поставить') : 'Надеть';
+        const price = it.consumable ? `<img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}` : owned ? (eq ? onLabel : offLabel) : `<img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false> ${it.price}`;
         const refill = !!(it.cup && owned && isCupEmpty(it.id));
         if (refill) tag = '<span class="tag" style="background:#868E96">Пустая</span>';
         return `<button class="item-card ${eq ? 'equipped' : ''} ${refill ? 'refill' : ''}" data-id="${it.id}" ${refill ? 'data-refill="1"' : ''}>${tag}<div class="pv">${itemPreview(it)}</div><div class="nm">${esc(it.name)}${it.id === 'buuza_plate' && owned ? ' · 🥟' + (s.buuz || 0) : ''}${it.offer ? ' · ' + ((s.offerInv || {})[it.offer] || 0) + ' шт.' : ''}</div><div class="price">${refill ? `🔄 Наполнить ${BZI} ${D.cupRefill}` : price}</div></button>`;
@@ -1200,7 +1205,7 @@
     const old = $('.yurt-in', stage); if (old) old.remove();
     const el = document.createElement('div'); el.className = 'yurt-in' + (instant ? ' on' : '');
     const eq = Object.assign({}, st().equip, { hand: null });
-    el.innerHTML = window.BG_YURT.interior(M.svg(eq, { mood: 'happy', cls: 'static' }), sleeveOf()) +
+    el.innerHTML = window.BG_YURT.interior(M.svg(eq, { mood: 'happy', cls: 'static' }), sleeveOf(), { tree: !!(st().nyInstalled && st().nyInstalled.ny_tree_indoor) }) +
       '<div class="yi-res" id="yiRes">🎲 Нажмите на руку Бато — он бросит шагаи</div>';
     stage.appendChild(el);
     if (!instant) requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('on')));
@@ -1545,17 +1550,37 @@
   }
   setInterval(() => { if (Date.now() >= WX.until) wxNext(); else wxApply(); }, 1000);
 
+  let snowFx = null;
   function wxFxHtml() {
     let r = '', f = '';
     for (let i = 0; i < 44; i++) r += `<i class="rd" style="left:${((i * 37) % 100 + Math.random() * 2).toFixed(1)}%;animation-delay:${(-Math.random()).toFixed(2)}s;animation-duration:${(.55 + Math.random() * .35).toFixed(2)}s"></i>`;
-    for (let i = 0; i < 34; i++) f += `<i class="sf" style="left:${(Math.random() * 100).toFixed(1)}%;animation-delay:${(-Math.random() * 7).toFixed(2)}s;animation-duration:${(4.5 + Math.random() * 4).toFixed(2)}s;--sz:${(3 + Math.random() * 4).toFixed(1)}px;--dx:${Math.round(Math.random() * 44 - 22)}px"></i>`;
-    return `<div class="wx-fx" aria-hidden="true"><div class="wx-tint"></div><div class="wx-drops">${r}</div><div class="wx-flakes">${f}</div></div>`;
+    for (let i = 0; i < 42; i++) {
+      const tier = i % 3;
+      const sz = tier === 0 ? 2 + Math.random() : tier === 1 ? 4 + Math.random() : 6 + Math.random() * 0.5;
+      const op = tier === 0 ? 0.5 : tier === 1 ? 0.78 : 0.96;
+      f += `<i class="sf" style="left:${(Math.random() * 100).toFixed(1)}%;--sz:${sz.toFixed(1)}px;--op:${op};--dx:${Math.round(Math.random() * 40 - 20)}px;animation-duration:${(6 + Math.random() * 8).toFixed(2)}s;animation-delay:${(-Math.random() * 14).toFixed(2)}s"></i>`;
+    }
+    return `<div class="wx-fx" id="snowLayer" aria-hidden="true"><div class="wx-tint"></div><div class="wx-drops">${r}</div><div class="wx-flakes">${f}</div></div>`;
+  }
+  function ensureSnowFx() {
+    if (snowFx && snowFx.querySelector('.sf')) return snowFx;
+    const parked = document.getElementById('snowLayer');
+    if (parked && parked.querySelector('.sf')) { snowFx = parked; parked.hidden = false; return snowFx; }
+    const host = document.createElement('div');
+    host.innerHTML = wxFxHtml();
+    const fresh = host.firstElementChild;
+    fresh.hidden = false;
+    if (parked && parked.parentElement) parked.replaceWith(fresh);
+    snowFx = fresh;
+    return snowFx;
   }
   /* Вызывается после каждой отрисовки сцены магазина */
   function wxBind(scr) {
     const stage = $('#stage', scr); if (!stage || !stage.isConnected) return;
-    $$('.wx-fx, .wx-badge, .stream-hit', stage).forEach(x => x.remove());
-    stage.insertAdjacentHTML('beforeend', wxFxHtml() + '<div class="wx-badge" aria-live="polite"></div>');
+    $$('.wx-badge, .stream-hit', stage).forEach(x => x.remove());
+    const fx = ensureSnowFx();
+    if (fx.parentElement !== stage) stage.appendChild(fx);
+    stage.insertAdjacentHTML('beforeend', '<div class="wx-badge" aria-live="polite"></div>');
     ui.sheltered = false;
     const s = stage.querySelector('.scene-svg .stream');
     if (s) requestAnimationFrame(() => {
@@ -2130,7 +2155,7 @@
     const s = st(), it = D.itemsById[id];
     if (!it) return;
     const owned = s.owned.indexOf(id) >= 0, nyOn = it.slot === 'ny' && !!(s.nyInstalled && s.nyInstalled[id]), eq = it.slot === 'ny' ? nyOn : s.equip[it.slot] === id;
-    const nyWear = it.id === 'ny_sheep' || it.id === 'ny_horse' || it.id === 'ny_dog';
+    const nyWear = it.wear || it.id === 'ny_sheep' || it.id === 'ny_horse' || it.id === 'ny_dog' || /^Костюм/.test(it.name || '');
     let preview;
     if (it.id === 'ny_sheep') preview = window.BG_ART.sheepSvg('sheep-pv', true);
     else if (it.id === 'ny_horse') preview = window.BG_ART.horseSvg(null, 'horse-svg big', true);

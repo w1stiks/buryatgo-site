@@ -451,9 +451,9 @@ window.BG_DATA = (function () {
     { id: 'ny_garland', slot: 'ny', name: 'Гирлянда для юрты', price: 500, icon: '💡', desc: 'Светящаяся гирлянда на крышу юрты' },
     { id: 'ny_tree', slot: 'ny', name: 'Уличная новогодняя ёлка', price: 0, icon: '🎄', desc: 'Сруби в зимнем лесу', quest: true },
     { id: 'ny_garland2', slot: 'ny', name: 'Гирлянда персонажа', price: 300, icon: '✨', desc: 'Праздничный декор' },
-    { id: 'ny_sheep', slot: 'ny', name: 'Костюм овец', price: 400, icon: '🐑', desc: 'Колпаки Санты на овец' },
-    { id: 'ny_horse', slot: 'ny', name: 'Костюм лошади', price: 450, icon: '🐴', desc: 'Попона с бубенцами' },
-    { id: 'ny_dog', slot: 'ny', name: 'Костюм собаки', price: 350, icon: '🐕', desc: 'Свитерок с оленями' },
+    { id: 'ny_sheep', slot: 'ny', wear: true, name: 'Костюм овец', price: 400, icon: '🐑', desc: 'Колпаки Санты на овец' },
+    { id: 'ny_horse', slot: 'ny', wear: true, name: 'Костюм лошади', price: 450, icon: '🐴', desc: 'Попона с бубенцами' },
+    { id: 'ny_dog', slot: 'ny', wear: true, name: 'Костюм собаки', price: 350, icon: '🐕', desc: 'Свитерок с оленями' },
     { id: 'ny_tree_indoor', slot: 'ny', name: 'Домашняя ёлка в юрту', price: 700, icon: '🎄', desc: 'Ёлка внутри юрты у очага' }
   ];
 

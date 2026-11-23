@@ -101,8 +101,10 @@
     </g></g>`;
   }
 
-  function interior(mascotSvg, sl) {
+  function interior(mascotSvg, sl, opts) {
     const c = (sl && sl.c) || '#2D7DD2', cuff = (sl && sl.cuff) || '#F2C14E';
+    opts = opts || {};
+    const indoor = opts.tree ? `<g class="ny-indoor" transform="translate(104 248)"><ellipse cx="0" cy="4" rx="16" ry="4" fill="rgba(40,15,5,.28)"/><rect x="-12" y="-4" width="24" height="8" rx="2" fill="#C92A2A"/><rect x="-3" y="-14" width="6" height="12" fill="#5C3A21"/><polygon points="0,-64 16,-38 -16,-38" fill="#14522C"/><polygon points="0,-46 20,-20 -20,-20" fill="#1C6E3C"/><polygon points="0,-30 24,-6 -24,-6" fill="#24824A"/><polygon points="0,-72 3.4,-62 -3.4,-62" fill="#FFD43B"/><circle cx="-6" cy="-40" r="2.3" fill="#FF2A2A"/><circle cx="6" cy="-26" r="2.3" fill="#FFD700"/><circle cx="-2" cy="-14" r="2.1" fill="#00A8FF"/><circle cx="8" cy="-46" r="2.1" fill="#00E676"/></g>` : '';
     const inner = String(mascotSvg).replace(/^\s*<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
     let poles = '';
     for (let i = 0; i <= 15; i++) poles += `<path d="M200 -34L${-40 + i * 32} 84" stroke="#C0552B" stroke-width="3.2"/>`;
@@ -144,6 +146,7 @@
     ${arm(armOut, 'yi-arm-r')}
     <g class="yi-hand" transform="translate(${HAND.x} ${HAND.y})">${handG(cuff, 'yi-hand-in', '<g class="yi-palm" transform="translate(0 -1)"></g>')}<circle class="yi-hint" r="13" fill="none" stroke="#FFD43B" stroke-width="2.4"/><circle r="24" fill="transparent"/></g>
     <g class="yi-bones"></g>
+    ${indoor}
     ${cat()}
     <rect x="-60" y="-80" width="520" height="400" fill="url(#yiGlow)" pointer-events="none"/>
     </svg>`;
