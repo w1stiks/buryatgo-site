@@ -2261,3 +2261,34 @@ body, html, #app, .screen {
 #tabbar {
   background: #102A5C !important;
 }
+
+
+/* Force no white corners */
+html, body, #app {
+  background: #0D4389 !important;
+}
+#tabbar, .tabbar {
+  background: #102A5C !important;
+  border-radius: 0 !important;
+}
+body::before, body::after {
+  display: none !important;
+}
+
+/* Achievements: kill inner gray border */
+body[data-view="profile"] .ach-row,
+body[data-view="profile"] .ach-card,
+body[data-view="profile"] .ach-info,
+body[data-view="profile"] .ach-text,
+body[data-view="profile"] .ach-row > div,
+body[data-view="profile"] .ach-row .info,
+body[data-view="profile"] .ach-row .text {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+body[data-view="profile"] .ach-row {
+  background: #102A5C !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+}
