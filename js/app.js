@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.10.24';
+  const APP_VERSION = 'BETA 1.10.23';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -939,8 +939,8 @@
 
   /* ───────── v1.15: возраст, теги статусов, боты ───────── */
   const AGES = [
-    { id: 'kids', label: 'Детский', tag: 'ДЕТСКИЙ', emoji: '🧸', d: 'Картинки и озвучка — читать не нужно' },
-    { id: 'big', label: 'Взрослый', tag: 'ВЗРОСЛЫЙ', emoji: '🎓', d: 'Полный режим: текст, карточки, конструктор фраз' }
+    { id: 'kids', label: 'Детский', tag: 'KIDS', emoji: '🧸', d: 'Картинки и озвучка — читать не нужно' },
+    { id: 'big', label: 'Взрослый', tag: 'BIG', emoji: '🎓', d: 'Полный режим: текст, карточки, конструктор фраз' }
   ];
   const ageOf = () => { const a = st().age; return a === 'kids' || a === 'big' ? a : 'big'; };
   const ageInfo = id => AGES.find(a => a.id === id) || AGES[2];

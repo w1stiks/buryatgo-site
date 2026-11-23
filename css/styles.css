@@ -2292,3 +2292,32 @@ body[data-view="profile"] .ach-row {
   border-radius: 14px !important;
   border: 1px solid rgba(255,255,255,.12) !important;
 }
+
+
+/* Settings: kill white wrappers, dark header */
+body[data-view="settings"] .set-group,
+body[data-view="settings"] .set-section,
+body[data-view="settings"] .settings-wrap,
+body[data-view="settings"] .view > div {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+body[data-view="settings"] .set-head,
+body[data-view="settings"] .settings-head {
+  background: #102A5C !important;
+  border: 1px solid rgba(255,255,255,.15) !important;
+  border-radius: 14px !important;
+  color: #fff !important;
+}
+body[data-view="settings"] .set-head h2,
+body[data-view="settings"] .settings-head h2,
+body[data-view="settings"] .set-head span {
+  color: #FFFFFF !important;
+}
+body[data-view="settings"] .set-head .x-btn,
+body[data-view="settings"] .settings-head .x-btn,
+body[data-view="settings"] .back-btn {
+  background: #193F85 !important;
+  color: #fff !important;
+}
