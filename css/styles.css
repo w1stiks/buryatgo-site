@@ -2186,3 +2186,60 @@ html body .screen::-webkit-scrollbar-thumb:hover,
 html body .view::-webkit-scrollbar-thumb:hover {
   background: #2B6CB0;
 }
+
+/* Settings: dark blue monochrome theme */
+body[data-view="settings"] .screen,
+body[data-view="settings"] .view {
+  background: #0D4389 !important;
+}
+body[data-view="settings"] .set-head,
+body[data-view="settings"] .set-card,
+body[data-view="settings"] .set-row {
+  background: #102A5C !important;
+  border: 1px solid rgba(255,255,255,.15) !important;
+  border-radius: 14px !important;
+  color: #fff !important;
+}
+body[data-view="settings"] .set-row + .set-row {
+  border-top: 1px solid rgba(255,255,255,.08) !important;
+}
+body[data-view="settings"] h2,
+body[data-view="settings"] .set-title,
+body[data-view="settings"] .set-row b,
+body[data-view="settings"] .set-row .lbl {
+  color: #FFFFFF !important;
+}
+body[data-view="settings"] .set-row small,
+body[data-view="settings"] .set-sub,
+body[data-view="settings"] .muted {
+  color: #B8D4FF !important;
+}
+body[data-view="settings"] .x-btn,
+body[data-view="settings"] .back-btn {
+  background: #193F85 !important;
+  color: #fff !important;
+  border: none !important;
+}
+body[data-view="settings"] .rate-btn,
+body[data-view="settings"] .seg button {
+  background: #0B1E42 !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,.2) !important;
+  border-radius: 10px !important;
+}
+body[data-view="settings"] .rate-btn.on,
+body[data-view="settings"] .seg button.on {
+  background: #0088FF !important;
+  color: #fff !important;
+  border-color: #0088FF !important;
+}
+body[data-view="settings"] select,
+body[data-view="settings"] .voice-sel {
+  background: #0B1E42 !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,.25) !important;
+  border-radius: 10px !important;
+}
+body[data-view="settings"] .toggle.off {
+  background: #1E4E9E !important;
+}
