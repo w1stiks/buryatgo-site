@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.30';
+  const APP_VERSION = 'BETA 1.11.31';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -1583,7 +1583,8 @@
   setInterval(() => { if (Date.now() >= WX.until) wxNext(); else wxApply(); }, 1000);
   function horseVitals() {
     const s = st();
-    if (!s.horseVitals || typeof s.horseVitals !== 'object') s.horseVitals = { cold: 0, hunger: 0, t: Date.now() };
+    if (!s.horseVitals || typeof s.horseVitals !== 'object') s.horseVitals = { cold: 0, t: Date.now() };
+    s.horseVitals.hunger = 0;
     return s.horseVitals;
   }
   function horseWarm() { return !!(st().horseCoat || (st().nyInstalled && st().nyInstalled.ny_horse)); }
@@ -1595,7 +1596,6 @@
     v.t = now;
     if (WX.mode === 'snow' && !horseWarm()) v.cold = Math.min(100, (v.cold || 0) + dt * 0.45);
     else v.cold = Math.max(0, (v.cold || 0) - dt * 0.9);
-    v.hunger = Math.min(100, (v.hunger || 0) + dt * 0.03);
     S.save();
     const pose = horsePose();
     $$('.mascot-stage').forEach(sg => { sg.classList.remove('hp-1', 'hp-2', 'hp-3'); if (pose) sg.classList.add('hp-' + pose); });
@@ -1603,9 +1603,7 @@
   function horsePose() {
     if (!ownsHorse()) return 0;
     const v = horseVitals();
-    const cold = horseWarm() ? 0 : (v.cold || 0);
-    const hunger = v.hunger || 0;
-    const n = Math.max(cold, hunger >= 100 ? 100 : hunger >= 80 ? 60 : 0);
+    const n = horseWarm() ? 0 : (v.cold || 0);
     if (n >= 100) return 3;
     if (n >= 65) return 2;
     if (n >= 30) return 1;
@@ -1615,14 +1613,12 @@
     if (!ownsHorse()) return '';
     const v = horseVitals();
     if (!horseWarm() && (v.cold || 0) >= 100) return 'Конь замёрз и лежит. Наденьте попону — без одежды в мороз он не встанет';
-    if ((v.hunger || 0) >= 100) return 'Конь слишком голодный и не скачет';
     return '';
   }
   function ridePace() {
     const v = horseVitals();
     const cold = horseWarm() ? 0 : (v.cold || 0);
-    const hunger = v.hunger || 0;
-    return 1 + cold / 90 + (hunger > 40 ? (hunger - 40) / 140 : 0);
+    return 1 + cold / 90;
   }
   setInterval(tickHorse, 15000);
 
@@ -2732,7 +2728,9 @@ function horseModal(id) {
           else { toast('☁️ Вы вошли. Прогресс сохранён в аккаунт', 2600); enforceBan(); render(); }
         }
       } catch (e) {
-        haptic('error'); err(e.message);
+        haptic('error');
+        if (e.code === 'BANNED' && e.ban) { closeModal(); showBan(e.ban); return; }
+        err(e.message);
         btn.disabled = false; btn.textContent = label;
       }
     };
@@ -2936,9 +2934,7 @@ function horseModal(id) {
       <div class="set-group dev-pad">
         <div class="dev-lbl">❄️ Холод ${Math.round((s.horseVitals && s.horseVitals.cold) || 0)}%</div>
         <input type="range" id="devCold" min="0" max="100" step="1" value="${Math.round((s.horseVitals && s.horseVitals.cold) || 0)}">
-        <div class="dev-lbl">🍎 Голод ${Math.round((s.horseVitals && s.horseVitals.hunger) || 0)}%</div>
-        <input type="range" id="devHunger" min="0" max="100" step="1" value="${Math.round((s.horseVitals && s.horseVitals.hunger) || 0)}">
-        <div class="muted dock-note">В снег без попоны холод растёт сам: конь садится, потом ложится и перестаёт скакать. Одежда согревает. Голод тоже копится — на 100% конь не едет. Здесь можно выставить оба значения.</div>
+        <div class="muted dock-note">В снег без попоны холод растёт сам: конь подгибает ноги и ложится на снег. На 100% он не скачет, пока не наденете попону.</div>
       </div>
       <h2 class="sub">Серия и заморозки</h2>
       <div class="set-group dev-pad">
@@ -3010,9 +3006,7 @@ function horseModal(id) {
       toast((key === 'cold' ? '❄️ Холод: ' : '🍎 Голод: ') + v[key] + '%');
     };
     $('#devCold').oninput = () => { $('#devCold').previousElementSibling.textContent = '❄️ Холод ' + $('#devCold').value + '%'; };
-    $('#devHunger').oninput = () => { $('#devHunger').previousElementSibling.textContent = '🍎 Голод ' + $('#devHunger').value + '%'; };
     $('#devCold').onchange = () => setVital('cold', $('#devCold'));
-    $('#devHunger').onchange = () => setVital('hunger', $('#devHunger'));
     $('#devSetBtn').onclick = () => { if (setExactBuzzy($('#devSet').value)) $('#devSet').value = st().buzzy; };
     $('#nyStart').onclick = () => nyAdmin(true, Date.now());
     $('#nyPlan').onclick = () => {
@@ -3103,7 +3097,7 @@ function horseModal(id) {
     if (!b || document.getElementById('banWall')) return;
     const wall = document.createElement('div');
     wall.id = 'banWall';
-    wall.innerHTML = `<div class="ban-card"><div class="big-emo">🚫</div><h2>${b.wipe ? 'Аккаунт удалён' : 'Вы заблокированы'}</h2><p>${esc(b.reason || 'Нарушение правил')}</p><small>${b.ip ? 'IP ' + esc(b.ip) : ''}</small></div>`;
+    wall.innerHTML = `<div class="ban-card"><div class="big-emo">🚫</div><h2>Ваш аккаунт заблокирован в данной игре.</h2><p>Причина: ${esc(b.reason || 'Нарушение правил')}</p></div>`;
     document.body.appendChild(wall);
   }
   function enforceBan() {
@@ -3128,7 +3122,7 @@ function horseModal(id) {
     try {
       await C.banPlayer({ uid: p.uid || p.id || '', ip: p.ip || '', name: p.name || '', reason, wipe });
       closeModal();
-      toast(wipe ? 'Аккаунт будет удалён, когда игрок откроет игру. IP закрыт' : 'Игрок забанен: ' + (p.ip || p.name));
+      toast(wipe ? 'Аккаунт удалён. При входе он увидит причину блокировки' : 'Игрок забанен: ' + (p.ip || p.name));
       loadBanBox();
     } catch (e) { toast(e.message || 'Не удалось записать бан'); }
   }

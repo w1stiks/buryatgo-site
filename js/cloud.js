@@ -200,6 +200,14 @@ window.BG_CLOUD = (function () {
     });
     if (!r.ok) throw fail(errCode(j));
     writeSess(fromAuth(j, login));
+    const ban = await checkBan();
+    if (ban) {
+      writeSess(null);
+      const e = new Error('Ваш аккаунт заблокирован в данной игре. Причина: ' + (ban.reason || 'Нарушение правил'));
+      e.code = 'BANNED';
+      e.ban = ban;
+      throw e;
+    }
     let remote = null;
     try { remote = await pull(); } catch (e) { writeSess(null); emit(); throw e; }
     if (remote && remote.state) {
@@ -390,6 +398,12 @@ window.BG_CLOUD = (function () {
     const id = entry.uid || ('ip-' + (entry.ip || Date.now()));
     const row = { id, uid: entry.uid || '', ip: entry.ip || '', name: entry.name || '', reason: entry.reason || 'Нарушение правил', wipe: !!entry.wipe, at: Date.now(), by: (sess && sess.login) || '' };
     await writeBans([row].concat(list.filter(b => b.id !== id && !(row.ip && b.ip === row.ip) && !(row.uid && b.uid === row.uid))));
+    if (entry.wipe && entry.uid) {
+      const t = await token();
+      const hdr = { Authorization: 'Bearer ' + t };
+      await request(fsDoc('users/' + encodeURIComponent(entry.uid)), { method: 'DELETE', headers: hdr }).catch(() => {});
+      await request(presUrl(entry.uid), { method: 'DELETE', headers: hdr }).catch(() => {});
+    }
     return row;
   }
   async function unban(id) { await writeBans((await readBans()).filter(b => b.id !== id)); }
@@ -406,9 +420,7 @@ window.BG_CLOUD = (function () {
     const ip = await myIp();
     const list = await readBans();
     const hit = list.find(b => (b.uid && b.uid === sess.uid) || (ip && b.ip && b.ip === ip));
-    if (!hit) return null;
-    if (hit.wipe && hit.uid === sess.uid) { try { await deleteSelf(); } catch (e) {} }
-    return hit;
+    return hit || null;
   }
 
   window.addEventListener('online', () => { if (sess && sess.dirty) push().catch(() => {}); });

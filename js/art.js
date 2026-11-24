@@ -178,6 +178,24 @@ window.BG_ART = (function () {
         <path d="M-37 -79L-47 -58M-32 -66L-50 -58" stroke="#7A4A21" stroke-width="1.5" fill="none"/>
         <circle cx="-46" cy="-56" r="1.6" fill="#C9A227"/>
       </g>
+    </g>
+    <g class="horse-lie">
+      <ellipse cx="4" cy="2" rx="36" ry="4.2" fill="rgba(0,0,0,.18)"/>
+      <path d="M-16 -1C-8 -7 2 -2 10 -6C16 -2 8 3 -2 3C-12 3 -18 1 -16 -1Z" fill="${d}"/>
+      <path d="M12 -2C20 -6 26 -1 18 2C12 3 8 -1 12 -2Z" fill="${d}"/>
+      <ellipse cx="2" cy="-14" rx="28" ry="11" fill="${c}" stroke="${line}" stroke-width="1"/>
+      <path d="M-6 -16C6 -10 18 -12 24 -16C16 -20 4 -20 -6 -16Z" fill="rgba(0,0,0,.08)"/>
+      <path d="M18 -18C28 -30 36 -24 30 -16C24 -14 20 -14 18 -18Z" fill="${c}" stroke="${line}" stroke-width="1"/>
+      <g transform="translate(32 -28)">
+        <path d="M2 -2C8 -10 16 -8 14 0C10 4 4 2 2 -2Z" fill="${c}" stroke="${line}" stroke-width="1"/>
+        <path d="M6 -8L8 -16L12 -8Z" fill="${c}" stroke="${line}" stroke-width=".8"/>
+        <path d="M4 -6C8 -2 14 -6 12 -10C8 -8 6 -8 4 -6Z" fill="${m}"/>
+        <circle cx="12" cy="-4" r="1.5" fill="#1E1E24"/><circle cx="12.4" cy="-4.4" r=".5" fill="#fff"/>
+        <circle cx="15" cy="0" r="1.1" fill="${d}"/>
+        ${h.blaze ? '<path d="M8 -8C10 -4 11 0 9 1C8 -3 7 -6 8 -8Z" fill="#FFF7EC"/>' : ''}
+      </g>
+      <path d="M-24 -16C-36 -18 -34 -2 -26 -6C-22 -10 -22 -14 -24 -16Z" fill="${m}"/>
+      <path d="M-8 -8C-4 -2 2 -4 0 -9Z" fill="${d}"/><path d="M6 -7C12 -2 8 -8 4 -8Z" fill="${d}"/>
     </g></g>`;
   }
   function horseSvg(h, cls, fest) {
@@ -245,7 +263,7 @@ window.BG_ART = (function () {
       ${opts.kennel ? '<g transform="translate(136 238) scale(.38)">' + kennel() + '</g>' : ''}
       <g class="tufts">${tufts([[30, 272, 1], [96, 266, .9], [130, 286, 1.1], [176, 262, .8], [250, 288, 1], [292, 284, .9], [340, 288, 1.1], [384, 276, 1], [60, 292, 1.2], [214, 292, 1], [6, 258, .8, '#5A9E36']])}</g>
       ${herd(opts.horses, opts.ny && opts.ny.horse)}
-      <g class="snowman" transform="translate(214 286)">
+      <g class="snowman" transform="translate(6 248) scale(.4)">
         <ellipse cx="0" cy="4" rx="26" ry="5" fill="rgba(30,50,90,.2)"/>
         <circle cx="0" cy="-16" r="18" fill="#F4F8FF" stroke="#C5D7EE" stroke-width="1.2"/>
         <circle cx="0" cy="-44" r="13" fill="#FFFFFF" stroke="#D5E4F5" stroke-width="1"/>
