@@ -2722,3 +2722,16 @@ body[data-view=developer] .modal .sheet,
 .dp-cell { background: #102A5C !important; border: 1px solid rgba(255,255,255,.16) !important; }
 .dp-cell small { color: #B8D4FF !important; }
 .dp-cell b { color: #fff !important; white-space: normal !important; overflow: visible !important; }
+
+/* BETA 1.11.30 — холод коня, бан, снеговик */
+.mascot-stage .horse-body { transform-box: fill-box; transform-origin: 50% 100%; transition: transform 1.2s ease; }
+.mascot-stage.hp-1 .horse-body { transform: rotate(-14deg); }
+.mascot-stage.hp-2 .horse-body { transform: rotate(-46deg); }
+.mascot-stage.hp-3 .horse-body { transform: rotate(-80deg); }
+#banWall { position: fixed; inset: 0; z-index: 100000; background: #071633; color: #fff; display: flex; align-items: center; justify-content: center; text-align: center; padding: 28px; }
+#banWall h2 { color: #fff; margin: 8px 0; }
+#banWall p { color: #F2B705; font-size: 18px; font-weight: 800; }
+#banWall small { display: block; margin-top: 8px; color: #B8D4FF; }
+.ban-row { justify-content: space-between; align-items: center; margin: 8px 0; }
+.ban-row small { display: block; color: #B8D4FF; font-size: 12px; font-weight: 700; }
+.ban-row b { color: #fff; }

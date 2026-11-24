@@ -266,7 +266,8 @@ window.BG_CLOUD = (function () {
     const body = { fields: {
       name: { stringValue: String(p.name || 'Ученик').slice(0, 24) },
       xp: I(p.xp), weekXp: I(p.weekXp), league: I(p.league), streak: I(p.streak), lastSeen: I(Date.now()),
-      snap: { stringValue: JSON.stringify(p) }
+      snap: { stringValue: JSON.stringify(p) },
+      ip: { stringValue: String(await myIp() || '') }
     } };
     const keys = Object.keys(body.fields);
     const mask = keys.map(f => 'updateMask.fieldPaths=' + f).join('&');
@@ -293,7 +294,8 @@ window.BG_CLOUD = (function () {
         out.push(Object.assign({}, snap, {
           id: snap.id || uid, uid, name: (f.name || {}).stringValue || snap.name || 'Ученик',
           xp: num('xp'), weekXp: num('weekXp'), league: num('league'), streak: num('streak'), lastSeen: num('lastSeen'),
-          me: uid === sess.uid
+          me: uid === sess.uid,
+          ip: (f.ip || {}).stringValue || snap.ip || ''
         }));
       });
       page = j.nextPageToken;
@@ -358,6 +360,57 @@ window.BG_CLOUD = (function () {
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') ping(true).catch(() => {}); });
   window.addEventListener('load', () => setTimeout(() => ping(true).catch(() => {}), 3000));
 
+  let cachedIp = '';
+  async function myIp() {
+    if (cachedIp) return cachedIp;
+    try {
+      const { r, j } = await request('https://api.ipify.org?format=json');
+      if (r.ok && j && j.ip) cachedIp = String(j.ip);
+    } catch (e) {}
+    return cachedIp;
+  }
+  async function readBans() {
+    if (!configured() || !sess) return [];
+    const t = await token();
+    const ev = await request(fsDoc('events/bans'), { headers: { Authorization: 'Bearer ' + t } });
+    if (!ev.r.ok) return [];
+    try { return JSON.parse(((ev.j.fields || {}).list || {}).stringValue || '[]') || []; } catch (e) { return []; }
+  }
+  async function writeBans(list) {
+    const t = await token();
+    const fields = { list: { stringValue: JSON.stringify(list) } };
+    const ev = await request(fsDoc('events/bans') + '?updateMask.fieldPaths=list', {
+      method: 'PATCH', headers: { Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' }, body: JSON.stringify({ fields })
+    });
+    if (!ev.r.ok) throw fail(errCode(ev.j));
+    return list;
+  }
+  async function banPlayer(entry) {
+    const list = await readBans();
+    const id = entry.uid || ('ip-' + (entry.ip || Date.now()));
+    const row = { id, uid: entry.uid || '', ip: entry.ip || '', name: entry.name || '', reason: entry.reason || 'Нарушение правил', wipe: !!entry.wipe, at: Date.now(), by: (sess && sess.login) || '' };
+    await writeBans([row].concat(list.filter(b => b.id !== id && !(row.ip && b.ip === row.ip) && !(row.uid && b.uid === row.uid))));
+    return row;
+  }
+  async function unban(id) { await writeBans((await readBans()).filter(b => b.id !== id)); }
+  async function deleteSelf() {
+    if (!sess) return;
+    const t = await token();
+    await request(docUrl(), { method: 'DELETE', headers: { Authorization: 'Bearer ' + t } }).catch(() => {});
+    await request(presUrl(sess.uid), { method: 'DELETE', headers: { Authorization: 'Bearer ' + t } }).catch(() => {});
+    await request(idt('delete'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ idToken: t }) }).catch(() => {});
+    writeSess(null);
+  }
+  async function checkBan() {
+    if (!configured() || !sess) return null;
+    const ip = await myIp();
+    const list = await readBans();
+    const hit = list.find(b => (b.uid && b.uid === sess.uid) || (ip && b.ip && b.ip === ip));
+    if (!hit) return null;
+    if (hit.wipe && hit.uid === sess.uid) { try { await deleteSelf(); } catch (e) {} }
+    return hit;
+  }
+
   window.addEventListener('online', () => { if (sess && sess.dirty) push().catch(() => {}); });
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden' && sess && (timer || sess.dirty)) push(true).catch(() => {});
@@ -371,6 +424,7 @@ window.BG_CLOUD = (function () {
     syncedAt: () => (sess ? sess.syncedAt || 0 : 0),
     pending: () => !!(sess && (sess.dirty || timer)),
     signUp, signIn, signOut, push, pull, schedule, startupSync, ping, livePlayers, publishNy, readNy,
+    myIp, readBans, banPlayer, unban, checkBan,
     onChange(fn) { listeners.push(fn); }
   };
 })();

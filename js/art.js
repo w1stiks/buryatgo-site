@@ -149,7 +149,7 @@ window.BG_ART = (function () {
     const hoof = '#3A2A20', line = 'rgba(30,20,10,.25)';
     const blaze = h.blaze ? `<path d="M-30 -77Q-36 -70 -46 -58L-49 -56Q-42 -66 -32 -78Z" fill="#FFF7EC"/>` : '';
     const sock = h.sock ? `<rect x="-16.5" y="-12" width="7.5" height="8" fill="#FFF7EC"/><rect x="18.5" y="-12" width="7" height="8" fill="#FFF7EC"/>` : '';
-    return `<g class="horse" transform="translate(${x} ${y}) scale(${flip ? -s : s} ${s})">
+    return `<g class="horse" transform="translate(${x} ${y}) scale(${flip ? -s : s} ${s})"><g class="horse-body">
       <ellipse cx="0" cy="0" rx="36" ry="4.5" fill="rgba(0,0,0,.16)"/>
       <path class="hr-hind" d="M12 -30L17 -4H11.5L7 -28Z" fill="${d}"/><path class="hr-hind" d="M-22 -30L-24 -4H-18.5L-16 -28Z" fill="${d}"/>
       <rect x="10.5" y="-5" width="7.5" height="5" rx="1.5" fill="${hoof}"/><rect x="-25" y="-5" width="7.5" height="5" rx="1.5" fill="${hoof}"/>
@@ -178,7 +178,7 @@ window.BG_ART = (function () {
         <path d="M-37 -79L-47 -58M-32 -66L-50 -58" stroke="#7A4A21" stroke-width="1.5" fill="none"/>
         <circle cx="-46" cy="-56" r="1.6" fill="#C9A227"/>
       </g>
-    </g>`;
+    </g></g>`;
   }
   function horseSvg(h, cls, fest) {
     return `<svg class="${cls || 'horse-svg'}" viewBox="-62 -108 124 118" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${horse(0, 0, 1, h, 0, false, !!fest)}</svg>`;
@@ -245,6 +245,24 @@ window.BG_ART = (function () {
       ${opts.kennel ? '<g transform="translate(136 238) scale(.38)">' + kennel() + '</g>' : ''}
       <g class="tufts">${tufts([[30, 272, 1], [96, 266, .9], [130, 286, 1.1], [176, 262, .8], [250, 288, 1], [292, 284, .9], [340, 288, 1.1], [384, 276, 1], [60, 292, 1.2], [214, 292, 1], [6, 258, .8, '#5A9E36']])}</g>
       ${herd(opts.horses, opts.ny && opts.ny.horse)}
+      <g class="snowman" transform="translate(214 286)">
+        <ellipse cx="0" cy="4" rx="26" ry="5" fill="rgba(30,50,90,.2)"/>
+        <circle cx="0" cy="-16" r="18" fill="#F4F8FF" stroke="#C5D7EE" stroke-width="1.2"/>
+        <circle cx="0" cy="-44" r="13" fill="#FFFFFF" stroke="#D5E4F5" stroke-width="1"/>
+        <circle cx="0" cy="-66" r="9.5" fill="#FFFFFF" stroke="#D5E4F5" stroke-width="1"/>
+        <path d="M-11 -52 Q0 -46 11 -54 Q4 -44 -11 -52Z" fill="#E03131"/>
+        <path d="M-16 -48 L-30 -36" stroke="#6B4226" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M16 -48 L30 -36" stroke="#6B4226" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M-28 -34 L-32 -28 M28 -34 L34 -30" stroke="#6B4226" stroke-width="1.4" stroke-linecap="round"/>
+        <circle cx="0" cy="-46" r="1.7" fill="#243044"/><circle cx="0" cy="-40" r="1.7" fill="#243044"/>
+        <circle cx="0" cy="-22" r="1.8" fill="#243044"/><circle cx="0" cy="-14" r="1.8" fill="#243044"/><circle cx="0" cy="-6" r="1.8" fill="#243044"/>
+        <circle cx="-3.2" cy="-69" r="1.35" fill="#243044"/><circle cx="3.2" cy="-69" r="1.35" fill="#243044"/>
+        <path d="M0 -66 L9 -63.5 L1.2 -62.2Z" fill="#F08C00"/>
+        <path d="M-3.4 -63.5 Q0 -60.5 3.6 -63.5" stroke="#243044" stroke-width="1" fill="none" stroke-linecap="round"/>
+        <path d="M-8 -78 H8 L5.2 -88 H-5.2Z" fill="#16356E"/>
+        <rect x="-9" y="-80" width="18" height="4.5" rx="2" fill="#E03131"/>
+        <circle cx="7" cy="-86" r="1.6" fill="#F2B705"/>
+      </g>
       ${shown.map(p => sheep(p[0], p[1], p[2], p[3], p[4], opts.ny && opts.ny.sheep)).join('')}
     </svg>`;
   }
