@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.38';
+  const APP_VERSION = 'BETA 1.11.39';
   window.BG_APP_VERSION = APP_VERSION;
 
   // Global lesson swipe-down lock
@@ -1612,8 +1612,8 @@
   let snowFx = null;
   function wxFxHtml() {
     let r = '', f = '';
-    for (let i = 0; i < 44; i++) r += `<i class="rd" style="left:${((i * 37) % 100 + Math.random() * 2).toFixed(1)}%;animation-delay:${(-Math.random()).toFixed(2)}s;animation-duration:${(.55 + Math.random() * .35).toFixed(2)}s"></i>`;
-    for (let i = 0; i < 42; i++) {
+    for (let i = 0; i < 22; i++) r += `<i class="rd" style="left:${((i * 37) % 100 + Math.random() * 2).toFixed(1)}%;animation-delay:${(-Math.random()).toFixed(2)}s;animation-duration:${(.55 + Math.random() * .35).toFixed(2)}s"></i>`;
+    for (let i = 0; i < 28; i++) {
       const tier = i % 3;
       const sz = tier === 0 ? 2 + Math.random() : tier === 1 ? 4 + Math.random() : 6 + Math.random() * 0.5;
       const op = tier === 0 ? 0.5 : tier === 1 ? 0.78 : 0.96;
@@ -3512,16 +3512,19 @@ function horseModal(id) {
     const spots = fold ? ['42%', '50%', '58%'] : ['22%', '36%', '50%', '64%', '74%'];
     return { x: spots[Math.floor(Math.random() * spots.length)], y: fold ? '44%' : (58 + Math.floor(Math.random() * 12)) + '%' };
   }
+  function dropNyGift(id) {
+    const spot = nyGiftSpot();
     const s = st();
-    s.nyGift = { id, x, y, open: false };
+    s.nyGift = { id, x: spot.x, y: spot.y, open: false };
     nyMark(id); S.save();
     if (ui.view === 'shop' && ui.loc === 'home') mountNyGift($('#stage'));
     else toast('🎁 Подарок ждёт у юрты в магазине');
   }
   function throwNyGift(id) {
-    const spots = ['12%', '22%', '58%', '70%', '78%'];
+    const fold = document.body.classList.contains('fs-on') || document.body.classList.contains('shop-fold');
+    const spots = fold ? ['44%', '50%', '56%'] : ['22%', '36%', '58%', '70%'];
     const x = spots[Math.floor(Math.random() * spots.length)];
-    const y = (60 + Math.floor(Math.random() * 12)) + '%';
+    const y = fold ? '46%' : (60 + Math.floor(Math.random() * 12)) + '%';
     const s = st();
     s.nyGift = { id, x, y, open: false };
     nyMark(id); S.save();
@@ -3755,9 +3758,12 @@ function horseModal(id) {
     ui.tab = 'home';
     render();
     document.addEventListener('fullscreenchange', syncFs);
-    document.addEventListener('visibilitychange', () => { if (!document.hidden) nyPoll(); });
+    document.addEventListener('visibilitychange', () => {
+      document.body.classList.toggle('is-hidden', document.hidden);
+      if (!document.hidden) nyPoll();
+    });
     setTimeout(nyPoll, 400);
-    setInterval(() => { if (!document.hidden) nyPoll(); }, 1000);
+    setInterval(() => { if (!document.hidden) nyPoll(); }, 400);
     setTimeout(enforceBan, 1600);
     setInterval(() => { if (!document.hidden) enforceBan(); }, 3000);
 

@@ -344,7 +344,7 @@ window.BG_CLOUD = (function () {
   async function readNy() {
     if (!configured() || !sess) return null;
     const t = await token();
-    const ev = await request(fsDoc('events/ny'), { headers: { Authorization: 'Bearer ' + t } });
+    const ev = await request(fsDoc('events/ny'), { cache: 'no-store', headers: { Authorization: 'Bearer ' + t } });
     if (ev.r.ok) return nyFromFields(ev.j.fields) || { on: false, id: '', at: 0 };
     let best = null, page = '';
     for (let i = 0; i < 4; i++) {
