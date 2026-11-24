@@ -2732,18 +2732,18 @@ body[data-view=developer] .modal .sheet,
 .scene-fold { position: absolute; z-index: 8; top: 10px; left: 10px; border: 0; border-radius: 999px; padding: 7px 12px; background: #102A5C; color: #fff; font-weight: 800; font-size: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
 .fold-hint { display: none; }
 body.shop-fold .shop-rest { display: none; }
-@media (max-width: 899px) {
+@media (min-width: 900px) {
+  body.shop-fold #app { max-width: min(1180px, 100vw); }
+  body.shop-fold .mascot-stage.v4 { height: calc(100dvh - var(--topbar-h) - var(--tabbar-h) - 36px); }
+}
+@media (max-width: 899px), (hover: none) and (pointer: coarse) {
   body.shop-fold { overflow: hidden; }
   body.shop-fold #topbar, body.shop-fold #tabbar { display: none !important; }
   body.shop-fold #app { max-width: none; }
   body.shop-fold .mascot-stage.v4 {
-    position: fixed; inset: 0; width: 100%; height: 100%;
+    position: fixed; inset: 0; width: 100%; height: 100dvh;
     margin: 0; border-radius: 0; z-index: 80;
   }
-}
-@media (min-width: 900px) {
-  body.shop-fold #app { max-width: min(1180px, 100vw); }
-  body.shop-fold .mascot-stage.v4 { height: calc(100dvh - var(--topbar-h) - var(--tabbar-h) - 36px); }
 }
 .ban-row small { display: block; color: #B8D4FF; font-size: 12px; font-weight: 700; }
 .ban-row b { color: #fff; }

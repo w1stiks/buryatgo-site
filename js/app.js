@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.36';
+  const APP_VERSION = 'BETA 1.11.37';
   window.BG_APP_VERSION = APP_VERSION;
 
   // Global lesson swipe-down lock
@@ -358,7 +358,7 @@
     const on = ui.view === 'shop' && !!ui.shopFold;
     document.body.classList.toggle('shop-fold', on);
     const o = screen.orientation;
-    const phone = window.matchMedia('(max-width: 899px)').matches;
+    const phone = window.matchMedia('(max-width: 899px), (hover: none) and (pointer: coarse)').matches;
     if (on && phone && askTurn) {
       const turn = () => { if (o && o.lock) o.lock('landscape').catch(() => toast('Поверните телефон — картинка уже на весь экран')); };
       const el = document.documentElement;
@@ -372,14 +372,14 @@
   function go(view) {
     ui.view = view;
     if (['home', 'shop', 'leagues', 'profile'].indexOf(view) >= 0) ui.tab = view;
-    render();
+    render(true);
   }
-  function render() {
+  function render(askTurn) {
     if (ui.lbTimer) { clearInterval(ui.lbTimer); ui.lbTimer = null; }
     const scr = $('#screen');
     scr.scrollTop = 0;
     document.body.dataset.view = ui.view;
-    applyShopFold();
+    applyShopFold(!!askTurn);
     $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === ui.tab));
     switch (ui.view) {
       case 'home': setChrome(true, true); renderHome(scr); break;
