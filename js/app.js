@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.39';
+  const APP_VERSION = 'BETA 1.11.40';
   window.BG_APP_VERSION = APP_VERSION;
 
   // Global lesson swipe-down lock
@@ -1607,7 +1607,7 @@
     const stage = $('#stage');
     if (stage && $('#mHold', stage)) wxSync(stage, false);
   }
-  setInterval(() => { if (Date.now() >= WX.until) wxNext(); else wxApply(); }, 1000);
+  setInterval(() => { if (document.hidden) return; if (Date.now() >= WX.until) wxNext(); }, 4000);
 
   let snowFx = null;
   function wxFxHtml() {
@@ -3762,8 +3762,8 @@ function horseModal(id) {
       document.body.classList.toggle('is-hidden', document.hidden);
       if (!document.hidden) nyPoll();
     });
-    setTimeout(nyPoll, 400);
-    setInterval(() => { if (!document.hidden) nyPoll(); }, 400);
+    setTimeout(nyPoll, 150);
+    setInterval(() => { if (!document.hidden) nyPoll(); }, 200);
     setTimeout(enforceBan, 1600);
     setInterval(() => { if (!document.hidden) enforceBan(); }, 3000);
 

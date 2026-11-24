@@ -341,14 +341,18 @@ window.BG_CLOUD = (function () {
     sess.nyId = id; writeSess(sess);
     return { on: !!on, id, at, startAt: when, shared: ev.r.ok };
   }
+  let nySlowAt = 0, nySlowCache = null;
   async function readNy() {
     if (!configured() || !sess) return null;
     const t = await token();
-    const ev = await request(fsDoc('events/ny'), { cache: 'no-store', headers: { Authorization: 'Bearer ' + t } });
-    if (ev.r.ok) return nyFromFields(ev.j.fields) || { on: false, id: '', at: 0 };
+    const ev = await request(fsDoc('events/ny'), { cache: 'no-store', headers: { Authorization: 'Bearer ' + t, 'Cache-Control': 'no-cache' } });
+    if (ev.r.ok) return nyFromFields(ev.j.fields) || { on: false, id: '', at: 0, startAt: 0 };
+    if (Date.now() - nySlowAt < 2000) return nySlowCache;
+    nySlowAt = Date.now();
     let best = null, page = '';
-    for (let i = 0; i < 4; i++) {
-      const { r, j } = await request(presUrl() + '?pageSize=300' + (page ? '&pageToken=' + encodeURIComponent(page) : ''),
+    for (let i = 0; i < 2; i++) {
+      const mask = ['nyOn', 'nyId', 'nyAt'].map(f => 'mask.fieldPaths=' + f).join('&');
+      const { r, j } = await request(presUrl() + '?pageSize=80&' + mask + (page ? '&pageToken=' + encodeURIComponent(page) : ''),
         { headers: { Authorization: 'Bearer ' + t } });
       if (!r.ok) break;
       (j.documents || []).forEach(d => {
@@ -358,7 +362,8 @@ window.BG_CLOUD = (function () {
       page = j.nextPageToken;
       if (!page) break;
     }
-    return best || (ev.r.status === 404 ? { on: false, id: '', at: 0 } : null);
+    nySlowCache = best;
+    return best;
   }
   setInterval(() => { ping().catch(() => {}); }, 60000);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') ping(true).catch(() => {}); });

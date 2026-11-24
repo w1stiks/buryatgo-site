@@ -2745,57 +2745,58 @@ body.shop-fold .shop-rest { display: none; }
     margin: 0; border-radius: 0; z-index: 80;
   }
 }
+body.fs-on,
+body.fs-on #app,
+body.fs-on .screen,
+body.fs-on .view { contain: none !important; transform: none !important; animation: none !important; }
 body.fs-on #app {
-  max-width: none !important; width: 100vw !important; left: 0 !important; right: 0 !important; margin: 0 !important;
+  max-width: none !important; width: 100% !important; height: 100% !important;
+  left: 0 !important; right: 0 !important; margin: 0 !important;
 }
-body.fs-on .screen, body.fs-on .view { animation: none !important; transform: none !important; overflow: visible !important; }
+body.fs-on .screen { position: fixed !important; inset: 0 !important; overflow: hidden !important; padding: 0 !important; }
 body.fs-on .mascot-stage.v4,
 body.shop-fold.fs-on .mascot-stage.v4 {
   position: fixed !important; inset: 0 !important; width: 100vw !important; height: 100dvh !important;
   margin: 0 !important; border-radius: 0 !important; z-index: 1 !important;
 }
 body.fs-on #topbar { display: none !important; }
-body.fs-on:not([data-view=shop]) #topbar {
-  display: flex !important; position: fixed; z-index: 40; top: 6px; left: 6px; right: auto;
-  width: auto; height: auto; padding: 0; background: transparent; border: 0;
-  transform: scale(.62); transform-origin: top left;
-}
-body.fs-on #topbar::after { display: none; }
-body.fs-on #topbar .stat-chip { font-size: 12px; padding: 2px 4px; }
-body.fs-on #topbar .bz-ic { width: 14px; height: 14px; }
 body.fs-on .shop-rest { display: block; }
 body.fs-on .shop-rest .shop-grid,
 body.fs-on .shop-rest .disclaimer,
 body.fs-on .shop-rest .shop-cat { display: none !important; }
 body.fs-on .shop-rest .wallet {
-  position: fixed; z-index: 40; top: 4px; left: 2px; width: max-content; max-width: 42vw;
-  margin: 0; gap: 4px; transform: scale(.52); transform-origin: top left;
-  background: transparent; padding: 0;
+  position: fixed; z-index: 60; top: 2px; left: 0; right: auto;
+  width: max-content; max-width: none; margin: 0; gap: 4px; padding: 0;
+  transform: scale(.38); transform-origin: top left; background: transparent;
 }
-body.fs-on .shop-rest .wallet > div { padding: 3px 6px; }
-body.fs-on .shop-rest .wallet .big { font-size: 14px; }
+body.fs-on .shop-rest .wallet > div { padding: 2px 6px; border-width: 1px; }
+body.fs-on .shop-rest .wallet .big { font-size: 13px; }
 body.fs-on .shop-rest .seg {
-  position: fixed; z-index: 40; left: 4px; right: auto; bottom: 6px; top: auto;
-  width: max-content; max-width: 36vw; margin: 0; padding: 3px;
-  transform: scale(.55); transform-origin: bottom left;
+  position: fixed; z-index: 60; left: 0; right: auto; bottom: 2px; top: auto;
+  width: max-content; max-width: 42vw; margin: 0; padding: 2px;
+  transform: scale(.4); transform-origin: bottom left;
 }
 body.fs-on #tabbar {
-  display: flex !important; position: fixed; z-index: 40; right: 4px; left: auto; bottom: 6px; top: auto;
-  width: auto; height: auto; padding: 3px; border-radius: 14px;
-  transform: scale(.55); transform-origin: bottom right;
+  display: flex !important; position: fixed; z-index: 60; right: 0; left: auto; bottom: 2px; top: auto;
+  width: auto; height: auto; padding: 2px; border-radius: 12px;
+  transform: scale(.4); transform-origin: bottom right;
 }
 body.fs-on #tabbar .tab-lb { display: none; }
-body.fs-on #tabbar .tab { margin: 1px; min-width: 36px; min-height: 36px; }
-body.fs-on .overlay { position: fixed !important; inset: 0 !important; z-index: 600 !important; }
+body.fs-on #tabbar .tab { margin: 0; min-width: 34px; min-height: 34px; }
+body.fs-on .scene-fold { z-index: 70; top: 6px; left: auto; right: 6px; }
+body.fs-on .overlay { position: fixed !important; inset: 0 !important; z-index: 900 !important; }
 body.fs-on .overlay .modal.center {
-  top: 50%; bottom: auto; left: 50%; right: auto; width: min(360px, calc(100vw - 48px));
-  max-height: calc(100dvh - 32px); overflow: auto;
-  transform: translate(-50%, -50%); padding: 12px 14px 16px;
+  top: 42%; bottom: auto; left: 50%; right: auto;
+  width: min(280px, calc(100vw - 96px));
+  max-height: calc(100dvh - 36px); overflow: auto;
+  transform: translate(-50%, -50%);
+  padding: 8px 12px 12px;
 }
-body.fs-on .ny-reward .big-emo { font-size: 36px; }
-body.fs-on .ny-reward h2 { font-size: 18px; }
-body.fs-on .ny-reward .btn { min-height: 46px; margin: 4px 0 0; }
-body.fs-on .ny-gift { z-index: 8; }
-body.fs-on .scene-fold { z-index: 50; top: 6px; left: auto; right: 6px; }
+body.fs-on .ny-reward .big-emo { font-size: 26px; margin: 0; }
+body.fs-on .ny-reward .ny-buuz img { width: 18px; height: 18px; }
+body.fs-on .ny-reward h2 { font-size: 16px; margin: 2px 0; }
+body.fs-on .ny-reward p { font-size: 13px; margin: 2px 0 6px; }
+body.fs-on .ny-reward .btn { min-height: 42px; width: 100%; margin: 0; }
+body.fs-on .ny-gift { z-index: 12; }
 body.is-hidden .wx-flakes, body.is-hidden .wx-drops { display: none; }
 .ban-row b { color: #fff; }
