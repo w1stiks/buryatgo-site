@@ -2745,5 +2745,47 @@ body.shop-fold .shop-rest { display: none; }
     margin: 0; border-radius: 0; z-index: 80;
   }
 }
-.ban-row small { display: block; color: #B8D4FF; font-size: 12px; font-weight: 700; }
+body.fs-on #app { max-width: none; width: 100%; height: 100%; }
+body.fs-on .screen { contain: none; overflow: hidden; padding: 0; }
+body.fs-on .mascot-stage.v4 {
+  position: fixed; inset: 0; width: 100%; height: 100dvh; margin: 0; border-radius: 0; z-index: 1;
+}
+body.fs-on #topbar { display: none !important; }
+body.fs-on:not([data-view=shop]) #topbar {
+  display: flex !important; position: fixed; z-index: 40; top: 8px; left: 8px; right: auto;
+  width: auto; height: auto; padding: 0; background: transparent; border: 0;
+  transform: scale(.78); transform-origin: top left;
+}
+body.fs-on #topbar::after { display: none; }
+body.fs-on #topbar .stat-chip { font-size: 13px; padding: 2px 5px; }
+body.fs-on #topbar .bz-ic { width: 16px; height: 16px; }
+body.fs-on .shop-rest { display: block; }
+body.fs-on .shop-rest .shop-grid,
+body.fs-on .shop-rest .disclaimer,
+body.fs-on .shop-rest .shop-cat { display: none !important; }
+body.fs-on .shop-rest .wallet {
+  position: fixed; z-index: 40; top: 8px; left: 8px; width: max-content; max-width: 46vw;
+  margin: 0; gap: 6px; transform: scale(.72); transform-origin: top left;
+}
+body.fs-on .shop-rest .wallet > div { padding: 4px 8px; }
+body.fs-on .shop-rest .wallet .big { font-size: 15px; }
+body.fs-on .shop-rest .seg {
+  position: fixed; z-index: 40; left: 8px; right: auto; bottom: 8px; top: auto;
+  width: max-content; max-width: 42vw; margin: 0; padding: 4px;
+  transform: scale(.72); transform-origin: bottom left;
+}
+body.fs-on #tabbar {
+  display: flex !important; position: fixed; z-index: 40; right: 8px; left: auto; bottom: 8px; top: auto;
+  width: auto; height: auto; padding: 4px; border-radius: 16px;
+  transform: scale(.72); transform-origin: bottom right;
+}
+body.fs-on #tabbar .tab-lb { display: none; }
+body.fs-on #tabbar .tab { margin: 2px; min-width: 42px; min-height: 42px; }
+body.fs-on .overlay { position: fixed; z-index: 400; }
+body.fs-on .overlay .modal.center {
+  max-height: calc(100dvh - 36px); overflow: auto;
+  left: 16px; right: 16px; width: auto; max-width: 420px; margin: 0 auto;
+}
+body.fs-on .ny-reward .btn { margin-bottom: 8px; }
+body.fs-on .scene-fold { z-index: 50; top: 8px; left: auto; right: 8px; }
 .ban-row b { color: #fff; }

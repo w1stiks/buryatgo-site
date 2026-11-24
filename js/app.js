@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.37';
+  const APP_VERSION = 'BETA 1.11.38';
   window.BG_APP_VERSION = APP_VERSION;
 
   // Global lesson swipe-down lock
@@ -354,19 +354,26 @@
     $('#tabbar').classList.toggle('hidden', !tabs);
     $('#screen').classList.toggle('full', !tabs);
   }
+  function syncFs() {
+    const phone = window.matchMedia('(hover: none), (pointer: coarse), (max-width: 900px)').matches;
+    const on = !!document.fullscreenElement || (!!ui.shopFold && ui.view === 'shop' && phone);
+    document.body.classList.toggle('fs-on', on);
+  }
   function applyShopFold(askTurn) {
     const on = ui.view === 'shop' && !!ui.shopFold;
     document.body.classList.toggle('shop-fold', on);
+    syncFs();
     const o = screen.orientation;
-    const phone = window.matchMedia('(max-width: 899px), (hover: none) and (pointer: coarse)').matches;
+    const phone = window.matchMedia('(max-width: 900px), (hover: none), (pointer: coarse)').matches;
     if (on && phone && askTurn) {
-      const turn = () => { if (o && o.lock) o.lock('landscape').catch(() => toast('Поверните телефон — картинка уже на весь экран')); };
+      const turn = () => { if (o && o.lock) o.lock('landscape').catch(() => {}); };
       const el = document.documentElement;
       if (el.requestFullscreen) el.requestFullscreen().then(turn).catch(turn);
       else turn();
     } else if (!on) {
       if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
       if (o && o.unlock) { try { o.unlock(); } catch (e) {} }
+      syncFs();
     }
   }
   function go(view) {
@@ -3500,10 +3507,11 @@ function horseModal(id) {
     $('#nyOk', m).onclick = () => { closeModal(); renderTop(); if (ui.view === 'shop') render(); };
     ui.nyOpening = false;
   }
-  function dropNyGift(id) {
-    const spots = ['12%', '22%', '58%', '70%', '78%'];
-    const x = spots[Math.floor(Math.random() * spots.length)];
-    const y = (60 + Math.floor(Math.random() * 12)) + '%';
+  function nyGiftSpot() {
+    const fold = document.body.classList.contains('shop-fold');
+    const spots = fold ? ['42%', '50%', '58%'] : ['22%', '36%', '50%', '64%', '74%'];
+    return { x: spots[Math.floor(Math.random() * spots.length)], y: fold ? '44%' : (58 + Math.floor(Math.random() * 12)) + '%' };
+  }
     const s = st();
     s.nyGift = { id, x, y, open: false };
     nyMark(id); S.save();
@@ -3696,16 +3704,19 @@ function horseModal(id) {
       refreshNyStatus();
     } catch (e) { toast(e.message || 'Не удалось запустить ивент'); }
   }
+  let nyPollBusy = false;
   async function nyPoll() {
     const C = window.BG_CLOUD;
-    if (!C || !C.user || !C.user() || !st().onboarded || ui.nyPlaying) return;
+    if (document.hidden || nyPollBusy || !C || !C.user || !C.user() || !st().onboarded || ui.nyPlaying) return;
+    nyPollBusy = true;
     try {
       const ev = await C.readNy();
       if (ev && ev.on) {
-        if ((ev.startAt || 0) > Date.now() + 800) scheduleNy(ev);
+        if ((ev.startAt || 0) > Date.now() + 150) scheduleNy(ev);
         else playNyNight(ev);
       }
     } catch (e) {}
+    nyPollBusy = false;
   }
 
   /* ───────────────── Инициализация ───────────────── */
@@ -3743,10 +3754,12 @@ function horseModal(id) {
     setTimeout(() => { if (st().onboarded && !st().age && !modalOpen()) ageModal(() => render(), true); }, 1900);
     ui.tab = 'home';
     render();
-    setTimeout(nyPoll, 2200);
-    setInterval(nyPoll, 15000);
+    document.addEventListener('fullscreenchange', syncFs);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) nyPoll(); });
+    setTimeout(nyPoll, 400);
+    setInterval(() => { if (!document.hidden) nyPoll(); }, 1000);
     setTimeout(enforceBan, 1600);
-    setInterval(enforceBan, 3000);
+    setInterval(() => { if (!document.hidden) enforceBan(); }, 3000);
 
     setTimeout(() => {
       const sp = $('#splash');
