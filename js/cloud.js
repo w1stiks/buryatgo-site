@@ -201,13 +201,7 @@ window.BG_CLOUD = (function () {
     if (!r.ok) throw fail(errCode(j));
     writeSess(fromAuth(j, login));
     const ban = await checkBan();
-    if (ban) {
-      writeSess(null);
-      const e = new Error('Ваш аккаунт заблокирован в данной игре. Причина: ' + (ban.reason || 'Нарушение правил'));
-      e.code = 'BANNED';
-      e.ban = ban;
-      throw e;
-    }
+    if (ban) return { login, banned: ban };
     let remote = null;
     try { remote = await pull(); } catch (e) { writeSess(null); emit(); throw e; }
     if (remote && remote.state) {
@@ -275,7 +269,8 @@ window.BG_CLOUD = (function () {
       name: { stringValue: String(p.name || 'Ученик').slice(0, 24) },
       xp: I(p.xp), weekXp: I(p.weekXp), league: I(p.league), streak: I(p.streak), lastSeen: I(Date.now()),
       snap: { stringValue: JSON.stringify(p) },
-      ip: { stringValue: String(await myIp() || '') }
+      ip: { stringValue: String(await myIp() || '') },
+      app: { stringValue: String(p.app || window.BG_APP_VERSION || '').slice(0, 24) }
     } };
     const keys = Object.keys(body.fields);
     const mask = keys.map(f => 'updateMask.fieldPaths=' + f).join('&');
@@ -303,7 +298,8 @@ window.BG_CLOUD = (function () {
           id: snap.id || uid, uid, name: (f.name || {}).stringValue || snap.name || 'Ученик',
           xp: num('xp'), weekXp: num('weekXp'), league: num('league'), streak: num('streak'), lastSeen: num('lastSeen'),
           me: uid === sess.uid,
-          ip: (f.ip || {}).stringValue || snap.ip || ''
+          ip: (f.ip || {}).stringValue || snap.ip || '',
+          app: (f.app || {}).stringValue || snap.app || ''
         }));
       });
       page = j.nextPageToken;

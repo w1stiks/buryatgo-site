@@ -1,7 +1,8 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.32';
+  const APP_VERSION = 'BETA 1.11.33';
+  window.BG_APP_VERSION = APP_VERSION;
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -2673,7 +2674,9 @@ function horseModal(id) {
           render();
         } else {
           const r = await C.signIn(login, pass);
-          closeModal(); haptic('success');
+          closeModal();
+          if (r.banned) { showBan(r.banned); render(); return; }
+          haptic('success');
           if (r.restored) { toast('☁️ Прогресс загружен!', 1500); setTimeout(() => location.reload(), 900); }
           else if (!st().onboarded) { ui.onbStep = Math.max(ui.onbStep, 1); toast('☁️ Вы вошли'); enforceBan(); go('onboarding'); }
           else { toast('☁️ Вы вошли. Прогресс сохранён в аккаунт', 2600); enforceBan(); render(); }
@@ -2993,7 +2996,7 @@ function horseModal(id) {
         <div class="set-group dev-players">${list.map(p => `<button class="dev-player" data-pid="${esc(p.id)}">
             <span class="dp-av">${M.svg(p.equip || {}, { full: true, cls: 'static' })}</span>
             <span class="dp-main"><b>${esc(p.name || 'Игрок')}${p.id === s.playerId ? ' <em>(вы)</em>' : ''}${p.premium ? ' 👑' : ''}</b>
-              <small><i class="dot ${agoText(p.lastSeen) === 'онлайн' ? 'on' : ''}"></i>${agoText(p.lastSeen)} · ${fmt(p.xp || 0)} XP · 🔥 ${p.streak || 0}</small></span>
+              <small><i class="dot ${agoText(p.lastSeen) === 'онлайн' ? 'on' : ''}"></i>${agoText(p.lastSeen)} · ${esc(p.app || 'версия не указана')} · ${fmt(p.xp || 0)} XP</small></span>
             <span class="dp-bz">${fmt(p.buzzy || 0)} <img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false></span></button>`).join('') || '<div class="set-row">Активных игроков нет</div>'}</div>
         <button class="btn ghost dark" id="devReload">↻ Обновить список</button>`;
       $('#devReload').onclick = () => { dock.classList.add('is-loading'); loadDevDock(); };
@@ -3012,7 +3015,7 @@ function horseModal(id) {
       ['📖 Слов', p.words || 0], ['🎯 Точность', acc],
       ['✨ Идеальных', p.perfect || 0], ['🛍️ Покупок', (p.purchases || 0) + ' · предметов ' + (p.owned || 0)],
       ['👑 Super', p.premium ? (p.premiumUntil === LIFETIME_UNTIL ? 'навсегда' : 'до ' + humanDate(p.premiumUntil)) : 'нет'], ['🎯 Цель', (p.dailyGoal || 0) + ' XP/день'],
-      ['🗓️ С нами с', p.createdAt ? humanDate(p.createdAt) : '—'], ['🟢 Активность', agoText(p.lastSeen)]
+      ['📦 Версия', esc(p.app || 'ещё не сообщил')], ['🗓️ С нами с', p.createdAt ? humanDate(p.createdAt) : '—'], ['🟢 Активность', agoText(p.lastSeen)]
     ];
     const m = openModal(`<div class="dp-modal"><div class="dp-head"><span class="dp-av big">${M.svg(p.equip || {}, { full: true, cls: 'static', mood: 'happy' })}</span>
         <div><div class="title" style="margin:0">${esc(p.name || 'Игрок')}</div><div class="muted" style="font-size:12px;font-weight:700">ID ${esc(String(p.id).slice(0, 12))} · ${esc(p.device || '')}</div></div></div>
@@ -3040,8 +3043,12 @@ function horseModal(id) {
   }
   function enforceBan() {
     const C = window.BG_CLOUD;
-    if (!C || !C.checkBan) return;
-    C.checkBan().then(b => { if (b) showBan(b); }).catch(() => {});
+    if (!C || !C.checkBan || !C.user()) return;
+    C.checkBan().then(b => {
+      const wall = document.getElementById('banWall');
+      if (b) showBan(b);
+      else if (wall) { wall.remove(); toast('Блокировка снята'); render(); }
+    }).catch(() => {});
   }
   function loadBanBox() {
     const box = $('#banBox'); if (!box || !window.BG_CLOUD || !BG_CLOUD.readBans) return;
@@ -3697,7 +3704,7 @@ function horseModal(id) {
     setTimeout(nyPoll, 2200);
     setInterval(nyPoll, 15000);
     setTimeout(enforceBan, 1600);
-    setInterval(enforceBan, 20000);
+    setInterval(enforceBan, 3000);
 
     setTimeout(() => {
       const sp = $('#splash');

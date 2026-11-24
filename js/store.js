@@ -120,7 +120,8 @@ window.BG_STORE = (function () {
         answers: s.stats.answers, correct: s.stats.correct, perfect: s.stats.perfect, purchases: s.stats.purchases,
         owned: s.owned.length, equip: s.equip, premium: api.isPremium() ? (s.premium.plan || 'year') : null,
         premiumUntil: api.isPremium() ? s.premium.until : null, dailyGoal: s.settings.dailyGoal, age: s.age || null, admin: !!s.admin, buuz: s.buuz || 0,
-        device: (navigator.userAgent.match(/\(([^)]+)\)/) || [, 'Устройство'])[1].split(';').slice(0, 2).join(';')
+        device: (navigator.userAgent.match(/\(([^)]+)\)/) || [, 'Устройство'])[1].split(';').slice(0, 2).join(';'),
+        app: window.BG_APP_VERSION || ''
       };
     },
     syncPlayer() {
