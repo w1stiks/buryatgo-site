@@ -2730,19 +2730,20 @@ body[data-view=developer] .modal .sheet,
 #banWall p { color: #F2B705; font-size: 18px; font-weight: 800; }
 #banWall small { display: block; margin-top: 8px; color: #B8D4FF; }
 .scene-fold { position: absolute; z-index: 8; top: 10px; left: 10px; border: 0; border-radius: 999px; padding: 7px 12px; background: #102A5C; color: #fff; font-weight: 800; font-size: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
-.fold-hint { display: none; position: absolute; z-index: 8; left: 12px; right: 12px; bottom: 10px; text-align: center; color: #102A5C; background: rgba(255,255,255,.88); border-radius: 12px; padding: 6px 8px; font-size: 12px; font-weight: 800; }
+.fold-hint { display: none; }
 body.shop-fold .shop-rest { display: none; }
-body.shop-fold .mascot-stage.v4 { height: calc(100dvh - var(--topbar-h) - var(--tabbar-h) - 36px); }
-body.shop-fold .fold-hint { display: block; }
-@media (min-width: 900px) {
-  body.shop-fold #app { max-width: min(1180px, 100vw); }
-  body.shop-fold .fold-hint { display: none; }
-}
-@media (orientation: landscape) and (max-height: 560px) {
+@media (max-width: 899px) {
+  body.shop-fold { overflow: hidden; }
   body.shop-fold #topbar, body.shop-fold #tabbar { display: none !important; }
   body.shop-fold #app { max-width: none; }
-  body.shop-fold .fold-hint { display: none; }
-  body.shop-fold .mascot-stage.v4 { position: fixed; inset: 0; width: 100vw; height: 100dvh; margin: 0; border-radius: 0; z-index: 30; }
+  body.shop-fold .mascot-stage.v4 {
+    position: fixed; inset: 0; width: 100%; height: 100%;
+    margin: 0; border-radius: 0; z-index: 80;
+  }
+}
+@media (min-width: 900px) {
+  body.shop-fold #app { max-width: min(1180px, 100vw); }
+  body.shop-fold .mascot-stage.v4 { height: calc(100dvh - var(--topbar-h) - var(--tabbar-h) - 36px); }
 }
 .ban-row small { display: block; color: #B8D4FF; font-size: 12px; font-weight: 700; }
 .ban-row b { color: #fff; }

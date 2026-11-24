@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.34';
+  const APP_VERSION = 'BETA 1.11.35';
   window.BG_APP_VERSION = APP_VERSION;
 
   // Global lesson swipe-down lock
@@ -354,6 +354,21 @@
     $('#tabbar').classList.toggle('hidden', !tabs);
     $('#screen').classList.toggle('full', !tabs);
   }
+  function applyShopFold(askTurn) {
+    const on = ui.view === 'shop' && !!ui.shopFold;
+    document.body.classList.toggle('shop-fold', on);
+    const o = screen.orientation;
+    const phone = window.matchMedia('(max-width: 899px)').matches;
+    if (on && phone && askTurn) {
+      const turn = () => { if (o && o.lock) o.lock('landscape').catch(() => toast('Поверните телефон — картинка уже на весь экран')); };
+      const el = document.documentElement;
+      if (el.requestFullscreen) el.requestFullscreen().then(turn).catch(turn);
+      else turn();
+    } else if (!on) {
+      if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+      if (o && o.unlock) { try { o.unlock(); } catch (e) {} }
+    }
+  }
   function go(view) {
     ui.view = view;
     if (['home', 'shop', 'leagues', 'profile'].indexOf(view) >= 0) ui.tab = view;
@@ -364,7 +379,7 @@
     const scr = $('#screen');
     scr.scrollTop = 0;
     document.body.dataset.view = ui.view;
-    document.body.classList.toggle('shop-fold', ui.view === 'shop' && !!ui.shopFold);
+    applyShopFold();
     $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === ui.tab));
     switch (ui.view) {
       case 'home': setChrome(true, true); renderHome(scr); break;
@@ -982,7 +997,7 @@
       <div class="mascot-stage v4" id="stage">${stageScene()}${STAGE_SKY}
         <div class="say" id="say"></div>
         <button type="button" class="scene-fold" id="shopFold">${ui.shopFold ? 'Магазин' : 'На весь экран'}</button>
-        <div class="fold-hint">Поверните телефон — картинка на весь экран</div>
+        <div class="fold-hint">Если картинка не легла горизонтально — поверните телефон</div>
         <div class="mascot-hold" id="mHold">${M.svg(s.equip, { mood: 'happy', cls: 'wave' })}</div></div>
       <div class="shop-rest">
       <div class="wallet">
@@ -1014,7 +1029,7 @@
       <p class="disclaimer">Нажмите на Бато — он скажет что-нибудь по-бурятски! Буузы зарабатываются за уроки, серии и достижения.</p></div></div>`;
     $$('.seg button', scr).forEach(b => { b.onclick = () => { ui.shopSlot = b.dataset.slot; renderShop(scr); }; });
     const fold = $('#shopFold', scr);
-    if (fold) fold.onclick = () => { ui.shopFold = !ui.shopFold; renderShop(scr); };
+    if (fold) fold.onclick = () => { ui.shopFold = !ui.shopFold; applyShopFold(true); renderShop(scr); };
     $$('.item-card', scr).forEach(b => { b.onclick = () => b.dataset.refill ? (refillCup(D.itemsById[b.dataset.id]) && refreshShop(true)) : b.dataset.lucky ? luckyModal() : b.dataset.pet ? sheepModal() : b.dataset.horse ? horseModal(b.dataset.horse) : itemModal(b.dataset.id); });
     const hold = $('#mHold', scr);
     hold.onclick = () => { if (ui.skating || ui.sheltered === 'yurt') return; mascotTap(hold, $('#stage', scr), mascotTalk); };
