@@ -7,7 +7,23 @@ window.BG_PWA = (function () {
     (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
 
   if (web && 'serviceWorker' in navigator) {
-    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+    let reloaded = false;
+    const reloadOnce = () => { if (reloaded) return; reloaded = true; location.reload(); };
+    navigator.serviceWorker.addEventListener('controllerchange', reloadOnce);
+    navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'reload') reloadOnce(); });
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').then(reg => {
+        if (reg.waiting) reg.waiting.postMessage({ type: 'skip' });
+        reg.addEventListener('updatefound', () => {
+          const nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener('statechange', () => {
+            if (nw.state === 'installed' && navigator.serviceWorker.controller) nw.postMessage({ type: 'skip' });
+          });
+        });
+        reg.update().catch(() => {});
+      }).catch(() => {});
+    });
   }
   /* Просим браузер не удалять сохранение при нехватке места */
   if (web && navigator.storage && navigator.storage.persist) {

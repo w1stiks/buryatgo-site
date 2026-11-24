@@ -1,6 +1,6 @@
 /* BuryatGo service worker: игра открывается и без интернета.
    Свои файлы — из кэша с фоновым обновлением; запросы к серверу аккаунтов не кэшируются. */
-const CACHE = 'buryatgo-v1.11.35-full';
+const CACHE = 'buryatgo-v1.11.36-net';
 const CORE = [
   './', 'index.html', 'manifest.webmanifest', 'css/styles.css',
   'js/data.js', 'js/store.js', 'js/cloud-config.js', 'js/cloud.js', 'js/pwa.js',
@@ -15,7 +15,13 @@ self.addEventListener('install', e => {
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys()
     .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
-    .then(() => self.clients.claim()));
+    .then(() => self.clients.claim())
+    .then(() => self.clients.matchAll({ type: 'window', includeUncontrolled: true }))
+    .then(list => list.forEach(c => c.postMessage({ type: 'reload' }))));
+});
+
+self.addEventListener('message', e => {
+  if (e.data && e.data.type === 'skip') self.skipWaiting();
 });
 
 self.addEventListener('fetch', e => {
@@ -23,11 +29,14 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
-  e.respondWith(caches.open(CACHE).then(cache => cache.match(req, { ignoreSearch: true }).then(hit => {
+  if (url.pathname.endsWith('/sw.js')) return;
+  const code = /\.(js|css|html)$/.test(url.pathname) || /\/$/.test(url.pathname);
+  e.respondWith(caches.open(CACHE).then(cache => {
     const net = fetch(req).then(res => {
       if (res && res.ok && res.type === 'basic') cache.put(req, res.clone());
       return res;
-    }).catch(() => hit || (req.mode === 'navigate' ? cache.match('index.html') : undefined));
-    return hit || net;
-  })));
+    }).catch(() => cache.match(req));
+    if (code) return net;
+    return cache.match(req).then(hit => hit || net);
+  }));
 });

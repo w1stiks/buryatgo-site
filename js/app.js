@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.35';
+  const APP_VERSION = 'BETA 1.11.36';
   window.BG_APP_VERSION = APP_VERSION;
 
   // Global lesson swipe-down lock
