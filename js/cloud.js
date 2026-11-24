@@ -406,7 +406,11 @@ window.BG_CLOUD = (function () {
     }
     return row;
   }
-  async function unban(id) { await writeBans((await readBans()).filter(b => b.id !== id)); }
+  async function unban(id) {
+    const keys = (Array.isArray(id) ? id : [id]).map(v => String(v || '')).filter(Boolean);
+    const list = await readBans();
+    await writeBans(list.filter(b => !keys.includes(b.id) && !keys.includes(b.uid) && !keys.includes(String(b.ip || ''))));
+  }
   async function deleteSelf() {
     if (!sess) return;
     const t = await token();

@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.31';
+  const APP_VERSION = 'BETA 1.11.32';
 
   // Global lesson swipe-down lock
   (function lockLessonSwipe() {
@@ -1575,52 +1575,10 @@
     const ds = $('#wxDevSt');
     if (ds) ds.textContent = `Сейчас: ${m[0]} ${m[1]} · до смены ${t} · лёд ${Math.round(ice * 100)}%${WX.iceDir > 0 ? ' (замерзает)' : WX.iceDir < 0 ? ' (тает)' : ''}`;
     $$('[data-wx]').forEach(b => b.classList.toggle('on', b.dataset.wx === WX.mode));
-    const pose = horsePose();
-    $$('.mascot-stage').forEach(sg => { sg.classList.remove('hp-1', 'hp-2', 'hp-3'); if (pose) sg.classList.add('hp-' + pose); });
     const stage = $('#stage');
     if (stage && $('#mHold', stage)) wxSync(stage, false);
   }
   setInterval(() => { if (Date.now() >= WX.until) wxNext(); else wxApply(); }, 1000);
-  function horseVitals() {
-    const s = st();
-    if (!s.horseVitals || typeof s.horseVitals !== 'object') s.horseVitals = { cold: 0, t: Date.now() };
-    s.horseVitals.hunger = 0;
-    return s.horseVitals;
-  }
-  function horseWarm() { return !!(st().horseCoat || (st().nyInstalled && st().nyInstalled.ny_horse)); }
-  function tickHorse() {
-    if (!ownsHorse()) return;
-    const v = horseVitals();
-    const now = Date.now();
-    const dt = Math.max(0, Math.min(90, (now - (v.t || now)) / 1000));
-    v.t = now;
-    if (WX.mode === 'snow' && !horseWarm()) v.cold = Math.min(100, (v.cold || 0) + dt * 0.45);
-    else v.cold = Math.max(0, (v.cold || 0) - dt * 0.9);
-    S.save();
-    const pose = horsePose();
-    $$('.mascot-stage').forEach(sg => { sg.classList.remove('hp-1', 'hp-2', 'hp-3'); if (pose) sg.classList.add('hp-' + pose); });
-  }
-  function horsePose() {
-    if (!ownsHorse()) return 0;
-    const v = horseVitals();
-    const n = horseWarm() ? 0 : (v.cold || 0);
-    if (n >= 100) return 3;
-    if (n >= 65) return 2;
-    if (n >= 30) return 1;
-    return 0;
-  }
-  function horseCanRide() {
-    if (!ownsHorse()) return '';
-    const v = horseVitals();
-    if (!horseWarm() && (v.cold || 0) >= 100) return 'Конь замёрз и лежит. Наденьте попону — без одежды в мороз он не встанет';
-    return '';
-  }
-  function ridePace() {
-    const v = horseVitals();
-    const cold = horseWarm() ? 0 : (v.cold || 0);
-    return 1 + cold / 90;
-  }
-  setInterval(tickHorse, 15000);
 
   let snowFx = null;
   function wxFxHtml() {
@@ -1741,8 +1699,7 @@
       b.onclick = () => {
         if (b.dataset.act === 'close') { closeModal(); return; }
         if (s.buzzy < D.horseCoatPrice) { haptic('error'); sfx('wrong'); toast(`Не хватает ${D.horseCoatPrice - s.buzzy} ${BZI}`); return; }
-        s.buzzy -= D.horseCoatPrice; s.horseCoat = true; s.stats.purchases++;
-        if (s.horseVitals) s.horseVitals.cold = 0; S.save();
+        s.buzzy -= D.horseCoatPrice; s.horseCoat = true; s.stats.purchases++; S.save();
         closeModal(); sfx('coin'); haptic('success'); confetti(); toast('❄️ Попона куплена — в снег кони будут в тепле');
         refreshShop(true);
       };
@@ -2111,9 +2068,6 @@
   async function rideCity(scr, i, g) {
     if (ui.ritual || ui.riding || ui.skating || ui.sheltered) return;
     const hs = stageHorses() || [], h = hs[i] || hs[0]; if (!h) return;
-    const deny = horseCanRide();
-    if (deny) { toast(deny); haptic('error'); return; }
-    const pace = ridePace();
     const toForest = Math.random() < 0.5;
     const stage = $('#stage', scr), hold = $('#mHold', scr);
     ui.riding = true; ui.rideHorse = h.id; sfx('pop'); haptic('light');
@@ -2130,17 +2084,17 @@
     r.classList.add('mount');                                /* садится верхом у сэргэ */
     await wait12(520);
     r.classList.remove('mount'); r.classList.add('gallop');
-    r.style.transition = 'transform ' + (1.5 * pace).toFixed(2) + 's cubic-bezier(.45,0,.75,1)';
-    r.style.transform = `translateX(${sr.width / 2 + rw}px) scale(1)`;   /* вправо, за край экрана */
-    await wait12(1550 * pace);
+    r.style.transition = 'transform 1.5s cubic-bezier(.45,0,.75,1)';
+    r.style.transform = `translateX(${sr.width / 2 + rw}px) scale(1)`;
+    await wait12(1550);
     stage.classList.add('fade'); await wait12(280);
     ui.loc = toForest ? 'forest' : 'city'; ui.inGov = false; ui.placeBusy = false;
     const sc = $('.scene', stage); if (sc) sc.innerHTML = ui.loc === 'forest' ? forestSceneHtml() : placeScene(ui.loc);
     if (dw) dw.remove();
     stage.classList.remove('fade');
     r.style.transition = 'none'; r.style.transform = `translateX(${-(sr.width / 2 + rw)}px)`; void r.offsetWidth;
-    r.style.transition = 'transform ' + (1.4 * pace).toFixed(2) + 's cubic-bezier(.2,.7,.3,1)'; r.style.transform = placeRiderTf(sr.width);
-    await wait12(1450 * pace);
+    r.style.transition = 'transform 1.4s cubic-bezier(.2,.7,.3,1)'; r.style.transform = placeRiderTf(sr.width);
+    await wait12(1450);
     r.classList.remove('gallop'); r.classList.add('idle');
     stage.insertAdjacentHTML('beforeend', ui.loc === 'forest' ? FOREST_BADGE + forestHintHtml() : (false && ui.loc === 'datsan' ? DATSAN_BADGE : CITY_BADGE));
     placeSetup(scr, h, true);
@@ -2174,9 +2128,6 @@
   }
   async function rideHome(scr, h) {
     if (ui.riding || ui.placeBusy || ui.inGov) return;
-    const deny = horseCanRide();
-    if (deny) { toast(deny); haptic('error'); return; }
-    const pace = ridePace();
     const stage = $('#stage', scr), r = $('#rider', stage); if (!r) return;
     ui.riding = true; sfx('pop'); haptic('light');
     $$('.pl-hit, .pl-spark', stage).forEach(x => x.remove());
@@ -2187,9 +2138,9 @@
     const badge = $('.city-badge', stage); if (badge) badge.remove();
     $$('.forest-hint', stage).forEach(x => x.remove());
     r.classList.remove('idle'); r.classList.add('gallop', 'back-dir');      /* разворот налево */
-    r.style.transition = 'transform ' + (1.4 * pace).toFixed(2) + 's cubic-bezier(.45,0,.75,1)';
+    r.style.transition = 'transform 1.4s cubic-bezier(.45,0,.75,1)';
     r.style.transform = `translateX(${-(sr.width / 2 + rw)}px)`;
-    await wait12(1450 * pace);
+    await wait12(1450);
     stage.classList.add('fade'); await wait12(280);
     ui.loc = 'home'; ui.inGov = false;
     const sc = $('.scene', stage); if (sc) sc.outerHTML = stageScene();
@@ -2200,8 +2151,8 @@
     const gr = g ? g.getBoundingClientRect() : null;
     const x1 = gr ? gr.left - sr.left + gr.width / 2 - sr.width / 2 : 0;
     r.style.transition = 'none'; r.style.transform = `translateX(${sr.width / 2 + rw}px)`; void r.offsetWidth;
-    r.style.transition = 'transform ' + (1.6 * pace).toFixed(2) + 's cubic-bezier(.2,.7,.3,1)'; r.style.transform = `translateX(${x1}px) scale(.7)`;
-    await wait12(1650 * pace);
+    r.style.transition = 'transform 1.6s cubic-bezier(.2,.7,.3,1)'; r.style.transform = `translateX(${x1}px) scale(.7)`;
+    await wait12(1650);
     r.classList.remove('gallop'); r.classList.add('mount');               /* спешивается у сэргэ */
     await wait12(420);
     if (g) g.style.opacity = '';
@@ -2930,12 +2881,6 @@ function horseModal(id) {
         </div>
         <div class="muted dock-note">Овцы, собака и конь появляются на сцене у юрты. «Подарок заново» даёт снова поймать подарок этого ивента. «Выдать вещи» кладёт одежду и предметы магазина в инвентарь.</div>
       </div>
-      <h2 class="sub">Конь: холод и голод</h2>
-      <div class="set-group dev-pad">
-        <div class="dev-lbl">❄️ Холод ${Math.round((s.horseVitals && s.horseVitals.cold) || 0)}%</div>
-        <input type="range" id="devCold" min="0" max="100" step="1" value="${Math.round((s.horseVitals && s.horseVitals.cold) || 0)}">
-        <div class="muted dock-note">В снег без попоны холод растёт сам: конь подгибает ноги и ложится на снег. На 100% он не скачет, пока не наденете попону.</div>
-      </div>
       <h2 class="sub">Серия и заморозки</h2>
       <div class="set-group dev-pad">
         <div class="dev-row"><span class="dev-lbl">🔥 Серия</span><input type="number" id="devStreak" min="0" step="1" value="${s.streak || 0}"><button class="btn small blue" id="devStreakSet">Ок</button></div>
@@ -2998,15 +2943,6 @@ function horseModal(id) {
       (D.items || []).forEach(it => { if (!it || !it.id || it.consumable || it.revive || it.food) return; if (s.owned.indexOf(it.id) < 0) { s.owned.push(it.id); n++; } });
       S.save(); toast(n ? '🧥 Выдано предметов: ' + n : 'Все вещи уже есть');
     };
-    const setVital = (key, input) => {
-      const v = horseVitals();
-      v[key] = Math.max(0, Math.min(100, Math.round(+input.value || 0)));
-      v.t = Date.now();
-      S.save(); wxApply();
-      toast((key === 'cold' ? '❄️ Холод: ' : '🍎 Голод: ') + v[key] + '%');
-    };
-    $('#devCold').oninput = () => { $('#devCold').previousElementSibling.textContent = '❄️ Холод ' + $('#devCold').value + '%'; };
-    $('#devCold').onchange = () => setVital('cold', $('#devCold'));
     $('#devSetBtn').onclick = () => { if (setExactBuzzy($('#devSet').value)) $('#devSet').value = st().buzzy; };
     $('#nyStart').onclick = () => nyAdmin(true, Date.now());
     $('#nyPlan').onclick = () => {
@@ -3085,11 +3021,13 @@ function horseModal(id) {
       <div class="dev-row" style="margin-top:10px"><input id="banReason" placeholder="Причина бана" value="Нарушение правил"></div>
       <p class="disclaimer">IP: ${esc(p.ip || 'появится, когда игрок будет онлайн')}</p>
       <button class="btn red" id="banGo" type="button">Забанить по IP</button>
+      <button class="btn blue" id="unbanGo" type="button" style="margin-top:8px">Разбанить</button>
       <button class="btn red" id="wipeGo" type="button" style="margin-top:8px">Удалить аккаунт навсегда</button>
       <button class="btn" data-ok style="margin-top:12px">Закрыть</button></div>`);
     $('[data-ok]', m).onclick = closeModal;
     if (me) $('#dpSetBtn', m).onclick = () => { if (setExactBuzzy($('#dpSet', m).value)) { closeModal(); loadDevDock(); } };
     $('#banGo', m).onclick = () => punishPlayer(p, false);
+    $('#unbanGo', m).onclick = () => liftBan(p);
     $('#wipeGo', m).onclick = () => punishPlayer(p, true);
   }
 
@@ -3110,9 +3048,20 @@ function horseModal(id) {
     BG_CLOUD.readBans().then(list => {
       if (!$('#banBox')) return;
       if (!list.length) { $('#banBox').innerHTML = '<div class="muted dock-note">Банов нет.</div>'; return; }
-      $('#banBox').innerHTML = list.map(b => `<div class="dev-row ban-row"><div><b>${esc(b.name || 'Игрок')}</b><small>${esc(b.ip || b.uid || '')} · ${esc(b.reason || '')}${b.wipe ? ' · удалён' : ''}</small></div><button class="btn small ghost dark" data-unban="${esc(b.id)}">Снять</button></div>`).join('');
-      $$('[data-unban]', $('#banBox')).forEach(btn => { btn.onclick = () => { BG_CLOUD.unban(btn.dataset.unban).then(() => { toast('Бан снят'); loadBanBox(); }).catch(e => toast(e.message || 'Не вышло')); }; });
+      $('#banBox').innerHTML = list.map(b => `<div class="dev-row ban-row"><div><b>${esc(b.name || 'Игрок')}</b><small>${esc(b.ip || b.uid || '')} · ${esc(b.reason || '')}${b.wipe ? ' · удалён' : ''}</small></div><button class="btn small blue" data-unban="${esc(b.id)}" data-uid="${esc(b.uid || '')}" data-ip="${esc(b.ip || '')}">Разбанить</button></div>`).join('');
+      $$('[data-unban]', $('#banBox')).forEach(btn => { btn.onclick = () => liftBan({ id: btn.dataset.unban, uid: btn.dataset.uid, ip: btn.dataset.ip }); });
     }).catch(() => { if ($('#banBox')) $('#banBox').innerHTML = '<div class="muted dock-note">Список банов недоступен. Войдите в аккаунт.</div>'; });
+  }
+  async function liftBan(p) {
+    const C = window.BG_CLOUD;
+    if (!C || !C.user()) { toast('Сначала войдите в аккаунт'); return; }
+    try {
+      await C.unban([p.id, p.uid, p.ip].filter(Boolean));
+      const wall = document.getElementById('banWall'); if (wall) wall.remove();
+      toast('Бан снят');
+      if (modalOpen()) closeModal();
+      loadBanBox();
+    } catch (e) { toast(e.message || 'Не удалось снять бан'); }
   }
   async function punishPlayer(p, wipe) {
     const C = window.BG_CLOUD;

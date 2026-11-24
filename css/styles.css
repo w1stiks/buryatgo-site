@@ -2724,14 +2724,7 @@ body[data-view=developer] .modal .sheet,
 .dp-cell b { color: #fff !important; white-space: normal !important; overflow: visible !important; }
 
 /* BETA 1.11.30 — холод коня, бан, снеговик */
-.horse-lie { display: none; }
-.mascot-stage .horse-body { transform: none; }
-.mascot-stage.hp-1 .hr-fore,
-.mascot-stage.hp-1 .hr-hind { transform: translateY(5px); }
-.mascot-stage.hp-2 .hr-fore,
-.mascot-stage.hp-2 .hr-hind { transform: translateY(10px); }
-.mascot-stage.hp-3 .horse-body { display: none; }
-.mascot-stage.hp-3 .horse-lie { display: block; }
+/* бан */
 #banWall { position: fixed; inset: 0; z-index: 100000; background: #071633; color: #fff; display: flex; align-items: center; justify-content: center; text-align: center; padding: 28px; }
 #banWall h2 { color: #fff; margin: 8px 0; }
 #banWall p { color: #F2B705; font-size: 18px; font-weight: 800; }
