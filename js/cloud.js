@@ -392,14 +392,8 @@ window.BG_CLOUD = (function () {
   async function banPlayer(entry) {
     const list = await readBans();
     const id = entry.uid || ('ip-' + (entry.ip || Date.now()));
-    const row = { id, uid: entry.uid || '', ip: entry.ip || '', name: entry.name || '', reason: entry.reason || 'Нарушение правил', wipe: !!entry.wipe, at: Date.now(), by: (sess && sess.login) || '' };
+    const row = { id, uid: entry.uid || '', ip: entry.ip || '', name: entry.name || '', reason: entry.reason || 'Нарушение правил', wipe: false, at: Date.now(), by: (sess && sess.login) || '' };
     await writeBans([row].concat(list.filter(b => b.id !== id && !(row.ip && b.ip === row.ip) && !(row.uid && b.uid === row.uid))));
-    if (entry.wipe && entry.uid) {
-      const t = await token();
-      const hdr = { Authorization: 'Bearer ' + t };
-      await request(fsDoc('users/' + encodeURIComponent(entry.uid)), { method: 'DELETE', headers: hdr }).catch(() => {});
-      await request(presUrl(entry.uid), { method: 'DELETE', headers: hdr }).catch(() => {});
-    }
     return row;
   }
   async function unban(id) {
@@ -414,6 +408,36 @@ window.BG_CLOUD = (function () {
     await request(presUrl(sess.uid), { method: 'DELETE', headers: { Authorization: 'Bearer ' + t } }).catch(() => {});
     await request(idt('delete'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ idToken: t }) }).catch(() => {});
     writeSess(null);
+  }
+  async function readPurged() {
+    if (!configured() || !sess) return [];
+    const t = await token();
+    const ev = await request(fsDoc('events/purged'), { headers: { Authorization: 'Bearer ' + t } });
+    if (!ev.r.ok) return [];
+    try { return JSON.parse(((ev.j.fields || {}).list || {}).stringValue || '[]') || []; } catch (e) { return []; }
+  }
+  async function purgeAccount(uid) {
+    uid = String(uid || '');
+    if (!uid) throw fail('USER_NOT_FOUND');
+    const list = await readPurged();
+    if (list.indexOf(uid) < 0) list.unshift(uid);
+    const t = await token();
+    const fields = { list: { stringValue: JSON.stringify(list.slice(0, 400)) } };
+    const ev = await request(fsDoc('events/purged') + '?updateMask.fieldPaths=list', {
+      method: 'PATCH', headers: { Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' }, body: JSON.stringify({ fields })
+    });
+    if (!ev.r.ok) throw fail(errCode(ev.j));
+    const hdr = { Authorization: 'Bearer ' + t };
+    const userDoc = await request(fsDoc('users/' + encodeURIComponent(uid)), { method: 'DELETE', headers: hdr });
+    const pres = await request(presUrl(uid), { method: 'DELETE', headers: hdr });
+    return { user: userDoc.r.ok || userDoc.r.status === 404, presence: pres.r.ok || pres.r.status === 404 };
+  }
+  async function checkPurge() {
+    if (!configured() || !sess) return false;
+    const list = await readPurged();
+    if (list.indexOf(sess.uid) < 0) return false;
+    try { await deleteSelf(); } catch (e) {}
+    return true;
   }
   async function checkBan() {
     if (!configured() || !sess) return null;
@@ -436,7 +460,7 @@ window.BG_CLOUD = (function () {
     syncedAt: () => (sess ? sess.syncedAt || 0 : 0),
     pending: () => !!(sess && (sess.dirty || timer)),
     signUp, signIn, signOut, push, pull, schedule, startupSync, ping, livePlayers, publishNy, readNy,
-    myIp, readBans, banPlayer, unban, checkBan,
+    myIp, readBans, banPlayer, unban, checkBan, readPurged, purgeAccount, checkPurge,
     onChange(fn) { listeners.push(fn); }
   };
 })();

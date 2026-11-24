@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.33';
+  const APP_VERSION = 'BETA 1.11.34';
   window.BG_APP_VERSION = APP_VERSION;
 
   // Global lesson swipe-down lock
@@ -364,6 +364,7 @@
     const scr = $('#screen');
     scr.scrollTop = 0;
     document.body.dataset.view = ui.view;
+    document.body.classList.toggle('shop-fold', ui.view === 'shop' && !!ui.shopFold);
     $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === ui.tab));
     switch (ui.view) {
       case 'home': setChrome(true, true); renderHome(scr); break;
@@ -980,7 +981,10 @@
     scr.innerHTML = `<div class="view">
       <div class="mascot-stage v4" id="stage">${stageScene()}${STAGE_SKY}
         <div class="say" id="say"></div>
+        <button type="button" class="scene-fold" id="shopFold">${ui.shopFold ? 'Магазин' : 'На весь экран'}</button>
+        <div class="fold-hint">Поверните телефон — картинка на весь экран</div>
         <div class="mascot-hold" id="mHold">${M.svg(s.equip, { mood: 'happy', cls: 'wave' })}</div></div>
+      <div class="shop-rest">
       <div class="wallet">
         <div><span class="big"><img class=bz-ic src=assets/images/buuza-icon.png alt=Буузы draggable=false></span><div><div class="big" id="wBuzzy">${fmt(s.buzzy)}</div><div class="muted" style="font-size:12px;font-weight:800">Буузы</div></div></div>
         <div><span class="big">🧊</span><div><div class="big">${s.freezes}</div><div class="muted" style="font-size:12px;font-weight:800">Заморозки</div></div></div>
@@ -1007,8 +1011,10 @@
         if (refill) tag = '<span class="tag" style="background:#868E96">Пустая</span>';
         return `<button class="item-card ${eq ? 'equipped' : ''} ${refill ? 'refill' : ''}" data-id="${it.id}" ${refill ? 'data-refill="1"' : ''}>${tag}<div class="pv">${itemPreview(it)}</div><div class="nm">${esc(it.name)}${it.id === 'buuza_plate' && owned ? ' · 🥟' + (s.buuz || 0) : ''}${it.offer ? ' · ' + ((s.offerInv || {})[it.offer] || 0) + ' шт.' : ''}</div><div class="price">${refill ? `🔄 Наполнить ${BZI} ${D.cupRefill}` : price}</div></button>`;
       }).join(''))}</div>
-      <p class="disclaimer">Нажмите на Бато — он скажет что-нибудь по-бурятски! Буузы зарабатываются за уроки, серии и достижения.</p></div>`;
+      <p class="disclaimer">Нажмите на Бато — он скажет что-нибудь по-бурятски! Буузы зарабатываются за уроки, серии и достижения.</p></div></div>`;
     $$('.seg button', scr).forEach(b => { b.onclick = () => { ui.shopSlot = b.dataset.slot; renderShop(scr); }; });
+    const fold = $('#shopFold', scr);
+    if (fold) fold.onclick = () => { ui.shopFold = !ui.shopFold; renderShop(scr); };
     $$('.item-card', scr).forEach(b => { b.onclick = () => b.dataset.refill ? (refillCup(D.itemsById[b.dataset.id]) && refreshShop(true)) : b.dataset.lucky ? luckyModal() : b.dataset.pet ? sheepModal() : b.dataset.horse ? horseModal(b.dataset.horse) : itemModal(b.dataset.id); });
     const hold = $('#mHold', scr);
     hold.onclick = () => { if (ui.skating || ui.sheltered === 'yurt') return; mascotTap(hold, $('#stage', scr), mascotTalk); };
@@ -2985,9 +2991,11 @@ function horseModal(id) {
   function loadDevDock() {
     const dock = $('#devDock'); if (!dock) return;
     const s = st();
-    devPlayersFetch().then(res => {
+    const hide = window.BG_CLOUD && BG_CLOUD.readPurged ? BG_CLOUD.readPurged().catch(() => []) : Promise.resolve([]);
+    Promise.all([devPlayersFetch(), hide]).then(([res, purged]) => {
       if (!$('#devDock')) return;
-      const list = (res.players || []).slice().sort((a, b) => (b.lastSeen || 0) - (a.lastSeen || 0));
+      const gone = new Set(purged || []);
+      const list = (res.players || []).filter(p => !gone.has(p.uid) && !gone.has(p.id)).slice().sort((a, b) => (b.lastSeen || 0) - (a.lastSeen || 0));
       ui.devPlayers = list;
       dock.classList.remove('is-loading'); dock.removeAttribute('aria-busy');
       dock.innerHTML = `<div class="dock-title">Игроки онлайн</div>
@@ -3025,13 +3033,14 @@ function horseModal(id) {
       <p class="disclaimer">IP: ${esc(p.ip || 'появится, когда игрок будет онлайн')}</p>
       <button class="btn red" id="banGo" type="button">Забанить по IP</button>
       <button class="btn blue" id="unbanGo" type="button" style="margin-top:8px">Разбанить</button>
-      <button class="btn red" id="wipeGo" type="button" style="margin-top:8px">Удалить аккаунт навсегда</button>
+      <p class="disclaimer">Удаление — не бан. Профиль пропадает из базы и из списка игроков.</p>
+      <button class="btn red" id="wipeGo" type="button">Удалить профиль из базы</button>
       <button class="btn" data-ok style="margin-top:12px">Закрыть</button></div>`);
     $('[data-ok]', m).onclick = closeModal;
     if (me) $('#dpSetBtn', m).onclick = () => { if (setExactBuzzy($('#dpSet', m).value)) { closeModal(); loadDevDock(); } };
-    $('#banGo', m).onclick = () => punishPlayer(p, false);
+    $('#banGo', m).onclick = () => punishPlayer(p);
     $('#unbanGo', m).onclick = () => liftBan(p);
-    $('#wipeGo', m).onclick = () => punishPlayer(p, true);
+    $('#wipeGo', m).onclick = () => purgePlayer(p);
   }
 
   function showBan(b) {
@@ -3048,6 +3057,11 @@ function horseModal(id) {
       const wall = document.getElementById('banWall');
       if (b) showBan(b);
       else if (wall) { wall.remove(); toast('Блокировка снята'); render(); }
+    }).catch(() => {});
+    if (C.checkPurge) C.checkPurge().then(gone => {
+      if (!gone) return;
+      try { window.BG_STORE.reset(); } catch (e) {}
+      location.reload();
     }).catch(() => {});
   }
   function loadBanBox() {
@@ -3070,15 +3084,28 @@ function horseModal(id) {
       loadBanBox();
     } catch (e) { toast(e.message || 'Не удалось снять бан'); }
   }
-  async function punishPlayer(p, wipe) {
+  async function purgePlayer(p) {
+    const C = window.BG_CLOUD;
+    if (!C || !C.user()) { toast('Сначала войдите в аккаунт'); return; }
+    const uid = p.uid || p.id;
+    if (!uid) { toast('Нет id профиля'); return; }
+    try {
+      const res = await C.purgeAccount(uid);
+      ui.devPlayers = (ui.devPlayers || []).filter(x => x.uid !== uid && x.id !== uid);
+      closeModal();
+      toast(res.user && res.presence ? 'Профиль удалён из базы' : 'Профиль убран из списка. Запись в базе сотрётся, как только игра этого игрока выйдет в сеть');
+      loadDevDock();
+    } catch (e) { toast(e.message || 'Не удалось удалить профиль'); }
+  }
+  async function punishPlayer(p) {
     const C = window.BG_CLOUD;
     if (!C || !C.user()) { toast('Сначала войдите в аккаунт'); return; }
     const reason = ($('#banReason') && $('#banReason').value || '').trim() || 'Нарушение правил';
     if (!p.ip && !p.uid && !p.id) { toast('Нет IP и нет аккаунта'); return; }
     try {
-      await C.banPlayer({ uid: p.uid || p.id || '', ip: p.ip || '', name: p.name || '', reason, wipe });
+      await C.banPlayer({ uid: p.uid || p.id || '', ip: p.ip || '', name: p.name || '', reason });
       closeModal();
-      toast(wipe ? 'Аккаунт удалён. При входе он увидит причину блокировки' : 'Игрок забанен: ' + (p.ip || p.name));
+      toast('Игрок забанен: ' + (p.ip || p.name));
       loadBanBox();
     } catch (e) { toast(e.message || 'Не удалось записать бан'); }
   }
