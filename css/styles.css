@@ -2800,52 +2800,6 @@ body.fs-on .ny-reward .btn { min-height: 42px; width: 100%; margin: 0; }
 body.fs-on .ny-gift { z-index: 12; }
 body.is-hidden .wx-flakes, body.is-hidden .wx-drops { display: none; }
 .ban-row b { color: #fff; }
-
-/* BETA 1.11.41 — уютный новогодний фон */
-#cozySky { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
-  background:
-    radial-gradient(circle at 82% 0%, rgba(255,244,214,.95) 0 46px, rgba(255,196,92,.42) 110px, transparent 240px),
-    linear-gradient(180deg, #FFE6B8 0%, #F6C98A 42%, #E7F2FF 100%); }
-#cozySky i { position: absolute; top: -12px; width: 7px; height: 7px; border-radius: 50%; background: #fff;
-  box-shadow: 0 0 6px rgba(255,255,255,.9); opacity: .85; animation: cozyFall linear infinite; }
-#cozySky i:nth-child(1) { left: 6%; animation-duration: 11s; animation-delay: -2s; }
-#cozySky i:nth-child(2) { left: 14%; width: 4px; height: 4px; animation-duration: 15s; animation-delay: -8s; }
-#cozySky i:nth-child(3) { left: 22%; animation-duration: 9s; animation-delay: -4s; }
-#cozySky i:nth-child(4) { left: 31%; width: 5px; height: 5px; animation-duration: 13s; animation-delay: -1s; }
-#cozySky i:nth-child(5) { left: 39%; animation-duration: 16s; animation-delay: -9s; }
-#cozySky i:nth-child(6) { left: 47%; width: 4px; height: 4px; animation-duration: 10s; animation-delay: -6s; }
-#cozySky i:nth-child(7) { left: 55%; animation-duration: 14s; animation-delay: -3s; }
-#cozySky i:nth-child(8) { left: 63%; width: 6px; height: 6px; animation-duration: 12s; animation-delay: -7s; }
-#cozySky i:nth-child(9) { left: 71%; animation-duration: 17s; animation-delay: -5s; }
-#cozySky i:nth-child(10) { left: 78%; width: 4px; height: 4px; animation-duration: 11s; animation-delay: -10s; }
-#cozySky i:nth-child(11) { left: 84%; animation-duration: 13s; animation-delay: -2.5s; }
-#cozySky i:nth-child(12) { left: 90%; width: 5px; height: 5px; animation-duration: 9.5s; animation-delay: -6.5s; }
-#cozySky i:nth-child(13) { left: 18%; animation-duration: 18s; animation-delay: -12s; }
-#cozySky i:nth-child(14) { left: 50%; width: 3px; height: 3px; animation-duration: 12s; animation-delay: -11s; }
-#cozySky i:nth-child(15) { left: 67%; animation-duration: 15s; animation-delay: -13s; }
-#cozySky i:nth-child(16) { left: 95%; width: 4px; height: 4px; animation-duration: 10.5s; animation-delay: -4.5s; }
-@keyframes cozyFall { from { transform: translateY(-10px); } to { transform: translateY(110vh); } }
-html, body, #app { background: transparent !important; }
-body[data-view="home"] .screen,
-body[data-view="shop"] .screen,
-body[data-view="leagues"] .screen,
-body[data-view="profile"] .screen,
-body[data-view="settings"] .screen,
-body[data-view="developer"] .screen,
-body[data-view="lesson"] .screen,
-body[data-view="home"] .screen::before,
-body[data-view="shop"] .screen::before,
-body[data-view="leagues"] .screen::before,
-body[data-view="profile"] .screen::before { background: transparent !important; filter: none !important; }
-body[data-view=home] .screen .node-label { color: #6A4320 !important; text-shadow: none !important; }
-#tabbar, .tabbar { background: linear-gradient(180deg, #8E2433, #5C1522) !important; border-top: 3px solid #F2C14E !important; }
-.topbar { background: linear-gradient(180deg, #C65A3A 0%, #8E2E32 100%) !important; }
-.btn { border: 1px solid rgba(242,193,78,.45); }
-.btn.green, .btn:not(.blue):not(.red):not(.gold):not(.purple):not(.ghost):not(.dark) {
-  background: linear-gradient(180deg, #3E9A62, #1F6B40) !important;
-  box-shadow: 0 4px 0 #145232 !important;
-}
 .node .node-svg { width: 40px; height: 40px; display: block; }
 .node.done { background: radial-gradient(circle at 32% 28%, #FFF6D2, #F0B429 48%, #C47A12) !important; box-shadow: 0 7px 0 #8A5410 !important; }
-.node.locked { background: linear-gradient(180deg, #F4FBFF, #C9DBEE) !important; box-shadow: 0 7px 0 #8EACC8 !important; color: #5C7FA6; }
-.node.open { box-shadow: 0 7px 0 rgba(90,40,20,.28), inset 0 0 0 3px rgba(255,255,255,.28); }
+.node.locked { background: linear-gradient(180deg, #F4FBFF, #C9DBEE) !important; box-shadow: 0 7px 0 #8EACC8 !important; }

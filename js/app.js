@@ -1,7 +1,7 @@
 /* BuryatGo — логика приложения: навигация, уроки, магазин, профиль, лиги, настройки, paywall */
 (function () {
   'use strict';
-  const APP_VERSION = 'BETA 1.11.41';
+  const APP_VERSION = 'BETA 1.11.42';
   window.BG_APP_VERSION = APP_VERSION;
 
   // Global lesson swipe-down lock
@@ -443,7 +443,7 @@
   }
 
   const NODE_ORN = `<svg class="node-svg" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="14" fill="#FFF6D8" stroke="#B86A12" stroke-width="2"/><path d="M32 8 L36 24 L52 24 L39 34 L44 50 L32 40 L20 50 L25 34 L12 24 L28 24 Z" fill="#E23B3B" stroke="#F6D78A" stroke-width="2" stroke-linejoin="round"/><circle cx="32" cy="30" r="4" fill="#F2C14E"/></svg>`;
-  const NODE_FLAKE = `<svg class="node-svg" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 8 V56 M12 20 L52 44 M52 20 L12 44" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M32 16 L28 22 M32 16 L36 22 M32 48 L28 42 M32 48 L36 42 M18 24 L24 22 M46 40 L40 42 M46 24 L40 22 M18 40 L24 42" stroke="#FFF6D8" stroke-width="3" stroke-linecap="round"/></svg>`;
+  const NODE_FLAKE = `<svg class="node-svg" viewBox="0 0 64 64" aria-hidden="true"><g fill="#fff">${[0,60,120,180,240,300].map(a => `<g transform="rotate(${a} 32 32)"><rect x="30.3" y="7" width="3.4" height="20" rx="1.6"/><path d="M32 14l-6-4 1.6 5.2zM32 14l6-4-1.6 5.2zM32 22l-7-3.2 2 5.4zM32 22l7-3.2-2 5.4z"/></g>`).join('')}<circle cx="32" cy="32" r="3.4"/></g></svg>`;
   const NODE_LOCK = `<svg class="node-svg" viewBox="0 0 64 64" aria-hidden="true"><rect x="16" y="28" width="32" height="24" rx="6" fill="#D7E6F6" stroke="#7E9BBF" stroke-width="3"/><path d="M24 28 V22 a8 8 0 0 1 16 0 V28" fill="none" stroke="#7E9BBF" stroke-width="3"/><circle cx="32" cy="40" r="3" fill="#5C7FA6"/></svg>`;
 
   function renderHome(scr) {
