@@ -285,25 +285,25 @@ window.BG_MASCOT = (function () {
     const c = o.color;
     const belt = `<path d="M66 168 H134" stroke="#2C241C" stroke-width="6" stroke-linecap="round"/><rect x="93" y="164" width="14" height="10" rx="2" fill="#E6C36A" stroke="#8A6A22" stroke-width="1"/>`;
     if (o.id === 'pants_sport') {
-      return `${belt}<path d="M66 172 H98 Q104 178 100 196 H74 Q58 190 66 172Z" fill="${c}"/><path d="M102 172 H134 Q142 190 126 196 H100 Q96 178 102 172Z" fill="${c}"/>
-        <path d="M68 176 V194" stroke="#F4FBFF" stroke-width="3.4" stroke-linecap="round"/><path d="M132 176 V194" stroke="#7EC8FF" stroke-width="3.4" stroke-linecap="round"/>
-        <path d="M84 176 V194 M116 176 V194" stroke="rgba(255,255,255,.22)" stroke-width="1.2"/>`;
+      return `${belt}<path d="M66 172 H98 Q104 178 100 190 H74 Q58 184 66 172Z" fill="${c}"/><path d="M102 172 H134 Q142 184 126 190 H100 Q96 178 102 172Z" fill="${c}"/>
+        <path d="M68 176 V188" stroke="#F4FBFF" stroke-width="3.4" stroke-linecap="round"/><path d="M132 176 V188" stroke="#7EC8FF" stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M84 176 V188 M116 176 V188" stroke="rgba(255,255,255,.22)" stroke-width="1.2"/>`;
     }
     if (o.id === 'pants_jeans') {
-      return `${belt}<path d="M66 172 H98 Q103 178 99 196 H74 Q58 190 66 172Z" fill="#2B5B84"/><path d="M102 172 H134 Q142 190 126 196 H101 Q97 178 102 172Z" fill="#2B5B84"/>
-        <path d="M74 178 V194 M90 178 V194 M110 178 V194 M126 178 V194" stroke="#D5E6F5" stroke-width=".9" stroke-dasharray="2 1.6"/>
-        <path d="M70 184 h12 v7 h-12 z M118 184 h12 v7 h-12 z" fill="none" stroke="#E7F1FA" stroke-width="1.2"/>
-        <path d="M86 172 Q84 182 72 186 M114 172 Q116 182 128 186" stroke="#F2B705" stroke-width="1.4" fill="none"/>
-        <circle cx="78" cy="190" r="1.2" fill="#E7F1FA"/><circle cx="124" cy="190" r="1.2" fill="#E7F1FA"/>`;
+      return `${belt}<path d="M66 172 H98 Q103 178 99 190 H74 Q58 184 66 172Z" fill="#2B5B84"/><path d="M102 172 H134 Q142 184 126 190 H101 Q97 178 102 172Z" fill="#2B5B84"/>
+        <path d="M74 176 V188 M90 176 V188 M110 176 V188 M126 176 V188" stroke="#D5E6F5" stroke-width=".9" stroke-dasharray="2 1.6"/>
+        <path d="M70 180 h12 v6 h-12 z M118 180 h12 v6 h-12 z" fill="none" stroke="#E7F1FA" stroke-width="1.2"/>
+        <path d="M86 172 Q84 180 72 184 M114 172 Q116 180 128 184" stroke="#F2B705" stroke-width="1.4" fill="none"/>
+        <circle cx="78" cy="186" r="1.2" fill="#E7F1FA"/><circle cx="124" cy="186" r="1.2" fill="#E7F1FA"/>`;
     }
     if (o.id === 'pants_umden') {
-      return `${belt}<path d="M64 172 Q50 188 64 198 H102 Q106 186 98 172Z" fill="${c}"/><path d="M102 172 Q94 186 98 198 H136 Q150 188 136 172Z" fill="${c}"/>
-        <path d="M66 192 H100 M100 192 H134" stroke="#E6C98A" stroke-width="3.2" stroke-linecap="round"/>
-        <path d="M72 182 Q86 190 96 180 M104 180 Q116 190 130 182" stroke="#E6C98A" stroke-width="1.4" fill="none"/>`;
+      return `${belt}<path d="M64 172 Q50 184 64 192 H102 Q106 182 98 172Z" fill="${c}"/><path d="M102 172 Q94 182 98 192 H136 Q150 184 136 172Z" fill="${c}"/>
+        <path d="M66 186 H100 M100 186 H134" stroke="#E6C98A" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M72 178 Q86 186 96 176 M104 176 Q116 186 130 178" stroke="#E6C98A" stroke-width="1.4" fill="none"/>`;
     }
-    return `${belt}<path d="M66 172 H98 Q103 178 99 196 H74 Q58 190 66 172Z" fill="${c}"/><path d="M102 172 H134 Q142 190 126 196 H101 Q97 178 102 172Z" fill="${c}"/>
-      <path d="M84 178 V194 M116 178 V194" stroke="rgba(255,255,255,.35)" stroke-width="1.3"/>
-      <path d="M72 184 H94 M106 184 H128" stroke="rgba(0,0,0,.18)" stroke-width="1"/>`;
+    return `${belt}<path d="M66 172 H98 Q103 178 99 190 H74 Q58 184 66 172Z" fill="${c}"/><path d="M102 172 H134 Q142 184 126 190 H101 Q97 178 102 172Z" fill="${c}"/>
+      <path d="M84 176 V188 M116 176 V188" stroke="rgba(255,255,255,.35)" stroke-width="1.3"/>
+      <path d="M72 180 H94 M106 180 H128" stroke="rgba(0,0,0,.18)" stroke-width="1"/>`;
   }
 
   /* Рука: рукав с обводкой, манжета и кисть с большим пальцем */
@@ -341,11 +341,9 @@ window.BG_MASCOT = (function () {
     const pants = pantsIt ? pantsIt.color : ((base && base.pants) || '#34405E');
     const sc = robe ? null : (base.socks || (vest && vest.socks) || null), scd = '#D9A436';
     const SOCK = '#FBF7EE', SOCK_L = '#6E604C', SOCK_C = '#2F5FB3', SOCK_P = '#CFE0F7';
-    const socks = sc && !robe ? `<rect x="79.5" y="198" width="16" height="22" rx="6" fill="${SOCK}" stroke="${SOCK_L}" stroke-width="1.3"/><rect x="104.5" y="198" width="16" height="22" rx="6" fill="${SOCK}" stroke="${SOCK_L}" stroke-width="1.3"/>
-        <path d="M81 210h13M106 210h13" stroke="#E03131" stroke-width="1.2"/><path d="M81 213h13M106 213h13" stroke="${SOCK_C}" stroke-width="1"/>
-        <path d="M90 200v18M115 200v18" stroke="rgba(0,0,0,.08)" stroke-width="4"/>
-        <rect x="78" y="195" width="19" height="7" rx="3" fill="${SOCK_C}" stroke="${SOCK_L}" stroke-width="1"/><rect x="103" y="195" width="19" height="7" rx="3" fill="${SOCK_C}" stroke="${SOCK_L}" stroke-width="1"/>
-        <path d="M80 198.5h15M105 198.5h15" stroke="#F2B705" stroke-width="1.3" stroke-dasharray="2 1.5"/>` : '';
+    const socks = sc && !robe ? `<rect x="81" y="188" width="13" height="18" rx="5" fill="${SOCK}" stroke="${SOCK_L}" stroke-width="1.2"/><rect x="106" y="188" width="13" height="18" rx="5" fill="${SOCK}" stroke="${SOCK_L}" stroke-width="1.2"/>
+        <path d="M82.5 196h10M107.5 196h10" stroke="#E03131" stroke-width="1.3"/><path d="M82.5 199.5h10M107.5 199.5h10" stroke="${SOCK_C}" stroke-width="1.2"/>
+        <rect x="79.5" y="184" width="16" height="6" rx="2.5" fill="${SOCK_C}" stroke="${SOCK_L}" stroke-width="1"/><rect x="104.5" y="184" width="16" height="6" rx="2.5" fill="${SOCK_C}" stroke="${SOCK_L}" stroke-width="1"/>` : '';
     const boots = feet ? feetSvg(feet) : (sc && !robe)
       ? `<path d="M96 214V221Q96 227 89 227H78Q70 227 70 222Q70 217 78 216L80 214Z" fill="${SOCK}"/><path d="M79 216Q70 217 70 222Q70 227 77 227H81V216Z" fill="${SOCK_P}"/><path d="M96 222V221Q96 227 89 227H87V222Z" fill="${SOCK_P}"/>
          <path d="M96 214V221Q96 227 89 227H78Q70 227 70 222Q70 217 78 216L80 214Z" fill="none" stroke="${SOCK_L}" stroke-width="1.4" stroke-linejoin="round"/>
@@ -369,10 +367,10 @@ window.BG_MASCOT = (function () {
     return `<svg overflow="visible" class="mascot-svg ${held ? 'holding' : ''} ${opts.cls || ''}" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" aria-label="Бато">
       <ellipse cx="100" cy="230" rx="54" ry="7" fill="rgba(0,0,0,.12)"/>
       <g class="m-body">
-        <rect x="79" y="176" width="17" height="22" rx="6" fill="${pants}"/>
-        <rect x="104" y="176" width="17" height="22" rx="6" fill="${pants}"/>
-        ${!robe && pantsIt ? pantsDetailSvg(pantsIt) : ''}
+        <rect x="79" y="168" width="17" height="22" rx="6" fill="${pants}"/>
+        <rect x="104" y="168" width="17" height="22" rx="6" fill="${pants}"/>
         ${socks}
+        ${!robe && pantsIt ? pantsDetailSvg(pantsIt) : ''}
         ${boots}
         <rect x="91" y="106" width="18" height="16" rx="5" fill="${SKIN_D}"/>
         ${bodySvg(drawTop)}
